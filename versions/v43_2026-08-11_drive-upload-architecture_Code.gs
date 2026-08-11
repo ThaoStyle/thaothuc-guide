@@ -19,6 +19,36 @@ function getAdminStatus() {
   }
 }
 
+function uploadImageToDrive(base64Data) {
+  try {
+    if (!base64Data) return { success: false, error: 'Không có dữ liệu ảnh' };
+    var splitData = base64Data.split(',');
+    var contentType = 'image/jpeg';
+    var rawBase64 = splitData[0];
+    if (splitData.length > 1) {
+      rawBase64 = splitData[1];
+      var matchType = splitData[0].match(/:(.*?);/);
+      if (matchType) contentType = matchType[1];
+    }
+    var decoded = Utilities.base64Decode(rawBase64);
+    var blob = Utilities.newBlob(decoded, contentType, 'thaothuc_' + Date.now() + '.jpg');
+    
+    // Create or get ThaoThuc_Photos folder in Google Drive
+    var folders = DriveApp.getFoldersByName('ThaoThuc_Photos');
+    var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder('ThaoThuc_Photos');
+    
+    var file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    var fileId = file.getId();
+    // Direct Google CDN photo link for high performance web loading
+    var directUrl = 'https://lh3.googleusercontent.com/d/' + fileId;
+    return { success: true, url: directUrl };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
 function extractLatLngRegex(str) {
   if (!str) return null;
   var s = String(str);
@@ -130,13 +160,6 @@ function getFoodLocations() {
       var lat = parseFloat(r[2]);
       var lng = parseFloat(r[3]);
       var mapUrl = r[9];
-      var imgUrl = r[10] ? String(r[10]).trim() : '';
-
-      // Auto purge oversized legacy base64 strings (> 25000 chars) from Google Sheet cells
-      if (imgUrl.length > 25000) {
-        imgUrl = '';
-        sheet.getRange(i + 1, 11).setValue(''); // Clean cell immediately in sheet!
-      }
 
       // Auto fix row coordinates if missing or unparsed
       if ((isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) && mapUrl) {
@@ -160,7 +183,7 @@ function getFoodLocations() {
         price_range: r[7],
         video_url: r[8],
         map_url: mapUrl,
-        image_url: imgUrl,
+        image_url: r[10],
         opening_hours: r[11] || '',
         description: r[12] || ''
       });
@@ -190,10 +213,10 @@ function addLocation(row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check cell length limit (Google Sheets has 50k char limit per cell)
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string' && row[k].length > 30000) {
+      row[k] = row[k].substring(0, 30000);
     }
   }
 
@@ -218,10 +241,10 @@ function updateLocation(id, row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check cell length limit
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string' && row[k].length > 30000) {
+      row[k] = row[k].substring(0, 30000);
     }
   }
 
@@ -251,9 +274,9 @@ function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Suggestions');
-    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']);
+    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes']);
   }
-  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes, data.image || '']);
+  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes]);
   return { success: true };
 }
 

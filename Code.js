@@ -251,9 +251,9 @@ function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Suggestions');
-    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']);
+    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes']);
   }
-  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes, data.image || '']);
+  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes]);
   return { success: true };
 }
 

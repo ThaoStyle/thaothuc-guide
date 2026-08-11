@@ -19,6 +19,57 @@ function getAdminStatus() {
   }
 }
 
+function uploadImageToDrive(base64Data) {
+  try {
+    if (!base64Data) return { success: false, error: 'Không có dữ liệu ảnh' };
+    var splitData = base64Data.split(',');
+    var contentType = 'image/jpeg';
+    var rawBase64 = splitData[0];
+    if (splitData.length > 1) {
+      rawBase64 = splitData[1];
+      var matchType = splitData[0].match(/:(.*?);/);
+      if (matchType) contentType = matchType[1];
+    }
+
+    // Strategy 1: Google Drive upload
+    try {
+      var decoded = Utilities.base64Decode(rawBase64);
+      var blob = Utilities.newBlob(decoded, contentType, 'thaothuc_' + Date.now() + '.jpg');
+      
+      var folders = DriveApp.getFoldersByName('ThaoThuc_Photos');
+      var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder('ThaoThuc_Photos');
+      
+      var file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      
+      var fileId = file.getId();
+      var directUrl = 'https://lh3.googleusercontent.com/d/' + fileId;
+      return { success: true, url: directUrl };
+    } catch(driveErr) {
+      // Strategy 2: Fast Image Cloud CDN API fallback (UrlFetchApp - always authorized)
+      try {
+        var payload = {
+          key: '6d207e02198a847aa98d0a2a901485a5',
+          image: rawBase64
+        };
+        var options = {
+          method: 'post',
+          payload: payload,
+          muteHttpExceptions: true
+        };
+        var response = UrlFetchApp.fetch('https://api.imgbb.com/1/upload', options);
+        var json = JSON.parse(response.getContentText());
+        if (json && json.data && (json.data.display_url || json.data.url)) {
+          return { success: true, url: json.data.display_url || json.data.url };
+        }
+      } catch(apiErr) {}
+      return { success: false, error: driveErr.message };
+    }
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
 function extractLatLngRegex(str) {
   if (!str) return null;
   var s = String(str);
@@ -132,8 +183,8 @@ function getFoodLocations() {
       var mapUrl = r[9];
       var imgUrl = r[10] ? String(r[10]).trim() : '';
 
-      // Auto purge oversized legacy base64 strings (> 25000 chars) from Google Sheet cells
-      if (imgUrl.length > 25000) {
+      // Auto purge legacy base64 strings from Google Sheet cells
+      if (imgUrl.indexOf('data:image/') === 0 || imgUrl.length > 1000) {
         imgUrl = '';
         sheet.getRange(i + 1, 11).setValue(''); // Clean cell immediately in sheet!
       }
@@ -190,10 +241,12 @@ function addLocation(row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: NEVER write raw base64 or strings > 1000 chars into sheets
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string') {
+      if (row[k].indexOf('data:image/') === 0 || row[k].length > 1000) {
+        row[k] = '';
+      }
     }
   }
 
@@ -218,10 +271,12 @@ function updateLocation(id, row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: NEVER write raw base64 or strings > 1000 chars into sheets
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string') {
+      if (row[k].indexOf('data:image/') === 0 || row[k].length > 1000) {
+        row[k] = '';
+      }
     }
   }
 
@@ -251,9 +306,9 @@ function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Suggestions');
-    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']);
+    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes']);
   }
-  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes, data.image || '']);
+  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes]);
   return { success: true };
 }
 

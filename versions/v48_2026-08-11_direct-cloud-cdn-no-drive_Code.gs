@@ -132,8 +132,8 @@ function getFoodLocations() {
       var mapUrl = r[9];
       var imgUrl = r[10] ? String(r[10]).trim() : '';
 
-      // Auto purge oversized legacy base64 strings (> 25000 chars) from Google Sheet cells
-      if (imgUrl.length > 25000) {
+      // Auto purge legacy base64 strings from Google Sheet cells
+      if (imgUrl.indexOf('data:image/') === 0 || imgUrl.length > 1000) {
         imgUrl = '';
         sheet.getRange(i + 1, 11).setValue(''); // Clean cell immediately in sheet!
       }
@@ -190,10 +190,12 @@ function addLocation(row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: NEVER write raw base64 or strings > 1000 chars into sheets
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string') {
+      if (row[k].indexOf('data:image/') === 0 || row[k].length > 1000) {
+        row[k] = '';
+      }
     }
   }
 
@@ -218,10 +220,12 @@ function updateLocation(id, row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: NEVER write raw base64 or strings > 1000 chars into sheets
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
+    if (typeof row[k] === 'string') {
+      if (row[k].indexOf('data:image/') === 0 || row[k].length > 1000) {
+        row[k] = '';
+      }
     }
   }
 
@@ -251,9 +255,9 @@ function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Suggestions');
-    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']);
+    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes']);
   }
-  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes, data.image || '']);
+  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes]);
   return { success: true };
 }
 

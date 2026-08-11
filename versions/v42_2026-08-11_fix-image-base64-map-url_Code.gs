@@ -23,45 +23,22 @@ function extractLatLngRegex(str) {
   if (!str) return null;
   var s = String(str);
   
-  // 1. Independent Place Pin Markers (!3d<lat> and !4d<lng>)
-  var m3d = s.match(/!3d(-?\d+\.\d+)/);
-  var m4d = s.match(/!4d(-?\d+\.\d+)/);
-  if (m3d && m4d) {
-    var lat3 = parseFloat(m3d[1]);
-    var lng4 = parseFloat(m4d[1]);
-    if (!isNaN(lat3) && !isNaN(lng4) && Math.abs(lat3) <= 90 && Math.abs(lng4) <= 180) {
-      return { lat: lat3, lng: lng4 };
-    }
+  // 1. Match !3d<lat>!4d<lng> (Exact Google Maps place pin marker coordinate!)
+  var mPin = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (mPin) {
+    return { lat: parseFloat(mPin[1]), lng: parseFloat(mPin[2]) };
   }
 
-  // 2. Query Parameters: q=lat,lng or ll=lat,lng or query=lat,lng or center=lat,lng
-  var mQ = s.match(/(?:[?&](?:q|ll|query|center)=|maps\?q=)(-?\d+\.\d+)(?:,|%2C)(-?\d+\.\d+)/i);
-  if (mQ) {
-    var latQ = parseFloat(mQ[1]);
-    var lngQ = parseFloat(mQ[2]);
-    if (!isNaN(latQ) && !isNaN(lngQ) && Math.abs(latQ) <= 90 && Math.abs(lngQ) <= 180) {
-      return { lat: latQ, lng: lngQ };
-    }
-  }
-
-  // 3. Embedded JSON array pattern in Google Maps HTML body
-  var mJsonPin = s.match(/\[null,null,(-?\d+\.\d+),(-?\d+\.\d+)\]/);
-  if (mJsonPin) {
-    var latJ = parseFloat(mJsonPin[1]);
-    var lngJ = parseFloat(mJsonPin[2]);
-    if (!isNaN(latJ) && !isNaN(lngJ) && Math.abs(latJ) <= 90 && Math.abs(lngJ) <= 180) {
-      return { lat: latJ, lng: lngJ };
-    }
-  }
-
-  // 4. Viewport / Camera Center @lat,lng (Fallback option)
+  // 2. Match @lat,lng, e.g. @21.0155114,105.5166529
   var mAt = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if (mAt) {
-    var latAt = parseFloat(mAt[1]);
-    var lngAt = parseFloat(mAt[2]);
-    if (!isNaN(latAt) && !isNaN(lngAt) && Math.abs(latAt) <= 90 && Math.abs(lngAt) <= 180) {
-      return { lat: latAt, lng: lngAt };
-    }
+    return { lat: parseFloat(mAt[1]), lng: parseFloat(mAt[2]) };
+  }
+
+  // 3. Match q=lat,lng or ll=lat,lng or center=lat,lng
+  var mQ = s.match(/(?:[?&](?:q|ll|query|center)=|maps\?q=)(-?\d+\.\d+)(?:,|%2C)(-?\d+\.\d+)/i);
+  if (mQ) {
+    return { lat: parseFloat(mQ[1]), lng: parseFloat(mQ[2]) };
   }
 
   return null;
@@ -75,25 +52,23 @@ function resolveLatLngFromMapUrl(mapUrl) {
   var directMatch = extractLatLngRegex(url);
   if (directMatch) return directMatch;
 
-  // Strategy 1: Don't follow redirects — capture 302 Location header
+  // Strategy 1: Don't follow redirects — capture the 302 Location header
   try {
     var resp1 = UrlFetchApp.fetch(url, {
       followRedirects: false,
       muteHttpExceptions: true
     });
-    var headers = resp1.getHeaders();
-    var loc = headers['Location'] || headers['location'];
+    var loc = resp1.getHeaders()['Location'] || resp1.getHeaders()['location'];
     if (loc) {
       var m1 = extractLatLngRegex(loc);
       if (m1) return m1;
-      // Location may itself redirect — follow 1 more level
+      // Location may itself be a redirect — follow it
       try {
         var resp2 = UrlFetchApp.fetch(loc, {
           followRedirects: false,
           muteHttpExceptions: true
         });
-        var headers2 = resp2.getHeaders();
-        var loc2 = headers2['Location'] || headers2['location'];
+        var loc2 = resp2.getHeaders()['Location'] || resp2.getHeaders()['location'];
         if (loc2) {
           var m2 = extractLatLngRegex(loc2);
           if (m2) return m2;
@@ -130,13 +105,6 @@ function getFoodLocations() {
       var lat = parseFloat(r[2]);
       var lng = parseFloat(r[3]);
       var mapUrl = r[9];
-      var imgUrl = r[10] ? String(r[10]).trim() : '';
-
-      // Auto purge oversized legacy base64 strings (> 25000 chars) from Google Sheet cells
-      if (imgUrl.length > 25000) {
-        imgUrl = '';
-        sheet.getRange(i + 1, 11).setValue(''); // Clean cell immediately in sheet!
-      }
 
       // Auto fix row coordinates if missing or unparsed
       if ((isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) && mapUrl) {
@@ -160,7 +128,7 @@ function getFoodLocations() {
         price_range: r[7],
         video_url: r[8],
         map_url: mapUrl,
-        image_url: imgUrl,
+        image_url: r[10],
         opening_hours: r[11] || '',
         description: r[12] || ''
       });
@@ -190,13 +158,6 @@ function addLocation(row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
-  for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
-    }
-  }
-
   sheet.appendRow(row);
   return { success: true, lat: row[2], lng: row[3] };
 }
@@ -215,13 +176,6 @@ function updateLocation(id, row) {
     if (coords) {
       row[2] = coords.lat;
       row[3] = coords.lng;
-    }
-  }
-
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
-  for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
-      row[k] = '';
     }
   }
 
@@ -251,9 +205,9 @@ function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Suggestions');
-    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']);
+    sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes']);
   }
-  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes, data.image || '']);
+  sheet.appendRow([new Date(), data.name, data.address, data.lat, data.lng, data.category, data.notes]);
   return { success: true };
 }
 

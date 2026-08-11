@@ -49,6 +49,9 @@ thaothuc-guide/
    * Trước khi sửa đổi cấu trúc lớn, luôn backup file vào `versions/vXX_description`.
 4. **Deploy & Kiểm thử**:
    * Sau khi sửa code, thực hiện deploy lên Google Apps Script và chạy xác nhận HTTP/Visual UI.
+5. **Xử lý Lỗi Encoding Tiếng Việt (CRITICAL)**:
+   * **KHÔNG BAO GIỜ** dùng PowerShell `WriteAllLines` hoặc `Set-Content` mà không cấu hình chính xác `$UTF8NoBOM = New-Object System.Text.UTF8Encoding $False`. Mặc định của Windows PowerShell sẽ mã hóa sai và làm hỏng toàn bộ ký tự tiếng Việt.
+   * **LUÔN LUÔN** ưu tiên dùng tool `multi_replace_file_content` / `replace_file_content` để chỉnh sửa HTML/JS/CSS nhằm bảo toàn cấu trúc file và Unicode.
 
 ---
 
