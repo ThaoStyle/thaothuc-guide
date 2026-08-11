@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover"/>
+<title>Thao Thức Guide – Cẩm Nang Ẩm Thực & Lifestyle</title>
+<meta name="description" content="Thao Thức Guide - Cẩm nang ẩm thực, nấu ăn Chồng Cook Vợ Look và địa điểm du lịch"/>
+
+<!-- PWA META -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Thao Thức"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#FFFFFF"/>
+
+<link id="icon-main"    rel="icon"             type="image/png" href=""/>
+<link id="icon-apple"   rel="apple-touch-icon" sizes="180x180"  href=""/>
+<link id="manifest-lnk" rel="manifest"                          href=""/>
+
+<script>
+(function(){
+  try{
+    sessionStorage.clear();
+    localStorage.clear();
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        for(var i=0;i<regs.length;i++){ regs[i].unregister(); }
+      });
+    }
+  }catch(e){}
+
+  function draw(sz){
+    var c=document.createElement('canvas');c.width=c.height=sz;
+    var x=c.getContext('2d'),s=sz/512,r=110*s;
+    x.beginPath();x.moveTo(r,0);x.lineTo(sz-r,0);x.quadraticCurveTo(sz,0,sz,r);
+    x.lineTo(sz,sz-r);x.quadraticCurveTo(sz,sz,sz-r,sz);
+    x.lineTo(r,sz);x.quadraticCurveTo(0,sz,0,sz-r);
+    x.lineTo(0,r);x.quadraticCurveTo(0,0,r,0);x.closePath();
+    x.fillStyle='#fff';x.fill();
+    var px=sz*.5,py=sz*.42,pr=sz*.27;
+    x.beginPath();x.arc(px,py,pr,Math.PI,0);
+    x.bezierCurveTo(sz*.77,py+pr*1.1,px+pr*.35,sz*.82,px,sz*.9);
+    x.bezierCurveTo(px-pr*.35,sz*.82,sz*.23,py+pr*1.1,px-pr,py);
+    x.closePath();
+    var g=x.createLinearGradient(px-pr,py-pr,px+pr,py+pr);
+    g.addColorStop(0,'#FF7043');g.addColorStop(1,'#E64A19');
+    x.fillStyle=g;x.shadowColor='rgba(255,87,34,.5)';x.shadowBlur=sz*.05;x.fill();x.shadowBlur=0;
+    x.beginPath();x.arc(px,py,pr*.52,0,Math.PI*2);x.fillStyle='white';x.fill();
+    x.fillStyle='#FF5722';x.font='900 '+Math.round(pr*.8)+'px Arial';
+    x.textAlign='center';x.textBaseline='middle';x.fillText('T',px,py+pr*.05);
+    x.fillStyle='#FFC107';x.font='900 '+Math.round(sz*.065)+'px Arial';x.fillText('★★★',px,sz*.79);
+    x.fillStyle='#FF5722';x.font='700 '+Math.round(sz*.048)+'px Arial';x.fillText('GUIDE',px,sz*.9);
+    return c.toDataURL('image/png');
+  }
+  var p=draw(512),p2=draw(192);
+  document.getElementById('icon-main').href=p2;
+  document.getElementById('icon-apple').href=p;
+  var mf={name:'Thao Thức Guide',short_name:'Thao Thức',start_url:'./',display:'standalone',
+    background_color:'#FFFFFF',theme_color:'#FF5722',orientation:'portrait',
+    icons:[{src:p2,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:p,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  try{document.getElementById('manifest-lnk').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));}catch(e){}
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root{
+  --or:#FF7043;--or2:#E64A19;--or-light:rgba(255,112,67,.12);--or-glow:rgba(255,112,67,.35);
+  --go:#F59E0B;--go-bg:#FFFBEB;
+  --nv:#0F172A;--sl:#64748B;--sl-light:#94A3B8;
+  --bg-solid:#F5F3EF;
+  --glass:rgba(255,255,255,.82);--glass-border:rgba(255,255,255,.75);
+  --shadow-sm:0 4px 16px rgba(15,23,42,.07);
+  --shadow-md:0 8px 28px rgba(15,23,42,.10);
+  --shadow-lg:0 16px 48px rgba(15,23,42,.14);
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;position:fixed;}
+body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--nv);font-weight:400;}
+.app-viewport{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  position:relative;background:linear-gradient(160deg,#F7F4F0 0%,#ECF0F7 100%);overflow:hidden;
+}
+@media(min-width:1024px){
+  body{display:flex;align-items:center;justify-content:center;}
+  .app-viewport{max-width:430px;max-height:932px;height:95vh;border-radius:48px;box-shadow:0 40px 80px rgba(15,23,42,.30),0 0 0 1px rgba(255,255,255,.4);overflow:hidden;}
+}
+/* TOP HEADER */
+.top-header{
+  position:absolute;top:calc(10px + var(--st));left:10px;right:10px;z-index:400;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.75);border-radius:20px;
+  box-shadow:0 8px 28px rgba(15,23,42,.10),inset 0 1px 0 rgba(255,255,255,.95);
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;
+}
+.brand-group{display:flex;flex-direction:column;min-width:0;flex-shrink:1;}
+.logo-title{font-size:17px;font-weight:600;color:var(--nv);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em;}
+.logo-sub{font-size:11px;color:var(--sl);font-weight:400;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.logo-sub.highlight{color:var(--or);}
+.hdr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.hdr-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);border-radius:12px;
+  padding:7px 12px;font-size:12px;font-weight:500;color:var(--nv);
+  cursor:pointer;transition:all .2s;min-height:36px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(15,23,42,.06);
+}
+.hdr-btn:active{transform:scale(.94);}
+.hdr-btn svg{width:14px;height:14px;fill:var(--or);stroke:none;}
+.hdr-btn.lang{padding:7px 10px;font-weight:600;font-size:12px;}
+@media(min-width:480px){
+  .top-header{padding:12px 18px;border-radius:22px;min-height:64px;top:calc(14px + var(--st));left:14px;right:14px;}
+  .logo-title{font-size:20px;}.logo-sub{font-size:12px;}.hdr-actions{gap:8px;}
+  .hdr-btn{padding:8px 14px;font-size:13px;min-height:40px;}.hdr-btn svg{width:16px;height:16px;}
+}
+/* FILTER PILLS */
+.filter-pills{
+  position:absolute;top:calc(78px + var(--st));left:10px;right:10px;z-index:390;
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 0;transition:opacity .2s;
+}
+@media(min-width:480px){.filter-pills{top:calc(96px + var(--st));left:14px;right:14px;gap:10px;}}
+.filter-pills::-webkit-scrollbar{display:none;}
+.pill{
+  white-space:nowrap;padding:9px 15px;border-radius:24px;font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .2s;color:var(--nv);
+  background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.75);box-shadow:0 4px 16px rgba(15,23,42,.07);
+  min-height:38px;display:inline-flex;align-items:center;justify-content:center;
+}
+@media(min-width:480px){.pill{padding:11px 20px;font-size:14px;min-height:44px;}}
+.pill:active{transform:scale(.93);}
+.pill.active{background:linear-gradient(135deg,#FF7043,#E64A19);border-color:transparent;color:white;box-shadow:0 6px 20px rgba(255,112,67,.35);}
+.pill.gold.active{background:linear-gradient(135deg,#F59E0B,#D97706);border-color:transparent;color:white;box-shadow:0 6px 20px rgba(245,158,11,.4);}
+/* MAP */
+.map-container{width:100%;height:100%;position:absolute;inset:0;z-index:1;background:#E8E4DC;}
+#map{width:100%;height:100%;background:#E8E4DC;}
+#map-loader{position:absolute;inset:0;z-index:500;background:linear-gradient(160deg,#F7F4F0,#ECF0F7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+#map-loader.hidden{display:none;}
+.spinner{width:48px;height:48px;border-radius:50%;border:3px solid rgba(15,23,42,.08);border-top-color:#FF7043;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* GPS FAB */
+.locate-fab{
+  position:absolute;bottom:calc(124px + var(--sb));right:16px;z-index:400;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#FF7043,#E64A19);
+  border:none;box-shadow:0 8px 24px rgba(255,112,67,.35),0 0 0 3px rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;
+}
+.locate-fab:active{transform:scale(.88);}
+.locate-fab svg{width:26px;height:26px;stroke:white;stroke-width:2.5;fill:none;}
+.locate-fab.locating{animation:pulse-fab 1s ease infinite;}
+@keyframes pulse-fab{0%,100%{box-shadow:0 8px 24px rgba(255,112,67,.35),0 0 0 0 rgba(255,112,67,.5);}50%{box-shadow:0 8px 24px rgba(255,112,67,.35),0 0 0 14px rgba(255,112,67,0);}}
+.user-dot-outer{width:34px;height:34px;border-radius:50%;background:rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;animation:user-pulse 2s ease infinite;}
+.user-dot-inner{width:16px;height:16px;border-radius:50%;background:#2563EB;border:3px solid white;box-shadow:0 3px 10px rgba(37,99,235,.5);}
+@keyframes user-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+/* MAP PINS */
+.custom-map-pin{background:none!important;border:none!important;}
+.map-pin-box{display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+.map-pin-head{background:linear-gradient(135deg,#FF7043,#E64A19);color:white;border:2px solid rgba(255,255,255,.9);border-radius:20px;padding:7px 13px;font-size:13px;font-weight:600;font-family:Inter,sans-serif;box-shadow:0 6px 18px rgba(255,112,67,.35);display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.map-pin-head.gold{background:linear-gradient(135deg,#F59E0B,#D97706);color:white;box-shadow:0 6px 18px rgba(245,158,11,.4);}
+.map-pin-arrow{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #E64A19;margin-top:-1px;}
+.map-pin-arrow.gold{border-top-color:#D97706;}
+/* BOTTOM NAV */
+.bottom-nav{
+  position:absolute;bottom:calc(12px + var(--sb));left:12px;right:12px;z-index:450;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.8);border-radius:28px;
+  box-shadow:0 16px 48px rgba(15,23,42,.15),inset 0 1px 0 rgba(255,255,255,.95);
+  padding:8px 10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;align-items:center;min-height:80px;transition:all .3s;
+}
+.bottom-nav.admin-mode{grid-template-columns:1fr 1fr 1fr 1fr;}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sl);cursor:pointer;padding:6px 4px;border-radius:18px;transition:all .2s;border:none;background:none;width:100%;}
+.nav-icon-box{width:52px;height:36px;border-radius:14px;display:flex;align-items:center;justify-content:center;transition:all .25s;margin:0 auto;}
+.nav-item svg{width:24px;height:24px;fill:currentColor;stroke:none;}
+.nav-item span{margin-top:3px;font-size:11px;font-weight:400;text-align:center;display:block;}
+.nav-item.active{color:#FF7043;}
+.nav-item.active .nav-icon-box{background:linear-gradient(135deg,rgba(255,112,67,.15),rgba(230,74,25,.1));}
+.nav-item.active svg{fill:#FF7043;}
+.nav-item.active span{font-weight:600;}
+/* PAGE OVERLAYS */
+.page-overlay{position:absolute;inset:0;bottom:calc(104px + var(--sb));z-index:350;background:linear-gradient(160deg,#F7F4F0 0%,#ECF0F7 100%);overflow-y:auto;padding-top:calc(12px + var(--st));display:none;flex-direction:column;}
+.page-overlay.show{display:flex;}
+.page-container{padding:14px 14px 28px;}
+@media(min-width:480px){.page-container{padding:20px 20px 40px;}}
+/* HOME HERO */
+.home-hero{
+  background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.75);border-radius:22px;padding:20px 18px;margin-bottom:16px;
+  box-shadow:0 8px 28px rgba(15,23,42,.10),inset 0 1px 0 rgba(255,255,255,.95);position:relative;overflow:hidden;
+}
+.home-hero-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF7043,#E64A19);color:white;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-bottom:12px;box-shadow:0 4px 12px rgba(255,112,67,.35);}
+.home-hero-title{font-size:22px;font-weight:700;color:var(--nv);line-height:1.2;margin-bottom:8px;letter-spacing:-.02em;}
+.home-hero-desc{font-size:13px;color:var(--sl);line-height:1.6;margin-bottom:18px;font-weight:400;}
+.btn-hero-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF7043,#E64A19);color:white;border:none;border-radius:14px;padding:11px 20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 8px 22px rgba(255,112,67,.35);transition:all .2s;}
+.btn-hero-cta:active{transform:scale(.97);}
+@media(min-width:480px){.home-hero{border-radius:26px;padding:24px 22px;margin-bottom:20px;}.home-hero-title{font-size:26px;}.btn-hero-cta{padding:13px 24px;font-size:14px;}}
+/* SECTION TITLE */
+.home-sec-ttl{font-size:15px;font-weight:600;color:var(--nv);margin-bottom:10px;display:flex;align-items:center;padding-left:11px;border-left:3px solid #FF7043;}
+@media(min-width:480px){.home-sec-ttl{font-size:17px;margin-bottom:12px;}}
+/* SOCIAL CARDS */
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.social-card{
+  background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.75);border-radius:18px;padding:16px 10px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  text-decoration:none;color:var(--nv);
+  box-shadow:0 4px 16px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.9);transition:all .2s;
+}
+.social-card:active{transform:scale(.96);}
+.social-icon{font-size:32px;margin-bottom:8px;line-height:1;}
+.social-title{font-size:13px;font-weight:600;color:var(--nv);}
+.social-sub{font-size:10px;color:var(--sl);margin-top:2px;font-weight:400;}
+@media(min-width:480px){.social-grid{gap:12px;margin-bottom:22px;}.social-card{border-radius:20px;padding:18px 12px;}.social-icon{font-size:38px;}.social-title{font-size:14px;}.social-sub{font-size:11px;}}
+/* CONTACT CARD */
+.contact-card{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.75);border-radius:18px;padding:4px 16px;box-shadow:0 4px 16px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.9);}
+.contact-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(15,23,42,.06);}
+.contact-row:last-child{border-bottom:none;}
+.contact-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#FF7043,#E64A19);display:flex;align-items:center;justify-content:center;font-size:17px;color:white;flex-shrink:0;box-shadow:0 4px 10px rgba(255,112,67,.35);}
+.contact-ttl{font-size:11px;font-weight:400;color:var(--sl);}
+.contact-val{font-size:13px;font-weight:600;color:var(--nv);}
+@media(min-width:480px){.contact-card{border-radius:22px;padding:4px 20px;}.contact-icon{width:44px;height:44px;border-radius:14px;font-size:20px;}.contact-val{font-size:15px;}}
+/* COOK PAGE */
+.cook-hero-card{background:linear-gradient(135deg,#FF7043,#E64A19);color:white;border-radius:20px;padding:18px 16px;margin-bottom:16px;box-shadow:0 10px 28px rgba(255,112,67,.35);display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.cook-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);}
+.cook-hero-avatar{font-size:38px;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cook-hero-ttl{font-size:17px;font-weight:600;line-height:1.2;}
+.cook-hero-sub{font-size:11px;opacity:.85;margin-top:3px;font-weight:400;}
+@media(min-width:480px){.cook-hero-card{border-radius:24px;padding:22px 20px;gap:16px;}.cook-hero-avatar{font-size:46px;width:72px;height:72px;}.cook-hero-ttl{font-size:22px;}.cook-hero-sub{font-size:13px;}}
+.page-title{font-size:18px;font-weight:600;color:var(--nv);margin-bottom:4px;letter-spacing:-.01em;}
+.page-sub{font-size:12px;color:var(--sl);margin-bottom:16px;font-weight:400;}
+.grid-cards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+@media(min-width:480px){.page-title{font-size:22px;}.page-sub{font-size:14px;margin-bottom:20px;}.grid-cards{gap:14px;}}
+@media(min-width:640px){.grid-cards{grid-template-columns:1fr 1fr 1fr;}}
+.recipe-card{background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.75);border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.9);display:flex;flex-direction:column;cursor:pointer;transition:all .2s;}
+.recipe-card:active{transform:scale(.96);}
+.recipe-img-box{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#E2E8F0;}
+.recipe-img{width:100%;height:100%;object-fit:cover;}
+.recipe-time-badge{position:absolute;bottom:8px;left:8px;background:rgba(15,23,42,.72);backdrop-filter:blur(8px);color:white;font-size:11px;font-weight:500;padding:3px 9px;border-radius:10px;}
+.recipe-body{padding:14px;display:flex;flex-direction:column;flex:1;}
+.recipe-name{font-size:14px;font-weight:600;color:var(--nv);line-height:1.3;margin-bottom:4px;}
+.recipe-meta{font-size:11px;color:var(--sl);font-weight:400;margin-bottom:10px;}
+.recipe-btn-video{background:rgba(255,112,67,.12);color:#FF7043;border:1px solid rgba(255,112,67,.25);border-radius:10px;padding:7px 10px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;text-decoration:none;transition:all .2s;}
+.recipe-btn-video:hover{background:#FF7043;color:white;}
+/* ADMIN PAGE */
+.admin-hero-card{background:linear-gradient(135deg,#1E293B,#0F172A);color:white;border-radius:20px;padding:18px 16px;margin-bottom:16px;box-shadow:0 12px 32px rgba(15,23,42,.30);display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.admin-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 50%);}
+.admin-hero-avatar{font-size:34px;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.12);}
+.admin-hero-ttl{font-size:17px;font-weight:600;line-height:1.2;}
+.admin-hero-sub{font-size:11px;color:#94A3B8;margin-top:3px;font-weight:400;}
+@media(min-width:480px){.admin-hero-card{border-radius:24px;padding:22px 20px;gap:16px;}.admin-hero-avatar{font-size:42px;width:68px;height:68px;}.admin-hero-ttl{font-size:22px;}.admin-hero-sub{font-size:12px;}}
+.admin-sec-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;}
+.admin-sec-tabs::-webkit-scrollbar{display:none;}
+.admin-tab-btn{white-space:nowrap;padding:9px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(15,23,42,.12);color:var(--nv);background:rgba(255,255,255,.82);backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(15,23,42,.07);transition:all .2s;}
+.admin-tab-btn.active{background:#0F172A;color:white;border-color:transparent;box-shadow:0 6px 18px rgba(15,23,42,.25);}
+.admin-loc-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:16px;margin-bottom:10px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.75);box-shadow:0 4px 16px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.9);}
+.admin-loc-info{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;}
+.admin-loc-name{font-size:14px;font-weight:600;color:var(--nv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.admin-loc-sub{font-size:11px;color:var(--sl);font-weight:400;}
+.admin-loc-btns{display:flex;gap:7px;flex-shrink:0;}
+.btn-sm-edit{background:linear-gradient(135deg,rgba(255,112,67,.15),rgba(230,74,25,.1));color:#FF7043;border:1px solid rgba(255,112,67,.25);padding:7px 12px;border-radius:12px;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;}
+.btn-sm-edit:active{background:#FF7043;color:white;}
+.btn-sm-del{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(220,38,38,.08));color:#DC2626;border:1px solid rgba(239,68,68,.2);padding:7px 12px;border-radius:12px;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;}
+.btn-sm-del:active{background:#DC2626;color:white;}
+/* BOTTOM SHEET */
+.bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;background:rgba(255,255,255,.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-radius:32px 32px 0 0;border-top:1px solid rgba(255,255,255,.8);box-shadow:0 -16px 60px rgba(15,23,42,.20);padding:22px 22px calc(28px + var(--sb));transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-height:86vh;overflow-y:auto;}
+.bottom-sheet.open{transform:translateY(0);}
+.sheet-drag{width:40px;height:5px;background:rgba(15,23,42,.15);border-radius:5px;margin:0 auto 18px;}
+.sheet-cover-box{width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;position:relative;margin-bottom:16px;box-shadow:0 8px 24px rgba(15,23,42,.12);background:#E2E8F0;}
+.sheet-cover-img{width:100%;height:100%;object-fit:cover;display:block;}
+.sheet-cover-badge{position:absolute;top:10px;left:10px;background:rgba(15,23,42,.72);backdrop-filter:blur(10px);color:white;border-radius:16px;padding:5px 14px;font-size:12px;font-weight:600;}
+.sheet-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;}
+.sheet-badge{display:inline-flex;align-items:center;background:rgba(255,112,67,.12);color:#FF7043;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;margin-bottom:8px;}
+.sheet-title{font-size:22px;font-weight:700;color:var(--nv);line-height:1.25;letter-spacing:-.02em;}
+.sheet-meta{display:flex;align-items:center;gap:12px;margin-top:5px;font-size:13px;color:var(--sl);font-weight:400;}
+.sheet-price{font-weight:700;color:#FF7043;}
+.sheet-close{background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border:1px solid rgba(15,23,42,.1);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--sl);flex-shrink:0;}
+.sheet-section{margin-top:18px;padding-top:16px;border-top:1px solid rgba(15,23,42,.07);}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--sl-light);margin-bottom:10px;}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;}
+.tag-item{background:rgba(245,158,11,.12);color:#92400E;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid rgba(245,158,11,.2);}
+.sheet-actions{display:flex;gap:12px;margin-top:22px;}
+.btn-action{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:16px;font-size:15px;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s;min-height:52px;}
+.btn-primary{background:linear-gradient(135deg,#FF7043,#E64A19);color:white;box-shadow:0 8px 22px rgba(255,112,67,.35);}
+.btn-primary:active{transform:scale(.98);}
+.btn-secondary{background:rgba(255,255,255,.8);backdrop-filter:blur(10px);color:var(--nv);border:1px solid rgba(15,23,42,.12);}
+/* MODALS */
+.modal-backdrop{position:absolute;inset:0;z-index:700;background:rgba(15,23,42,.4);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;}
+.modal-backdrop.show{display:flex;}
+.modal-card{background:rgba(255,255,255,.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-radius:32px 32px 0 0;border-top:1px solid rgba(255,255,255,.8);width:100%;padding:24px 22px calc(28px + var(--sb));max-height:88vh;overflow-y:auto;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-bar{width:40px;height:5px;background:rgba(15,23,42,.12);border-radius:5px;margin:0 auto 20px;}
+.modal-h2{font-size:20px;font-weight:700;color:var(--nv);margin-bottom:8px;letter-spacing:-.01em;}
+.modal-p{font-size:13px;color:var(--sl);margin-bottom:20px;font-weight:400;}
+.input-box{width:100%;border:1px solid rgba(15,23,42,.14);border-radius:14px;padding:13px 16px;font-size:14px;font-family:Inter,sans-serif;color:var(--nv);background:rgba(255,255,255,.8);outline:none;resize:none;margin-bottom:12px;transition:all .2s;}
+.input-box:focus{border-color:#FF7043;background:white;box-shadow:0 0 0 3px rgba(255,112,67,.12);}
+.input-row{display:flex;gap:10px;}
+.input-row .input-box{flex:1;}
+.btn-submit{width:100%;background:linear-gradient(135deg,#FF7043,#E64A19);color:white;border-radius:16px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;box-shadow:0 8px 22px rgba(255,112,67,.35);border:none;transition:all .2s;}
+.btn-submit:active{transform:scale(.98);}
+/* PWA */
+#pwa-banner{position:absolute;bottom:calc(110px + var(--sb));left:12px;right:12px;z-index:550;background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.75);border-radius:20px;padding:16px 18px;display:none;align-items:center;gap:14px;box-shadow:0 16px 48px rgba(15,23,42,.14);}
+#pwa-banner.show{display:flex;}
+#offline-bar{display:none;background:linear-gradient(135deg,#EF4444,#DC2626);color:white;text-align:center;padding:10px;font-size:13px;font-weight:600;position:absolute;top:0;left:0;right:0;z-index:999;}
+</style>
+</head>
+<body>
+
+<div id="offline-bar">📡 Offline — đang dùng dữ liệu cache</div>
+
+<div class="app-viewport">
+
+  <!-- ── FLOATING TOP HEADER (Map page only) ── -->
+  <div class="top-header" id="map-header">
+    <div class="brand-group">
+      <div class="logo-title" id="logo-btn">Thao Thức Guide</div>
+      <div class="logo-sub" id="logo-sub-text">Cẩm Nang Ẩm Thực & Lifestyle ✔️</div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn" onclick="openModal('m-crit')">
+        <svg viewBox="0 0 24 24" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span id="t-crit">Tiêu chí</span>
+      </button>
+      <button class="hdr-btn" onclick="openModal('m-sug')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="t-sug">Gợi ý</span>
+      </button>
+      <button class="hdr-btn lang" onclick="toggleLang()" id="lang-btn">EN</button>
+    </div>
+  </div>
+
+  <!-- ── FLOATING CATEGORY PILLS (placeholder) ── -->
+  <div class="filter-pills" id="pill-bar"></div>
+
+  <!-- ── FULLSCREEN MAP ── -->
+  <div class="map-container">
+    <div id="map-loader">
+      <div class="spinner"></div>
+      <div style="font-size:16px;color:var(--sl);font-weight:900;" id="t-loading">Đang tải bản đồ...</div>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- ── FAB LOCATE ME ── -->
+  <button class="locate-fab" id="locate-btn" onclick="locateMe()" title="Vị trí của tôi">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+      <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" stroke-opacity=".4"/>
+    </svg>
+  </button>
+
+  <!-- ── HOME PAGE OVERLAY ── -->
+  <div class="page-overlay" id="page-home">
+    <div class="page-container">
+      <div class="home-hero">
+        <span class="home-hero-tag">🌟 Official Guide</span>
+        <div class="home-hero-title">Thao Thức Guide</div>
+        <div class="home-hero-desc">Cẩm nang review ẩm thực, du lịch & lối sống chân thật. Khám phá những quán ăn ngon chuẩn vị trên bản đồ tương tác và học công thức nấu ăn cùng Chồng Cook Vợ Look.</div>
+        <button class="btn-hero-cta" onclick="switchNav('map')">
+          <span>🗺️ Khám phá Bản Đồ ngay</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:20px;height:20px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <div class="home-sec-ttl">🍜 Thao Thức Đi Ăn</div>
+      <div class="social-grid">
+        <a href="https://www.tiktok.com/@thaothuc.dian" target="_blank" class="social-card">
+          <div class="social-icon">🎵</div>
+          <div class="social-title">TikTok</div>
+          <div class="social-sub">@thaothuc.dian</div>
+        </a>
+        <a href="https://youtube.com/@thaothucdian" target="_blank" class="social-card">
+          <div class="social-icon">🎬</div>
+          <div class="social-title">YouTube</div>
+          <div class="social-sub">@thaothucdian</div>
+        </a>
+        <a href="https://www.facebook.com/share/1BYD3k3Xk2/" target="_blank" class="social-card">
+          <div class="social-icon">📘</div>
+          <div class="social-title">Facebook</div>
+          <div class="social-sub">Thao Thức Đi Ăn</div>
+        </a>
+      </div>
+
+      <div class="home-sec-ttl">🍳 Chồng Cook Vợ Look</div>
+      <div class="social-grid">
+        <a href="https://www.tiktok.com/@chongcookvolook" target="_blank" class="social-card">
+          <div class="social-icon">🎵</div>
+          <div class="social-title">TikTok</div>
+          <div class="social-sub">@chongcookvolook</div>
+        </a>
+        <a href="https://www.facebook.com/share/1F3cwXApKD/" target="_blank" class="social-card">
+          <div class="social-icon">📘</div>
+          <div class="social-title">Facebook</div>
+          <div class="social-sub">Chồng Cook Vợ Look</div>
+        </a>
+      </div>
+
+      <div class="home-sec-ttl">✉️ Liên Hệ & Hợp Tác</div>
+      <div class="contact-card">
+        <a href="mailto:chongcookvolook@gmail.com" class="contact-row" style="text-decoration:none;color:inherit;">
+          <div class="contact-icon">📧</div>
+          <div>
+            <div class="contact-ttl">Email Liên Hệ</div>
+            <div class="contact-val">chongcookvolook@gmail.com</div>
+          </div>
+        </a>
+        <a href="tel:0867132283" class="contact-row" style="text-decoration:none;color:inherit;">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-ttl">Hotline / Zalo</div>
+            <div class="contact-val">0867 132 283</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RECIPES PAGE OVERLAY - CHỒNG COOK VỢ LOOK 🍳👀 ── -->
+  <div class="page-overlay" id="page-cook">
+    <div class="page-container">
+      
+      <div class="cook-hero-card">
+        <div class="cook-hero-avatar">🍳👀</div>
+        <div>
+          <div class="cook-hero-ttl">Chồng Cook Vợ Look</div>
+          <div class="cook-hero-sub">Cẩm nang nấu ăn chuẩn vị gia đình • Bí quyết đứng bếp mượt mà</div>
+        </div>
+      </div>
+
+      <div class="page-title" id="t-ck-t">🍳 Công Thức Nấu Ăn — Chồng Cook Vợ Look</div>
+      <div class="page-sub"   id="t-ck-s">Món ngon chuẩn vị từ bếp nhà Chồng Cook Vợ Look 👀</div>
+      
+      <div class="grid-cards" id="recipe-list-grid">
+        <!-- Recipe Cards rendered dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEDICATED ADMIN TAB OVERLAY (#page-admin - THAO THỨC GUIDE ADMIN) ── -->
+  <div class="page-overlay" id="page-admin">
+    <div class="page-container">
+      
+      <div class="admin-hero-card">
+        <div class="admin-hero-avatar">⚙️</div>
+        <div>
+          <div class="admin-hero-ttl">Thao Thức Guide Admin</div>
+          <div class="admin-hero-sub">👑 Đã đăng nhập: Google Account Admin System</div>
+        </div>
+      </div>
+
+      <div class="admin-sec-tabs">
+        <button class="admin-tab-btn active" id="atab-locs" onclick="switchAdminSec('locs')">📍 Địa Điểm Bản Đồ</button>
+        <button class="admin-tab-btn"        id="atab-rcps" onclick="switchAdminSec('rcps')">🍳 Công Thức Nấu Ăn</button>
+        <button class="admin-tab-btn"        id="atab-sugs" onclick="switchAdminSec('sugs')">📩 Gợi Ý Khán Giả</button>
+      </div>
+
+      <!-- SECTION 1: MAP LOCATIONS MANAGER -->
+      <div id="asec-locs">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <button class="btn-submit" style="margin-top:0;flex:1;background:var(--or);" onclick="openAdminModal('manual')">➕ Thêm Địa Điểm Mới</button>
+          <button class="btn-submit" style="margin-top:0;flex:1;background:var(--nv);" onclick="openAdminModal('gps')">📡 Dùng GPS Hiện Tại</button>
+        </div>
+
+        <input class="input-box" id="admin-search-input" placeholder="🔍 Tìm kiếm địa điểm theo tên hoặc loại..." oninput="renderAdminLocList()"/>
+
+        <div id="admin-loc-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- SECTION 2: RECIPES MANAGER (CHỒNG COOK VỢ LOOK) -->
+      <div id="asec-rcps" style="display:none;">
+        <button class="btn-submit" style="margin-top:0;margin-bottom:16px;background:var(--or);" onclick="openModal('m-admin-add-recipe')">🍳 Thêm Công Thức Nấu Ăn Mới</button>
+
+        <div id="admin-rcp-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- SECTION 3: USER SUGGESTIONS INBOX -->
+      <div id="asec-sugs" style="display:none;">
+        <div style="font-size:16px;font-weight:900;color:var(--nv);margin-bottom:14px;">📩 Danh Sách Gợi Ý Địa Điểm Từ Khán Giả:</div>
+        <div id="admin-sug-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── LOCATION DETAIL BOTTOM SHEET ── -->
+  <div class="bottom-sheet" id="loc-sheet">
+    <div class="sheet-drag"></div>
+    
+    <!-- 16:9 ASPECT RATIO COVER BOX -->
+    <div class="sheet-cover-box" id="sh-cover-box">
+      <img id="sh-cover-img" class="sheet-cover-img" src="" alt="Món ăn"/>
+      <div class="sheet-cover-badge" id="sh-cover-badge">📸 Ảnh quán & Món ăn</div>
+    </div>
+
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-badge" id="sh-stars">⭐ 3 Sao</div>
+        <div class="sheet-title" id="sh-title">Tên Quán</div>
+        <div class="sheet-meta">
+          <span id="sh-cat">📍 Loại</span>
+          <span>•</span>
+          <span class="sheet-price" id="sh-price">50k-80k</span>
+        </div>
+        <div id="sh-hours" style="font-size:14px;font-weight:800;color:var(--or);margin-top:6px;display:none;">⏰ 06:00 - 22:00</div>
+        <div id="sh-desc" style="font-size:14px;color:var(--sl);font-weight:600;margin-top:8px;line-height:1.4;display:none;"></div>
+      </div>
+      <button class="sheet-close" onclick="closeSheet()">✕</button>
+    </div>
+
+    <div class="sheet-section" id="sh-must-wrap">
+      <div class="section-label" id="t-sh-must">✨ Món Phải Thử</div>
+      <div class="tag-list" id="sh-tags"></div>
+    </div>
+
+    <div class="sheet-actions">
+      <a href="#" target="_blank" class="btn-action btn-primary" id="sh-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <span id="t-sh-dir">📍 Chỉ đường</span>
+      </a>
+      <a href="#" target="_blank" class="btn-action btn-secondary" id="sh-vid-link">
+        <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <span id="t-sh-vid">🎬 Review</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── FLOATING ELEVATED BOTTOM NAVIGATION ── -->
+  <nav class="bottom-nav" id="main-bottom-nav">
+    <button class="nav-item" id="bnav-home" onclick="switchNav('home')">
+      <div class="nav-icon-box">
+        <!-- Home filled icon -->
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </div>
+      <span>Trang Chủ</span>
+    </button>
+    <button class="nav-item active" id="bnav-map" onclick="switchNav('map')">
+      <div class="nav-icon-box">
+        <!-- Map filled icon -->
+        <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+      </div>
+      <span id="t-bnav-map">Bản Đồ</span>
+    </button>
+    <button class="nav-item" id="bnav-cook" onclick="switchNav('cook')">
+      <div class="nav-icon-box">
+        <!-- Restaurant/cook filled icon -->
+        <svg viewBox="0 0 24 24"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-4.5-15.03-5-15.03 0h15.03zM1.02 17h15v2h-15z"/></svg>
+      </div>
+      <span id="t-bnav-cook">Nấu Ăn</span>
+    </button>
+    <!-- TAB THỨ 4: CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP GOOGLE ACCOUNT ADMIN -->
+    <button class="nav-item" id="bnav-admin" onclick="switchNav('admin')" style="display:none;">
+      <div class="nav-icon-box">
+        <!-- Settings/admin filled icon -->
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </div>
+      <span>Admin</span>
+    </button>
+  </nav>
+
+
+</div><!-- .app-viewport -->
+
+<!-- ── MODAL: TIÊU CHÍ ── -->
+<div class="modal-backdrop" id="m-crit" onclick="if(event.target===this)closeModal('m-crit')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div class="modal-h2" id="t-mc-h2">Tiêu Chí Đánh Giá</div>
+    <div class="modal-p"  id="t-mc-p">Tiêu chí đánh giá riêng của Thao Thức Guide</div>
+    <div class="crit-item">
+      <div class="crit-star">⭐⭐⭐</div>
+      <div><div class="crit-h3" id="t-s3t">3 Sao — Michelin-style</div><div class="crit-desc" id="t-s3d">Xuất sắc, đáng đi xa chỉ để ăn. Hương vị độc đáo, trải nghiệm đặc biệt.</div></div>
+    </div>
+    <div class="crit-item">
+      <div class="crit-star">⭐⭐</div>
+      <div><div class="crit-h3" id="t-s2t">2 Sao — Rất đáng thử</div><div class="crit-desc" id="t-s2d">Chất lượng tốt, đáng ghé khi ở gần. Có thể quay lại.</div></div>
+    </div>
+    <div class="crit-item">
+      <div class="crit-star">⭐</div>
+      <div><div class="crit-h3" id="t-s1t">1 Sao — Ngon bình dân</div><div class="crit-desc" id="t-s1d">Ngon theo kiểu bình dân, phù hợp nếu đang ở gần.</div></div>
+    </div>
+    <button class="btn-submit" onclick="closeModal('m-crit')" style="margin-top:16px;">
+      <span id="t-mc-ok">✓ Đã hiểu</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── MODAL GỢI Ý KHÁN GIẢ ── -->
+<div class="modal-backdrop" id="m-sug" onclick="if(event.target===this)closeModal('m-sug')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div class="modal-h2" id="t-ms-h2">Gợi Ý Địa Điểm</div>
+    <div class="modal-p"  id="t-ms-p">Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!</div>
+
+    <button class="admin-action" style="margin-bottom:14px;width:100%;justify-content:center;" onclick="gpsForSuggest()">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      <span id="t-ms-gps">📡 Lấy vị trí GPS của tôi</span>
+    </button>
+
+    <input  class="input-box" id="s-name" placeholder="Tên quán / địa điểm *"/>
+    <input  class="input-box" id="s-addr" placeholder="Địa chỉ (hoặc link Google Maps)"/>
+    <div class="input-row">
+      <input class="input-box" id="s-lat" placeholder="Vĩ độ (lat)" readonly/>
+      <input class="input-box" id="s-lng" placeholder="Kinh độ (lng)" readonly/>
+    </div>
+    <input    class="input-box" id="s-cat"  placeholder="Loại: Bún/Phở, Cafe, Ăn vặt..."/>
+    <textarea class="input-box" id="s-note" rows="3" placeholder="Món phải thử, giá cả, ghi chú..."></textarea>
+    <button class="btn-submit" onclick="doSuggest()"><span id="t-ms-send">📤 Gửi gợi ý tới Thao Thức Guide</span></button>
+  </div>
+</div>
+
+<!-- ── MODAL DETAIL CÔNG THỨC NẤU ĂN ── -->
+<div class="modal-backdrop" id="m-recipe-detail" onclick="if(event.target===this)closeModal('m-recipe-detail')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span style="background:var(--or-light);color:var(--or);font-size:13px;font-weight:900;padding:4px 12px;border-radius:14px;" id="rcp-cat">🍳 Bếp Nhà</span>
+      <button class="sheet-close" onclick="closeModal('m-recipe-detail')">✕</button>
+    </div>
+    <div class="modal-h2" id="rcp-title">Tên Công Thức</div>
+    <div class="modal-p" id="rcp-meta">⏱️ 45 phút • 👨‍🍳 Dễ nấu</div>
+
+    <div style="background:var(--bg);border:2px solid var(--bd-soft);border-radius:20px;padding:18px;margin-bottom:20px;">
+      <div style="font-size:15px;font-weight:900;color:var(--nv);margin-bottom:10px;">🥦 Nguyên Liệu Cần Có:</div>
+      <div id="rcp-ing-list" style="display:flex;flex-direction:column;gap:8px;font-size:15px;color:var(--sl);font-weight:700;"></div>
+    </div>
+
+    <div style="font-size:15px;font-weight:900;color:var(--nv);margin-bottom:10px;">🍳 Các Bước Thực Hiện:</div>
+    <div id="rcp-steps-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;"></div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <a href="#" target="_blank" id="btn-rcp-video" class="btn-submit" style="background:var(--or);display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;margin-top:0;">
+        🎬 Xem Video Nấu (Chồng Cook Vợ Look)
+      </a>
+      <button class="btn-submit" id="btn-rcp-findmap" style="background:var(--nv);margin-top:0;">
+        🗺️ Tìm Quán Nấu Chuẩn Vị Này Trên Bản Đồ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ADMIN EDIT LOCATION ── -->
+<div class="modal-backdrop" id="m-admin-edit" onclick="if(event.target===this)closeModal('m-admin-edit')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div class="modal-h2">✏️ Chỉnh Sửa Địa Điểm</div>
+    <input type="hidden" id="edit-id"/>
+    <input  class="input-box" id="edit-name"  placeholder="Tên quán *"/>
+    
+    <!-- OPTIONAL LAT & LNG -->
+    <div class="input-row">
+      <input class="input-box" id="edit-lat" placeholder="Lat (Không bắt buộc)"/>
+      <input class="input-box" id="edit-lng" placeholder="Lng (Không bắt buộc)"/>
+    </div>
+    
+    <select class="input-box" id="edit-cat" style="cursor:pointer;"></select>
+    <input  class="input-box" id="edit-must"  placeholder="Món phải thử (cách bởi phẩy)"/>
+    
+    <div class="input-row">
+      <input class="input-box" id="edit-price" placeholder="Giá (vd: 50k-80k)"/>
+      <select class="input-box" id="edit-stars" style="cursor:pointer;">
+        <option value="1">⭐ 1 Sao</option>
+        <option value="2">⭐⭐ 2 Sao</option>
+        <option value="3">⭐⭐⭐ 3 Sao</option>
+      </select>
+    </div>
+
+    <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
+    <input class="input-box" id="edit-hours" placeholder="⏰ Khung giờ bán (vd: 06:00 - 22:00)"/>
+    <textarea class="input-box" id="edit-desc" rows="3" placeholder="📝 Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
+
+    <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
+    <div style="margin-bottom:16px;">
+      <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;">📸 Ảnh Quán & Món Ăn (Tỉ lệ chuẩn 16:9):</label>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+        <button type="button" class="btn-submit" style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;" onclick="document.getElementById('edit-img-file').click();">
+          <span>📷 Chọn ảnh từ máy / camera</span>
+        </button>
+        <input type="file" id="edit-img-file" accept="image/*" style="display:none;" onchange="handleImageFileSelect(this, 'edit-img', 'edit-img-preview')"/>
+      </div>
+      <div id="edit-img-preview" style="display:none;position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px dashed var(--or);margin-bottom:10px;background:#E2E8F0;">
+        <img id="edit-img-preview-img" src="" style="width:100%;height:100%;object-fit:cover;" alt="Preview"/>
+        <button type="button" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:50%;width:32px;height:32px;font-weight:900;cursor:pointer;" onclick="clearImageSelect('edit-img', 'edit-img-preview', 'edit-img-file')">✕</button>
+      </div>
+      <input class="input-box" id="edit-img" placeholder="Hoặc dán URL Ảnh (HTTP link)" style="margin-bottom:0;"/>
+    </div>
+
+    <input  class="input-box" id="edit-video" placeholder="YouTube URL"/>
+    <input  class="input-box" id="edit-map"   placeholder="Google Maps URL"/>
+    <button class="btn-submit" onclick="saveAdminEdit()">💾 Lưu Thay Đổi</button>
+  </div>
+</div>
+
+<!-- ── MODAL ADMIN ADD NEW LOCATION ── -->
+<div class="modal-backdrop" id="m-admin" onclick="if(event.target===this)closeModal('m-admin')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div class="modal-h2">📍 Thêm Địa Điểm Mới</div>
+    <div class="modal-p">Dữ liệu sẽ lưu vào Google Sheet</div>
+    <input  class="input-box" id="a-name"  placeholder="Tên quán *"/>
+    
+    <!-- OPTIONAL LAT & LNG -->
+    <div class="input-row">
+      <input class="input-box" id="a-lat" placeholder="Lat (Không bắt buộc)"/>
+      <input class="input-box" id="a-lng" placeholder="Lng (Không bắt buộc)"/>
+    </div>
+    
+    <select class="input-box" id="a-cat" style="cursor:pointer;"></select>
+    <input  class="input-box" id="a-must"  placeholder="Món phải thử (cách bởi dấu phẩy)"/>
+    
+    <div class="input-row">
+      <input class="input-box" id="a-price" placeholder="Giá (vd: 50k-80k)"/>
+      <select class="input-box" id="a-stars" style="cursor:pointer;">
+        <option value="1">⭐ 1 Sao</option>
+        <option value="2">⭐⭐ 2 Sao</option>
+        <option value="3" selected>⭐⭐⭐ 3 Sao</option>
+      </select>
+    </div>
+
+    <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
+    <input class="input-box" id="a-hours" placeholder="⏰ Khung giờ bán (vd: 06:00 - 22:00)"/>
+    <textarea class="input-box" id="a-desc" rows="3" placeholder="📝 Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
+
+    <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
+    <div style="margin-bottom:16px;">
+      <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;">📸 Ảnh Quán & Món Ăn (Tỉ lệ chuẩn 16:9):</label>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+        <button type="button" class="btn-submit" style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;" onclick="document.getElementById('a-img-file').click();">
+          <span>📷 Chọn ảnh từ máy / camera</span>
+        </button>
+        <input type="file" id="a-img-file" accept="image/*" style="display:none;" onchange="handleImageFileSelect(this, 'a-img', 'a-img-preview')"/>
+      </div>
+      <div id="a-img-preview" style="display:none;position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px dashed var(--or);margin-bottom:10px;background:#E2E8F0;">
+        <img id="a-img-preview-img" src="" style="width:100%;height:100%;object-fit:cover;" alt="Preview"/>
+        <button type="button" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:50%;width:32px;height:32px;font-weight:900;cursor:pointer;" onclick="clearImageSelect('a-img', 'a-img-preview', 'a-img-file')">✕</button>
+      </div>
+      <input class="input-box" id="a-img" placeholder="Hoặc dán URL Ảnh (HTTP link)" style="margin-bottom:0;"/>
+    </div>
+
+    <input  class="input-box" id="a-video" placeholder="YouTube URL"/>
+    <input  class="input-box" id="a-map"   placeholder="Google Maps URL"/>
+    <button class="btn-submit" onclick="doAdminAdd()">➕ Thêm vào Sheet</button>
+  </div>
+</div>
+
+<!-- ── MODAL ADMIN ADD NEW RECIPE ── -->
+<div class="modal-backdrop" id="m-admin-add-recipe" onclick="if(event.target===this)closeModal('m-admin-add-recipe')">
+  <div class="modal-card">
+    <div class="modal-bar"></div>
+    <div class="modal-h2">🍳 Thêm Công Thức Mới</div>
+    <div class="modal-p">Chồng Cook Vợ Look Recipes</div>
+    <input  class="input-box" id="ar-name"  placeholder="Tên món ăn *"/>
+    <input  class="input-box" id="ar-cat"   placeholder="Danh mục (vd: Món Nước • Đặc Sản)"/>
+    <div class="input-row">
+      <input class="input-box" id="ar-time" placeholder="Thời gian (vd: 45 phút)"/>
+      <input class="input-box" id="ar-level" placeholder="Cấp độ (vd: Dễ làm)"/>
+    </div>
+    <input  class="input-box" id="ar-img"   placeholder="URL Ảnh món ăn"/>
+    <input  class="input-box" id="ar-video" placeholder="Link Video TikTok / YouTube"/>
+    <textarea class="input-box" id="ar-ing"   rows="3" placeholder="Nguyên liệu (phân cách bởi dấu xuống dòng)"></textarea>
+    <textarea class="input-box" id="ar-steps" rows="4" placeholder="Các bước nấu (phân cách bởi dấu xuống dòng)"></textarea>
+    <button class="btn-submit" onclick="doAdminAddRecipe()">➕ Thêm Công Thức Nấu Ăn</button>
+  </div>
+</div>
+
+<!-- ── PWA BANNER ── -->
+<div id="pwa-banner">
+  <div style="width:48px;height:48px;border-radius:14px;background:var(--or);color:white;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">T</div>
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:14px;font-weight:900;color:var(--nv);" id="t-pwa-t">Cài Thao Thức Guide</div>
+    <div style="font-size:13px;color:var(--sl);" id="t-pwa-s">Dùng như app, không cần App Store</div>
+  </div>
+  <button style="background:var(--or);color:white;border:none;border-radius:14px;padding:10px 18px;font-size:14px;font-weight:900;cursor:pointer;" onclick="installPWA()">Cài</button>
+  <button style="background:none;border:none;color:var(--sl);font-size:20px;padding:0 4px;cursor:pointer;" onclick="dismissPWA()">✕</button>
+</div>
+
+<!-- ── JAVASCRIPT ── -->
+<script>
+'use strict';
+var TR={
+  vi:{l:'EN',cr:'Tiêu chí',sg:'Gợi ý',
+    all:'🗺️ Tất cả',ld:'Đang tải bản đồ...',
+    ckT:'🍳 Công Thức Nấu Ăn — Chồng Cook Vợ Look',ckS:'Món ngon chuẩn vị từ bếp nhà Chồng Cook Vợ Look 👀',
+    mcH:'Tiêu Chí Đánh Giá',mcP:'Tiêu chí đánh giá riêng của Thao Thức Guide',
+    s3t:'3 Sao — Michelin-style',s3d:'Xuất sắc, đáng đi xa chỉ để ăn. Hương vị độc đáo, trải nghiệm đặc biệt.',
+    s2t:'2 Sao — Rất đáng thử',s2d:'Chất lượng tốt, đáng ghé khi ở gần. Có thể quay lại.',
+    s1t:'1 Sao — Ngon bình dân',s1d:'Ngon theo kiểu bình dân, phù hợp nếu đang ở gần.',
+    mcok:'✓ Đã hiểu',
+    msH:'Gợi Ý Địa Điểm',msP:'Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!',
+    gps:'📡 Lấy vị trí GPS của tôi',send:'📤 Gửi gợi ý tới Thao Thức Guide',
+    navd:'📍 Chỉ đường',navv:'🎬 Review',must:'✨ Món Phải Thử',
+    bMap:'Bản Đồ',bCook:'Nấu Ăn',
+    nameReq:'Vui lòng nhập tên địa điểm',sent:'✅ Đã gửi gợi ý tới Thao Thức Guide! Cảm ơn bạn 🙏',
+    locErr:'Không lấy được vị trí. Hãy cho phép truy cập vị trí.',
+    ios:'📱 Trên iPhone: nhấn Share (📤) → "Thêm vào Màn hình chính"'},
+  en:{l:'VI',cr:'Criteria',sg:'Suggest',
+    all:'🗺️ All',ld:'Loading map...',
+    ckT:'Recipes — Chồng Cook Vợ Look',ckS:"Delicious dishes from Chồng Cook Vợ Look's kitchen 👀",
+    mcH:'Rating Criteria',mcP:'How Thao Thức Guide selects locations',
+    s3t:'3 Stars — Michelin-style',s3d:'Exceptional. Worth a special trip just to eat here.',
+    s2t:'2 Stars — Very good',s2d:'Excellent quality, worth visiting when in the area.',
+    s1t:'1 Star — Local gem',s1d:"Good in a local way, worth it if you're nearby.",
+    mcok:'✓ Got it',
+    msH:'Suggest a Place',msP:'Know a great spot? Share with Thao Thức Guide!',
+    gps:'📡 Use my GPS location',send:'📤 Send Suggestion to Thao Thức Guide',
+    navd:'📍 Directions',navv:'🎬 Review',must:'✨ Must Try',
+    bMap:'Map',bCook:'Recipes',
+    nameReq:'Please enter a place name',sent:'✅ Suggestion sent to Thao Thức Guide! Thank you 🙏',
+    locErr:'Could not get location. Please allow location access.',
+    ios:'📱 On iPhone: tap Share (📤) → "Add to Home Screen"'}
+};
+
+var CAT_IMAGES={
+  'Bún/Phở': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80',
+  'Ăn vặt':  'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
+  'Cafe':    'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
+  'Hải sản': 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
+  'Default': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80'
+};
+
+var RECIPES_DATA = [
+  {
+    id: 'rcp_001',
+    name: 'Bún Bò Huế Chuẩn Vị Cố Đô',
+    category: 'Món Nước • Đặc Sản',
+    time: '45 phút',
+    level: 'Dễ làm',
+    image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80',
+    video_url: 'https://www.tiktok.com/@chongcookvolook',
+    ingredients: ['500g bắp bò / giò heo', '1kg bún tươi sợi to', '3 củ sả đập dập', '2 muỗng canh mắm ruốc Huế', 'Hành tây, rau thơm, bắp chuối'],
+    steps: [
+      'Bước 1: Hầm bắp bò và giò heo với sả đập dập trong 30 phút.',
+      'Bước 2: Hòa tan mắm ruốc Huế với nước lạnh, lọc lấy nước trong cho vào nồi nước dùng.',
+      'Bước 3: Phi thơm ớt sa tế, nêm nếm gia vị vừa ăn.',
+      'Bước 4: Trụng bún, xếp thịt bắp bò, giò heo, chan nước dùng nóng hổi và thưởng thức!'
+    ],
+    searchCat: 'Bún/Phở'
+  },
+  {
+    id: 'rcp_002',
+    name: 'Canh Chua Cá Hồi Nam Bộ',
+    category: 'Món Canh • Bữa Cơm',
+    time: '30 phút',
+    level: 'Rất dễ',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80',
+    video_url: 'https://www.tiktok.com/@chongcookvolook',
+    ingredients: ['300g đầu/lườn cá hồi', '1/2 quả dứa (thơm)', '2 quả cà chua', 'Đậu bắp, giá đỗ, bạc hà (dọc mùng)', 'Vắt me chua, rau ngổ, ngò gai'],
+    steps: [
+      'Bước 1: Ướp cá hồi với chút muối và hành phi.',
+      'Bước 2: Nấu nước me chua, cho dứa và cà chua vào đun sôi.',
+      'Bước 3: Cho cá hồi vào nấu chín tới (khoảng 7-10 phút).',
+      'Bước 4: Cho đậu bắp, giá đỗ, bạc hà vào đun sôi lại, rắc rau ngổ ngò gai lên trên.'
+    ],
+    searchCat: 'Hải sản'
+  },
+  {
+    id: 'rcp_003',
+    name: 'Cơm Tấm Sườn Nướng Mật Ong',
+    category: 'Món Chính • Sài Gòn',
+    time: '40 phút',
+    level: 'Trung bình',
+    image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+    video_url: 'https://www.tiktok.com/@chongcookvolook',
+    ingredients: ['500g sườn cốt lết', '2 muỗng mật honey, sả băm, tỏi băm', 'Gạo tấm ngon', 'Nước mắm kẹo, mỡ hành, đồ chua'],
+    steps: [
+      'Bước 1: Cốt lết đập mềm, ướp với mật ong, nước mắm, sả tỏi qua đêm.',
+      'Bước 2: Nấu cơm tấm chín tới.',
+      'Bước 3: Nướng sườn trên bếp than hoặc lò nướng ở 200°C cho chín vàng thơm.',
+      'Bước 4: Xới cơm ra đĩa, đặt sườn nướng, rưới mỡ hành và chan nước mắm kẹo.'
+    ],
+    searchCat: 'Ăn vặt'
+  },
+  {
+    id: 'rcp_004',
+    name: 'Bánh Xèo Miền Tây Giòn Rụm',
+    category: 'Món Chiên • Đặc Sản',
+    time: '35 phút',
+    level: 'Khéo tay',
+    image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
+    video_url: 'https://www.tiktok.com/@chongcookvolook',
+    ingredients: ['Bột bánh xèo + nước cốt dừa', 'Tôm tươi, thịt ba chỉ', 'Giá đỗ, hành lá', 'Rau cải xanh, xà lách, rau rừng', 'Nước mắm chua ngọt'],
+    steps: [
+      'Bước 1: Pha bột bánh xèo với nước cốt dừa, bột nghệ và hành lá cắt nhỏ.',
+      'Bước 2: Xào sơ tôm thịt.',
+      'Bước 3: Tráng bột mỏng vào chảo nóng, thêm tôm thịt giá đỗ, đậy nắp 2 phút cho giòn rụm.',
+      'Bước 4: Gấp đôi bánh xèo, dọn ra ăn kèm rau sống và nước mắm chua ngọt.'
+    ],
+    searchCat: 'Ăn vặt'
+  }
+];
+
+var lang='vi';
+var activeFilter='all';
+
+// ── CENTRALIZED CATEGORY LIST (syncs filter pills + admin dropdown)
+var CATEGORIES = [
+  { key: 'all',       emoji: '🗺️', vi: 'Tất cả',     en: 'All',        pill: true, special: 'all' },
+  { key: '3star',     emoji: '⭐⭐⭐', vi: '3 Sao',    en: '3 Stars',    pill: true, special: '3star', pillClass: 'gold' },
+  { key: 'Bún/Phở',  emoji: '🍜', vi: 'Bún/Phở',     en: 'Noodles',    pill: true },
+  { key: 'Cơm',      emoji: '🍚', vi: 'Cơm',          en: 'Rice',       pill: true },
+  { key: 'Ăn vặt',   emoji: '🥟', vi: 'Ăn vặt',      en: 'Snacks',     pill: true },
+  { key: 'Cafe',     emoji: '☕', vi: 'Cafe',          en: 'Cafe',       pill: true },
+  { key: 'Hải sản',  emoji: '🦐', vi: 'Hải sản',     en: 'Seafood',    pill: true },
+  { key: 'Lẩu/Nướng',emoji: '🍲', vi: 'Lẩu/Nướng',  en: 'Hotpot/BBQ', pill: true },
+  { key: 'Bánh',     emoji: '🥖', vi: 'Bánh',         en: 'Bakery',     pill: true },
+  { key: 'Đồ uống',  emoji: '🧋', vi: 'Đồ uống',     en: 'Drinks',     pill: true },
+  { key: 'Khác',     emoji: '🍽️', vi: 'Khác',        en: 'Other',      pill: true }
+];
+
+function initCategories(){
+  // 1. Build filter pills
+  var bar = document.getElementById('pill-bar');
+  bar.innerHTML = '';
+  CATEGORIES.forEach(function(cat){
+    if(!cat.pill) return;
+    var btn = document.createElement('button');
+    btn.className = 'pill' + (cat.special==='all' ? ' active' : '') + (cat.pillClass ? ' ' + cat.pillClass : '');
+    btn.onclick = function(){ filterMap(cat.special || cat.key, btn); };
+    btn.textContent = cat.emoji + ' ' + (lang==='vi' ? cat.vi : cat.en);
+    bar.appendChild(btn);
+  });
+
+  // 2. Populate category <select> dropdowns (admin add + edit forms)
+  var selectable = CATEGORIES.filter(function(c){ return !c.special; });
+  ['a-cat','edit-cat'].forEach(function(id){
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML = '<option value="" disabled selected>📂 Chọn loại quán...</option>';
+    selectable.forEach(function(cat){
+      var opt = document.createElement('option');
+      opt.value = cat.key;
+      opt.textContent = cat.emoji + ' ' + cat.vi;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function t(k){return TR[lang][k]||k;}
+
+function applyLang(){
+  var x=TR[lang];
+  document.getElementById('lang-btn').textContent=x.l;
+  document.getElementById('t-crit').textContent=x.cr;
+  document.getElementById('t-sug').textContent=x.sg;
+  document.getElementById('t-loading').textContent=x.ld;
+  document.getElementById('t-ck-t').textContent=x.ckT;
+  document.getElementById('t-ck-s').textContent=x.ckS;
+  document.getElementById('t-mc-h2').textContent=x.mcH;
+  document.getElementById('t-mc-p').textContent=x.mcP;
+  document.getElementById('t-s3t').textContent=x.s3t;
+  document.getElementById('t-s3d').textContent=x.s3d;
+  document.getElementById('t-s2t').textContent=x.s2t;
+  document.getElementById('t-s2d').textContent=x.s2d;
+  document.getElementById('t-s1t').textContent=x.s1t;
+  document.getElementById('t-s1d').textContent=x.s1d;
+  document.getElementById('t-mc-ok').textContent=x.mcok;
+  document.getElementById('t-ms-h2').textContent=x.msH;
+  document.getElementById('t-ms-p').textContent=x.msP;
+  document.getElementById('t-ms-gps').textContent=x.gps;
+  document.getElementById('t-ms-send').textContent=x.send;
+  document.getElementById('t-sh-must').textContent=x.must;
+  document.getElementById('t-sh-dir').textContent=x.navd;
+  document.getElementById('t-sh-vid').textContent=x.navv;
+  document.getElementById('t-bnav-map').textContent=x.bMap;
+  document.getElementById('t-bnav-cook').textContent=x.bCook;
+}
+function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); updateSubTitle(); }
+
+function updateSubTitle(){
+  var subEl=document.getElementById('logo-sub-text');
+  if(activeFilter==='all'){
+    subEl.textContent = (lang==='vi' ? 'Cẩm Nang Ẩm Thực & Lifestyle ✔️' : 'Food & Lifestyle Guide ✔️');
+    subEl.classList.remove('highlight');
+  }else{
+    var labelText = activeFilter==='3star' ? '3 Sao ⭐⭐⭐' : activeFilter;
+    subEl.textContent = (lang==='vi' ? 'Bản đồ ' + labelText : labelText + ' Map');
+    subEl.classList.add('highlight');
+  }
+}
+
+// ── AUTO EXTRACT LAT/LNG FROM GOOGLE MAPS LINK
+function extractLatLngFromMapUrl(url){
+  if(!url) return null;
+  var s = String(url).trim();
+  var mPin = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if(mPin) return { lat: parseFloat(mPin[1]), lng: parseFloat(mPin[2]) };
+  var mAt = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(mAt) return { lat: parseFloat(mAt[1]), lng: parseFloat(mAt[2]) };
+  var mQ = s.match(/(?:[?&](?:q|ll|query|center)=|maps\?q=)(-?\d+\.\d+)(?:,|%2C)(-?\d+\.\d+)/i);
+  if(mQ) return { lat: parseFloat(mQ[1]), lng: parseFloat(mQ[2]) };
+  var mDirect = s.match(/\/(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(mDirect) return { lat: parseFloat(mDirect[1]), lng: parseFloat(mDirect[2]) };
+  return null;
+}
+
+// ── IMAGE FILE ATTACHMENT COMPRESSOR
+function handleImageFileSelect(fileInput, targetInputId, previewDivId){
+  if(!fileInput.files || !fileInput.files[0]) return;
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var canvas = document.createElement('canvas');
+      var maxW = 960, maxH = 540; // 16:9 resolution canvas
+      var width = img.width, height = img.height;
+
+      if(width > height){
+        if(width > maxW){ height = Math.round(height * (maxW / width)); width = maxW; }
+      } else {
+        if(height > maxH){ width = Math.round(width * (maxH / height)); height = maxH; }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+
+      document.getElementById(targetInputId).value = compressedDataUrl;
+      
+      var previewDiv = document.getElementById(previewDivId);
+      var previewImg = document.getElementById(previewDivId + '-img');
+      if(previewDiv && previewImg){
+        previewImg.src = compressedDataUrl;
+        previewDiv.style.display = 'block';
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImageSelect(targetInputId, previewDivId, fileInputId){
+  document.getElementById(targetInputId).value = '';
+  var fileInput = document.getElementById(fileInputId);
+  if(fileInput) fileInput.value = '';
+  var previewDiv = document.getElementById(previewDivId);
+  if(previewDiv) previewDiv.style.display = 'none';
+}
+
+// ── MODALS
+function openModal(id){
+  var m=document.getElementById(id);
+  if(m) m.classList.add('show');
+}
+function closeModal(id){
+  var m=document.getElementById(id);
+  if(m) m.classList.remove('show');
+}
+
+// ── RENDER RECIPES GRID - CHỒNG COOK VỢ LOOK
+function renderRecipes(){
+  var grid = document.getElementById('recipe-list-grid');
+  if(!grid) return;
+  grid.innerHTML = RECIPES_DATA.map(function(r){
+    var vidUrl = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
+    return '<div class="recipe-card" onclick="openRecipeDetail(\''+r.id+'\')">'
+      + '<div class="recipe-img-box"><img class="recipe-img" src="'+r.image+'" alt="'+r.name+'"/><span class="recipe-time-badge">⏱️ '+r.time+'</span></div>'
+      + '<div class="recipe-body">'
+      + '<div class="recipe-name">'+r.name+'</div>'
+      + '<div class="recipe-meta">'+r.category+' • '+r.level+'</div>'
+      + '<a href="'+vidUrl+'" target="_blank" class="recipe-btn-video" onclick="event.stopPropagation();">🎬 Xem Video Nấu</a>'
+      + '</div></div>';
+  }).join('');
+}
+
+function openRecipeDetail(id){
+  var r = RECIPES_DATA.find(function(item){return item.id===id;});
+  if(!r) return;
+  document.getElementById('rcp-cat').textContent = '🍳 ' + r.category;
+  document.getElementById('rcp-title').textContent = r.name;
+  document.getElementById('rcp-meta').textContent = '⏱️ Thời gian: ' + r.time + ' • Cấp độ: ' + r.level;
+  
+  document.getElementById('rcp-ing-list').innerHTML = r.ingredients.map(function(ing){
+    return '<label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" style="width:18px;height:18px;accent-color:var(--or);"/> <span>'+ing+'</span></label>';
+  }).join('');
+
+  document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function(st){
+    return '<div style="background:var(--bg);border-left:4px solid var(--or);padding:12px 16px;border-radius:12px;font-size:15px;color:var(--nv);font-weight:700;">'+st+'</div>';
+  }).join('');
+
+  var vidBtn = document.getElementById('btn-rcp-video');
+  if(vidBtn){
+    vidBtn.href = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
+  }
+
+  document.getElementById('btn-rcp-findmap').onclick = function(){
+    closeModal('m-recipe-detail');
+    switchNav('map');
+    filterMap(r.searchCat, document.querySelector('.pill:nth-child(3)'));
+  };
+
+  openModal('m-recipe-detail');
+}
+
+// ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
+function switchNav(tab){
+  ['home','map','cook','admin'].forEach(function(k){
+    var btn=document.getElementById('bnav-'+k);
+    if(btn) btn.classList.toggle('active',k===tab);
+    var p=document.getElementById('page-'+k);
+    if(p) p.classList.toggle('show',k===tab);
+  });
+
+  var isMap=(tab==='map');
+  document.getElementById('map-header').style.display = isMap ? 'flex' : 'none';
+  document.getElementById('pill-bar').style.display = isMap ? 'flex' : 'none';
+  document.getElementById('locate-btn').style.display = isMap ? 'flex' : 'none';
+  if(!isMap) closeSheet();
+
+  if(tab==='cook') renderRecipes();
+  if(tab==='admin') renderAdminTab();
+
+  if(isMap && window.map){
+    setTimeout(function(){
+      map.invalidateSize();
+      if(userMarker){
+        map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
+      } else if(markers.length){
+        try{ 
+          var group = L.featureGroup(markers);
+          map.fitBounds(group.getBounds(), { maxZoom: 14, padding: [50, 50] });
+        }catch(e){}
+      }
+    },100);
+  }
+}
+
+// ── DEDICATED ADMIN TAB CONTROLLER (THAO THỨC GUIDE ADMIN)
+var isAdmin = false;
+
+function checkAdminAuth(){
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(res){
+        if(res && res.isAdmin){
+          isAdmin = true;
+          document.getElementById('main-bottom-nav').classList.add('admin-mode');
+          document.getElementById('bnav-admin').style.display = 'flex';
+        } else {
+          isAdmin = false;
+          document.getElementById('main-bottom-nav').classList.remove('admin-mode');
+          document.getElementById('bnav-admin').style.display = 'none';
+        }
+      })
+      .getAdminStatus();
+  } else {
+    // Local dev mode auto-enable admin tab for testing
+    isAdmin = true;
+    document.getElementById('main-bottom-nav').classList.add('admin-mode');
+    document.getElementById('bnav-admin').style.display = 'flex';
+  }
+}
+
+function switchAdminSec(sec){
+  ['locs','rcps','sugs'].forEach(function(k){
+    var btn = document.getElementById('atab-'+k);
+    if(btn) btn.classList.toggle('active', k===sec);
+    var div = document.getElementById('asec-'+k);
+    if(div) div.style.display = (k===sec) ? 'block' : 'none';
+  });
+
+  if(sec==='locs') renderAdminLocList();
+  if(sec==='rcps') renderAdminRcpList();
+  if(sec==='sugs') loadAdminSuggestions();
+}
+
+function renderAdminTab(){
+  switchAdminSec('locs');
+}
+
+function renderAdminRcpList(){
+  var container = document.getElementById('admin-rcp-container');
+  if(!container) return;
+  container.innerHTML = RECIPES_DATA.map(function(r){
+    return '<div class="admin-loc-item">'
+      + '<div class="admin-loc-info">'
+      + '<div class="admin-loc-name">🍳 '+r.name+'</div>'
+      + '<div class="admin-loc-sub">'+r.category+' • ⏱️ '+r.time+'</div>'
+      + '</div>'
+      + '<div class="admin-loc-btns">'
+      + '<button class="btn-sm-del" onclick="deleteRecipeItem(\''+r.id+'\')">🗑️ Xóa</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function doAdminAddRecipe(){
+  var name = document.getElementById('ar-name').value.trim();
+  if(!name){alert('Vui lòng nhập tên công thức món ăn!');return;}
+  
+  var newRcp = {
+    id: 'rcp_' + Date.now(),
+    name: name,
+    category: document.getElementById('ar-cat').value.trim() || 'Món Nước • Đặc Sản',
+    time: document.getElementById('ar-time').value.trim() || '30 phút',
+    level: document.getElementById('ar-level').value.trim() || 'Dễ làm',
+    image: document.getElementById('ar-img').value.trim() || CAT_IMAGES['Default'],
+    video_url: document.getElementById('ar-video').value.trim() || 'https://www.tiktok.com/@chongcookvolook',
+    ingredients: document.getElementById('ar-ing').value.split('\n').filter(function(s){return s.trim();}),
+    steps: document.getElementById('ar-steps').value.split('\n').filter(function(s){return s.trim();}),
+    searchCat: 'Bún/Phở'
+  };
+
+  RECIPES_DATA.unshift(newRcp);
+  alert('✅ Đã thêm công thức mới vào Chồng Cook Vợ Look!');
+  closeModal('m-admin-add-recipe');
+  renderRecipes();
+  renderAdminRcpList();
+  ['ar-name','ar-cat','ar-time','ar-level','ar-img','ar-video','ar-ing','ar-steps'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+function deleteRecipeItem(id){
+  if(!confirm('Bạn có muốn xóa công thức này?')) return;
+  RECIPES_DATA = RECIPES_DATA.filter(function(r){return r.id!==id;});
+  renderRecipes();
+  renderAdminRcpList();
+}
+
+function loadAdminSuggestions(){
+  var container = document.getElementById('admin-sug-container');
+  if(!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--sl);">Đang tải hòm thư gợi ý...</div>';
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(list){
+        if(!Array.isArray(list) || list.length===0){
+          container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--sl);font-weight:700;">Chưa có gợi ý nào từ khán giả.</div>';
+          return;
+        }
+        container.innerHTML = list.map(function(s){
+          return '<div class="admin-loc-item">'
+            + '<div class="admin-loc-info">'
+            + '<div class="admin-loc-name">📍 '+fixUtf8(s.place_name)+'</div>'
+            + '<div class="admin-loc-sub">'+(fixUtf8(s.category)||'Ẩm thực')+' • '+(s.address||'')+ ' • GPS: '+s.lat+','+s.lng+'</div>'
+            + '<div style="font-size:13px;color:var(--nv);margin-top:4px;font-style:italic;">"'+fixUtf8(s.must_try_notes)+'"</div>'
+            + '</div>'
+            + '</div>';
+        }).join('');
+      })
+      .getSuggestions();
+  } else {
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--sl);font-weight:700;">Hòm thư gợi ý sẵn sàng (Google Sheet Suggestions tab).</div>';
+  }
+}
+
+// ── GEOLOCATION & GPS FOCUS
+var userMarker=null, locating=false;
+
+function autoLocateOnLaunch(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        var lat=pos.coords.latitude, lng=pos.coords.longitude;
+        if(userMarker) map.removeLayer(userMarker);
+        var html='<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
+        userMarker=L.marker([lat,lng],{icon:L.divIcon({html:html,iconSize:[36,36],iconAnchor:[18,18],className:'custom-map-pin'})}).addTo(map);
+
+        // Fly straight to user location at zoom level 15
+        map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
+      },
+      function(err){
+        // GPS permission pending/denied
+      },
+      {enableHighAccuracy:true, timeout:8000}
+    );
+  }
+}
+
+function locateMe(){
+  if(!navigator.geolocation){alert(t('locErr'));return;}
+  switchNav('map'); // Auto-switch to map tab
+  var btn=document.getElementById('locate-btn');
+  if(locating)return;
+  locating=true; btn.classList.add('locating');
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      locating=false; btn.classList.remove('locating');
+      var lat=pos.coords.latitude, lng=pos.coords.longitude;
+      if(userMarker) map.removeLayer(userMarker);
+      var html='<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
+      userMarker=L.marker([lat,lng],{icon:L.divIcon({html:html,iconSize:[36,36],iconAnchor:[18,18],className:'custom-map-pin'})}).addTo(map);
+
+      // Smooth flyTo animation to user's exact GPS coordinates
+      map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
+
+      setTimeout(function(){ map.invalidateSize(); }, 300);
+    },
+    function(){
+      locating=false; btn.classList.remove('locating');
+      alert(t('locErr'));
+    },
+    {enableHighAccuracy:true,timeout:10000}
+  );
+}
+
+function gpsForSuggest(){
+  if(!navigator.geolocation){alert(t('locErr'));return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      document.getElementById('s-lat').value=pos.coords.latitude.toFixed(6);
+      document.getElementById('s-lng').value=pos.coords.longitude.toFixed(6);
+    },
+    function(){alert(t('locErr'));},
+    {enableHighAccuracy:true,timeout:10000}
+  );
+}
+
+function doSuggest(){
+  var name=document.getElementById('s-name').value.trim();
+  if(!name){alert(t('nameReq'));return;}
+  
+  var data = {
+    name: name,
+    address: document.getElementById('s-addr').value.trim(),
+    lat: document.getElementById('s-lat').value.trim(),
+    lng: document.getElementById('s-lng').value.trim(),
+    category: document.getElementById('s-cat').value.trim(),
+    notes: document.getElementById('s-note').value.trim()
+  };
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(){
+        alert(t('sent'));
+        ['s-name','s-addr','s-lat','s-lng','s-cat','s-note'].forEach(function(id){document.getElementById(id).value='';});
+        closeModal('m-sug');
+      })
+      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .saveSuggestion(data);
+  }else{
+    alert(t('sent'));
+    ['s-name','s-addr','s-lat','s-lng','s-cat','s-note'].forEach(function(id){document.getElementById(id).value='';});
+    closeModal('m-sug');
+  }
+}
+
+function openAdminModal(mode){
+  clearImageSelect('a-img', 'a-img-preview', 'a-img-file');
+  document.getElementById('a-hours').value = '';
+  document.getElementById('a-desc').value = '';
+  if(mode==='gps'&&navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      document.getElementById('a-lat').value=pos.coords.latitude.toFixed(6);
+      document.getElementById('a-lng').value=pos.coords.longitude.toFixed(6);
+    },function(){},{enableHighAccuracy:true,timeout:8000});
+  }
+  openModal('m-admin');
+}
+
+function renderAdminLocList(){
+  var container = document.getElementById('admin-loc-container');
+  if(!container) return;
+  var inputEl = document.getElementById('admin-search-input');
+  var query = inputEl ? (inputEl.value||'').toLowerCase().trim() : '';
+  
+  var list = allLocs.filter(function(l){
+    if(!query) return true;
+    return (l.name||'').toLowerCase().indexOf(query) !== -1 || (l.category||'').toLowerCase().indexOf(query) !== -1;
+  });
+
+  if(list.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;">Chưa có địa điểm nào trong Google Sheet.<br/><span style="font-size:14px;color:var(--sl-light);margin-top:6px;display:block;">Hãy nhấn "➕ Thêm Địa Điểm Mới" ở trên để bắt đầu thêm địa điểm thật!</span></div>';
+    return;
+  }
+
+  container.innerHTML = list.map(function(loc){
+    return '<div class="admin-loc-item">'
+      + '<div class="admin-loc-info">'
+      + '<div class="admin-loc-name">'+fixUtf8(loc.name)+'</div>'
+      + '<div class="admin-loc-sub">⭐ '+loc.rating_stars+' Sao • '+(fixUtf8(loc.category)||'Ẩm thực')+' • '+(loc.price_range||'')+(loc.opening_hours?' • ⏰ '+loc.opening_hours:'')+'</div>'
+      + '</div>'
+      + '<div class="admin-loc-btns">'
+      + '<button class="btn-sm-edit" onclick="openAdminEdit(\''+loc.id+'\')">✏️ Sửa</button>'
+      + '<button class="btn-sm-del" onclick="deleteAdminLoc(\''+loc.id+'\')">🗑️ Xóa</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function openAdminEdit(id){
+  var loc = allLocs.find(function(l){return String(l.id)===String(id);});
+  if(!loc) return;
+  document.getElementById('edit-id').value = loc.id;
+  document.getElementById('edit-name').value = loc.name || '';
+  document.getElementById('edit-lat').value = loc.lat || '';
+  document.getElementById('edit-lng').value = loc.lng || '';
+  document.getElementById('edit-cat').value = loc.category || '';
+  document.getElementById('edit-must').value = loc.must_try || '';
+  document.getElementById('edit-price').value = loc.price_range || '';
+  document.getElementById('edit-stars').value = loc.rating_stars || '3';
+  document.getElementById('edit-hours').value = loc.opening_hours || '';
+  document.getElementById('edit-desc').value = loc.description || '';
+  
+  var imgVal = loc.image_url || '';
+  document.getElementById('edit-img').value = imgVal;
+  document.getElementById('edit-video').value = loc.video_url || '';
+  document.getElementById('edit-map').value = loc.map_url || '';
+  
+  if(imgVal){
+    document.getElementById('edit-img-preview-img').src = imgVal;
+    document.getElementById('edit-img-preview').style.display = 'block';
+  } else {
+    document.getElementById('edit-img-preview').style.display = 'none';
+  }
+
+  openModal('m-admin-edit');
+}
+
+function saveAdminEdit(){
+  var id = document.getElementById('edit-id').value;
+  var name = document.getElementById('edit-name').value.trim();
+  if(!name){alert('Vui lòng nhập tên địa điểm!');return;}
+
+  var rawLat = document.getElementById('edit-lat').value.trim();
+  var rawLng = document.getElementById('edit-lng').value.trim();
+  var mapUrl = document.getElementById('edit-map').value.trim();
+
+  var lat = parseFloat(rawLat);
+  var lng = parseFloat(rawLng);
+
+  if(isNaN(lat) || isNaN(lng)){
+    var extracted = extractLatLngFromMapUrl(mapUrl);
+    if(extracted){
+      lat = extracted.lat;
+      lng = extracted.lng;
+    } else {
+      lat = '';
+      lng = '';
+    }
+  }
+
+  var row = [
+    id, name, lat, lng,
+    document.getElementById('edit-stars').value,
+    document.getElementById('edit-cat').value,
+    document.getElementById('edit-must').value,
+    document.getElementById('edit-price').value,
+    document.getElementById('edit-video').value,
+    mapUrl,
+    document.getElementById('edit-img').value,
+    document.getElementById('edit-hours').value.trim(),
+    document.getElementById('edit-desc').value.trim()
+  ];
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(){
+        alert('✅ Đã lưu chỉnh sửa!');
+        closeModal('m-admin-edit');
+        loadData();
+      })
+      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .updateLocation(id, row);
+  }else{
+    var idx = allLocs.findIndex(function(l){return String(l.id)===String(id);});
+    if(idx!==-1){
+      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,rating_stars:parseInt(row[4]),category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]};
+      loadMarkers(allLocs, true);
+    }
+    closeModal('m-admin-edit');
+    alert('✅ Đã sửa (local test)');
+  }
+}
+
+function deleteAdminLoc(id){
+  if(!confirm('Bạn có chắc chắn muốn xóa địa điểm này khỏi Google Sheet và Bản đồ?')) return;
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(){
+        alert('🗑️ Đã xóa địa điểm!');
+        loadData();
+      })
+      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .deleteLocation(id);
+  }else{
+    allLocs = allLocs.filter(function(l){return String(l.id)!==String(id);});
+    loadMarkers(allLocs, true);
+    renderAdminLocList();
+    alert('🗑️ Đã xóa (local test)');
+  }
+}
+
+function doAdminAdd(){
+  var name=document.getElementById('a-name').value.trim();
+  if(!name){alert('Vui lòng nhập tên địa điểm!');return;}
+
+  var rawLat = document.getElementById('a-lat').value.trim();
+  var rawLng = document.getElementById('a-lng').value.trim();
+  var mapUrl = document.getElementById('a-map').value.trim();
+
+  var lat = parseFloat(rawLat);
+  var lng = parseFloat(rawLng);
+
+  // Client-side regex check first; if short URL, send empty string to let Google Apps Script UrlFetchApp resolve server-side!
+  if(isNaN(lat) || isNaN(lng)){
+    var extracted = extractLatLngFromMapUrl(mapUrl);
+    if(extracted){
+      lat = extracted.lat;
+      lng = extracted.lng;
+    } else {
+      lat = '';
+      lng = '';
+    }
+  }
+
+  var row=['loc_'+Date.now(),name,lat,lng,
+    document.getElementById('a-stars').value,
+    document.getElementById('a-cat').value,
+    document.getElementById('a-must').value,
+    document.getElementById('a-price').value,
+    document.getElementById('a-video').value,
+    mapUrl,
+    document.getElementById('a-img').value,
+    document.getElementById('a-hours').value.trim(),
+    document.getElementById('a-desc').value.trim()
+  ];
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(res){
+        alert('✅ Đã thêm địa điểm mới vào Google Sheet! (Tọa độ tự động định vị từ link Google Maps)');
+        closeModal('m-admin');
+        loadData();
+      })
+      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .addLocation(row);
+  }else{
+    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,rating_stars:parseInt(row[4]),category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]});
+    loadMarkers(allLocs, true);
+    closeModal('m-admin');
+    alert('✅ Đã thêm (local test)');
+  }
+}
+
+// Comprehensive UTF-8 & Coordinate Sanitizers
+function fixUtf8(str){
+  if(!str) return '';
+  var s = String(str);
+  s = s.replace(/C\s+Ph\s+Mu\?i\s+H\?i\s+K\s*/gi, 'Cà Phê Muối Hải Ký')
+       .replace(/B\s*n\s*B\s*Hu\? s*M\? s*R\?t/gi, 'Bún Bò Huế Mụ Rớt')
+       .replace(/B\s*nh\s*M\s*Phu\?ng/gi, 'Bánh Mì Phượng')
+       .replace(/M\s*Qu\?ng\s*B\s*Mua/gi, 'Mì Quảng Bà Mua')
+       .replace(/Ch\s*B\s*Tu\s*D\s*N\?ng/gi, 'Chè Bà Tư Đà Nẵng')
+       .replace(/C\s*ph\s*mu\?i/gi, 'Cà phê muối')
+       .replace(/C\s*ph\s*tr\?ng/gi, 'Cà phê trứng')
+       .replace(/B\s*n\s*b\s*d\?c\s*bi\?t/gi, 'Bún bò đặc biệt')
+       .replace(/B\s*nh\s*m\s*th\?t\s*ngu\?i/gi, 'Bánh mì thịt nguội')
+       .replace(/B\s*nh\s*m\s*tr\?ng/gi, 'Bánh mì trứng')
+       .replace(/M\s*qu\?ng\s*t\s*m\s*th\?t/gi, 'Mì quảng tôm thịt')
+       .replace(/M\s*qu\?ng\s*g\s*/gi, 'Mì quảng gà')
+       .replace(/Ch\s*d\?u\s*xanh/gi, 'Chè đậu xanh')
+       .replace(/Ch\s*tr\s*i\s*nu\?c/gi, 'Chè trôi nước')
+       .replace(/An\s*v\?t/gi, 'Ăn vặt')
+       .replace(/B\s*n\/Ph\?/gi, 'Bún/Phở');
+  return s;
+}
+
+function parseCoord(rawLat, rawLng) {
+  var sLat = String(rawLat || '').trim();
+  var sLng = String(rawLng || '').trim();
+
+  var lat = parseFloat(sLat.replace(',', '.'));
+  if (isNaN(lat) || Math.abs(lat) > 90) {
+    var clean1 = sLat.replace(/[^0-9]/g, '');
+    lat = parseFloat(clean1.substring(0, 2) + '.' + clean1.substring(2)) || 16.0544;
+  }
+
+  var lng = parseFloat(sLng.replace(',', '.'));
+  if (isNaN(lng) || lng > 180 || lng < 10) {
+    var clean2 = sLng.replace(/[^0-9]/g, '');
+    lng = parseFloat(clean2.substring(0, 3) + '.' + clean2.substring(3)) || 108.2022;
+  }
+
+  return { lat: lat, lng: lng };
+}
+
+// ── LOCATION DETAIL BOTTOM SHEET WITH FOOD PHOTO, HOURS & DESCRIPTION
+function openSheet(loc){
+  var name = fixUtf8(loc.name);
+  var must_try = fixUtf8(loc.must_try);
+  var category = fixUtf8(loc.category);
+  var desc = fixUtf8(loc.description);
+
+  var stars='⭐'.repeat(Math.min(loc.rating_stars,3));
+  document.getElementById('sh-stars').textContent=stars+' '+loc.rating_stars+' Sao';
+  document.getElementById('sh-title').textContent=name;
+  document.getElementById('sh-cat').textContent='📍 '+(category||'Ẩm thực');
+  document.getElementById('sh-price').textContent=loc.price_range||'';
+  
+  var hoursEl = document.getElementById('sh-hours');
+  if(loc.opening_hours){
+    hoursEl.textContent = '⏰ Giờ mở cửa: ' + loc.opening_hours;
+    hoursEl.style.display = 'block';
+  } else {
+    hoursEl.style.display = 'none';
+  }
+
+  var descEl = document.getElementById('sh-desc');
+  if(desc){
+    descEl.textContent = '📝 ' + desc;
+    descEl.style.display = 'block';
+  } else {
+    descEl.style.display = 'none';
+  }
+
+  var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'];
+  document.getElementById('sh-cover-img').src = imgUrl;
+  document.getElementById('sh-cover-badge').textContent = '📸 ' + (category || 'Món ngon');
+
+  var mustWrap=document.getElementById('sh-must-wrap');
+  var tagsBox=document.getElementById('sh-tags');
+  var musts=(must_try||'').split(',').filter(function(s){return s.trim();});
+  if(musts.length){
+    mustWrap.style.display='block';
+    tagsBox.innerHTML=musts.map(function(m){return '<span class="tag-item">'+fixUtf8(m)+'</span>';}).join('');
+  }else{
+    mustWrap.style.display='none';
+  }
+
+  document.getElementById('sh-nav-link').href=loc.map_url||'#';
+  document.getElementById('sh-vid-link').href=loc.video_url||'#';
+
+  document.getElementById('loc-sheet').classList.add('open');
+}
+
+function closeSheet(){
+  document.getElementById('loc-sheet').classList.remove('open');
+}
+
+// ── MAP ENGINE & OFFICIAL GOOGLE MAPS TILE LAYER WITH CARTO & OSM FALLBACKS
+var map, allLocs=[], markers=[];
+
+function initMap(){
+  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:18}).setView([16.0544,108.2022],13);
+
+  var googleMapsUrl = 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+  var cartoVoyagerUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
+  var osmFallbackUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+  var tileLayer = L.tileLayer(googleMapsUrl, {
+    maxZoom:18,
+    subdomains:['0','1','2','3'],
+    attribution:'&copy; Google Maps'
+  });
+
+  tileLayer.on('tileerror', function(error, tile) {
+    if(tile && tile.src){
+      if(tile.src.indexOf('google.com') !== -1){
+        tile.src = cartoVoyagerUrl.replace('{s}', 'a').replace('{z}', error.coords.z).replace('{x}', error.coords.x).replace('{y}', error.coords.y);
+      } else if(tile.src.indexOf('cartocdn.com') !== -1){
+        tile.src = osmFallbackUrl.replace('{s}', 'a').replace('{z}', error.coords.z).replace('{x}', error.coords.x).replace('{y}', error.coords.y);
+      }
+    }
+  });
+
+  tileLayer.addTo(map);
+
+  map.on('click',function(){ closeSheet(); });
+
+  loadData();
+  checkAdminAuth();
+  autoLocateOnLaunch();
+}
+
+// DEMO DATA CLEARED - REAL LIVE MODE FOR GOOGLE SHEETS
+var DEMO_DATA = [];
+
+function loadData(){
+  document.getElementById('map-loader').classList.remove('hidden');
+
+  if(typeof google!=='undefined'&&google.script&&google.script.run){
+    google.script.run
+      .withSuccessHandler(function(d){
+        onData(d);
+      })
+      .withFailureHandler(function(){
+        document.getElementById('map-loader').classList.add('hidden');
+        onData([]);
+      })
+      .getFoodLocations();
+  }else{
+    onData([]);
+  }
+}
+
+function onData(d){
+  document.getElementById('map-loader').classList.add('hidden');
+  if(!Array.isArray(d)) d = [];
+  d.forEach(function(loc){
+    loc.name = fixUtf8(loc.name);
+    loc.must_try = fixUtf8(loc.must_try);
+    loc.category = fixUtf8(loc.category);
+    loc.description = fixUtf8(loc.description);
+    var c = parseCoord(loc.lat, loc.lng);
+    loc.lat = c.lat;
+    loc.lng = c.lng;
+  });
+  allLocs=d;
+  
+  // If userMarker exists, keep focus on user location at zoom level 15
+  loadMarkers(d, !!userMarker);
+  
+  if(userMarker){
+    map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
+  }
+
+  if(document.getElementById('page-admin').classList.contains('show')){
+    renderAdminLocList();
+  }
+}
+
+// HTML-based Crisp Map Pins
+function mkPin(stars){
+  var isGold = stars >= 3;
+  var starsText = '⭐'.repeat(Math.min(stars,3));
+  var html = '<div class="map-pin-box">'
+    + '<div class="map-pin-head '+(isGold?'gold':'')+'">'+starsText+'</div>'
+    + '<div class="map-pin-arrow '+(isGold?'gold':'')+'"></div>'
+    + '</div>';
+  return L.divIcon({html:html,iconSize:[80,44],iconAnchor:[40,44],className:'custom-map-pin'});
+}
+
+function loadMarkers(locs, skipFitBounds){
+  if(!Array.isArray(locs)) locs = [];
+  markers.forEach(function(m){map.removeLayer(m);}); markers=[];
+  var validBounds = [];
+  locs.forEach(function(loc){
+    var c = parseCoord(loc.lat, loc.lng);
+    if(!c.lat || !c.lng) return;
+    var m = L.marker([c.lat, c.lng], {icon: mkPin(loc.rating_stars)});
+    m.on('click', function(e){
+      L.DomEvent.stopPropagation(e);
+      openSheet(loc);
+      map.panTo([c.lat, c.lng]);
+    });
+    m.addTo(map); markers.push(m);
+    validBounds.push([c.lat, c.lng]);
+  });
+
+  if(map){
+    map.invalidateSize();
+  }
+
+  // CRITICAL FIX: If userMarker exists, NEVER override map position back to default!
+  if(!skipFitBounds && !userMarker){
+    if(validBounds.length > 0){
+      try{
+        map.fitBounds(L.latLngBounds(validBounds), { maxZoom: 14, padding: [50, 50] });
+      }catch(e){}
+    }
+  }
+}
+
+function filterMap(f,btn){
+  if(btn){
+    document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+  }
+  activeFilter=f;
+  updateSubTitle();
+  closeSheet();
+
+  var filtered = [];
+  if(!Array.isArray(allLocs)) allLocs = [];
+
+  if(f==='all'){
+    filtered = allLocs;
+  }else if(f==='3star'){
+    filtered = allLocs.filter(function(l){ return parseInt(l.rating_stars) >= 3; });
+  }else{
+    var searchCat = f.toLowerCase().trim();
+    filtered = allLocs.filter(function(l){
+      var c = (l.category||'').toLowerCase().trim();
+      return c === searchCat || c.indexOf(searchCat) !== -1 || searchCat.indexOf(c) !== -1;
+    });
+  }
+
+  loadMarkers(filtered, !!userMarker);
+
+  if(map){
+    setTimeout(function(){ map.invalidateSize(); }, 50);
+    setTimeout(function(){ map.invalidateSize(); }, 250);
+  }
+}
+
+// ── PWA PROMPT
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); deferredPrompt=e;
+  setTimeout(function(){
+    if(!localStorage.getItem('pwa-ok')) document.getElementById('pwa-banner').classList.add('show');
+  },4000);
+});
+function installPWA(){
+  if(!deferredPrompt){alert(t('ios'));return;}
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r){
+    if(r.outcome==='accepted'){document.getElementById('pwa-banner').classList.remove('show');localStorage.setItem('pwa-ok','1');}
+    deferredPrompt=null;
+  });
+}
+function dismissPWA(){document.getElementById('pwa-banner').classList.remove('show');localStorage.setItem('pwa-ok','1');}
+
+// ── OFFLINE
+function chkOnline(){document.getElementById('offline-bar').style.display=navigator.onLine?'none':'block';}
+window.addEventListener('online',chkOnline); window.addEventListener('offline',chkOnline); chkOnline();
+
+// ── INIT
+window.addEventListener('load',function(){
+  initCategories();
+  initMap();
+});
+</script>
+</body>
+</html>

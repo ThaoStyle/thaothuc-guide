@@ -1,0 +1,7 @@
+[2026-08-11_08-46] v41_2026-08-11_08-46_social-links-categories
+- Real social links: Thao Th?c Ði An (TikTok, YouTube, Facebook), Ch?ng Cook V? Look (TikTok, Facebook)
+- Real contact: chongcookvolook@gmail.com, 0867 132 283
+- Categories system (CATEGORIES array) synced across filter pills + admin dropdown
+- Header + pills only visible on Map page
+- Mobile responsive layout (v38-v40)
+- Short link resolver improved (v37)
