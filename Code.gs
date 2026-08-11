@@ -182,12 +182,18 @@ function getFoodLocations() {
         }
       }
 
+      var rawB = String(r[4] || '').toLowerCase().trim();
+      var badge = 'spot';
+      if(rawB==='3' || rawB==='heritage') badge = 'heritage';
+      else if(rawB==='2' || rawB==='approved') badge = 'approved';
+      else if(rawB==='pending') badge = 'pending';
+
       locations.push({
         id: r[0],
         name: r[1],
         lat: lat || 16.0544,
         lng: lng || 108.2022,
-        rating_stars: r[4],
+        badge_type: badge,
         category: r[5],
         must_try: r[6],
         price_range: r[7],
@@ -208,7 +214,7 @@ function addLocation(row) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Locations');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Locations');
-    sheet.appendRow(['id','name','lat','lng','rating_stars','category','must_try','price_range','video_url','map_url','image_url','opening_hours','description']);
+    sheet.appendRow(['id','name','lat','lng','badge_type','category','must_try','price_range','video_url','map_url','image_url','opening_hours','description']);
   }
 
   var lat = parseFloat(row[2]);

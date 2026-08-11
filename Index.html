@@ -171,6 +171,14 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 .map-pin-head.gold{background:linear-gradient(135deg,#F59E0B,#D97706);color:white;box-shadow:0 6px 18px rgba(245,158,11,.4);}
 .map-pin-arrow{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #E64A19;margin-top:-1px;}
 .map-pin-arrow.gold{border-top-color:#D97706;}
+.map-pin-head.orange{background:linear-gradient(135deg,#FF7043,#E64A19);color:white;box-shadow:0 6px 18px rgba(255,112,67,.35);}
+.map-pin-arrow.orange{border-top-color:#E64A19;}
+.map-pin-head.purple{background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:white;box-shadow:0 6px 18px rgba(139,92,246,.35);}
+.map-pin-arrow.purple{border-top-color:#6D28D9;}
+.map-pin-head.blue{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:white;box-shadow:0 6px 18px rgba(14,165,233,.35);}
+.map-pin-arrow.blue{border-top-color:#0284c7;}
+.map-pin-head.red{background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;box-shadow:0 6px 18px rgba(239,68,68,.35);}
+.map-pin-arrow.red{border-top-color:#b91c1c;}
 /* BOTTOM NAV */
 .bottom-nav{
   position:absolute;bottom:calc(12px + var(--sb));left:12px;right:12px;z-index:450;
@@ -588,16 +596,20 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <div class="modal-h2" id="t-mc-h2">Tiêu Chí Đánh Giá</div>
     <div class="modal-p"  id="t-mc-p">Tiêu chí đánh giá riêng của Thao Thức Guide</div>
     <div class="crit-item">
-      <div class="crit-star">⭐⭐⭐</div>
-      <div><div class="crit-h3" id="t-s3t">3 Sao — Michelin-style</div><div class="crit-desc" id="t-s3d">Xuất sắc, đáng đi xa chỉ để ăn. Hương vị độc đáo, trải nghiệm đặc biệt.</div></div>
+      <div class="crit-star">🏆</div>
+      <div><div class="crit-h3" id="t-s3t">Thao Thức Heritage</div><div class="crit-desc" id="t-s3d">Các biểu tượng ẩm thực lâu đời, mang tính di sản và văn hóa địa phương. Trải nghiệm không thể bỏ qua.</div></div>
     </div>
     <div class="crit-item">
-      <div class="crit-star">⭐⭐</div>
-      <div><div class="crit-h3" id="t-s2t">2 Sao — Rất đáng thử</div><div class="crit-desc" id="t-s2d">Chất lượng tốt, đáng ghé khi ở gần. Có thể quay lại.</div></div>
+      <div class="crit-star">✔️</div>
+      <div><div class="crit-h3" id="t-s2t">Thao Thức Approved</div><div class="crit-desc" id="t-s2d">Các quán ăn chất lượng xuất sắc, đã được Thao Thức Guide trực tiếp trải nghiệm và bảo chứng chất lượng.</div></div>
     </div>
     <div class="crit-item">
-      <div class="crit-star">⭐</div>
-      <div><div class="crit-h3" id="t-s1t">1 Sao — Ngon bình dân</div><div class="crit-desc" id="t-s1d">Ngon theo kiểu bình dân, phù hợp nếu đang ở gần.</div></div>
+      <div class="crit-star">📍</div>
+      <div><div class="crit-h3" id="t-s1t">Thao Thức Spot</div><div class="crit-desc" id="t-s1d">Các điểm ăn uống chất lượng tốt, phù hợp cho bữa ăn hàng ngày.</div></div>
+    </div>
+    <div class="crit-item">
+      <div class="crit-star">⏳</div>
+      <div><div class="crit-h3">Chờ duyệt</div><div class="crit-desc">Các quán nằm trong danh sách chuẩn bị lên lịch thẩm định.</div></div>
     </div>
     <button class="btn-submit" onclick="closeModal('m-crit')" style="margin-top:16px;">
       <span id="t-mc-ok">✓ Đã hiểu</span>
@@ -694,9 +706,10 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <div class="input-row">
       <input class="input-box" id="edit-price" placeholder="Giá (vd: 50k-80k)"/>
       <select class="input-box" id="edit-stars" style="cursor:pointer;">
-        <option value="1">⭐ 1 Sao</option>
-        <option value="2">⭐⭐ 2 Sao</option>
-        <option value="3">⭐⭐⭐ 3 Sao</option>
+        <option value="heritage">🏆 Thao Thức Heritage</option>
+        <option value="approved">✔️ Thao Thức Approved</option>
+        <option value="spot" selected>📍 Thao Thức Spot</option>
+        <option value="pending">⏳ Chờ xác nhận</option>
       </select>
     </div>
 
@@ -746,9 +759,10 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <div class="input-row">
       <input class="input-box" id="a-price" placeholder="Giá (vd: 50k-80k)"/>
       <select class="input-box" id="a-stars" style="cursor:pointer;">
-        <option value="1">⭐ 1 Sao</option>
-        <option value="2">⭐⭐ 2 Sao</option>
-        <option value="3" selected>⭐⭐⭐ 3 Sao</option>
+        <option value="heritage">🏆 Thao Thức Heritage</option>
+        <option value="approved">✔️ Thao Thức Approved</option>
+        <option value="spot" selected>📍 Thao Thức Spot</option>
+        <option value="pending">⏳ Chờ xác nhận</option>
       </select>
     </div>
 
@@ -944,8 +958,11 @@ var activeFilter='all';
 
 // ── CENTRALIZED CATEGORY LIST (syncs filter pills + admin dropdown)
 var CATEGORIES = [
-  { key: 'all',       emoji: '🗺️', vi: 'Tất cả',     en: 'All',        pill: true, special: 'all' },
-  { key: '3star',     emoji: '⭐⭐⭐', vi: '3 Sao',    en: '3 Stars',    pill: true, special: '3star', pillClass: 'gold' },
+  { key: 'all',       emoji: '🟢', vi: 'Tất cả',     en: 'All',        pill: true, special: 'all' },
+  { key: 'heritage',  emoji: '🏆', vi: 'Heritage',    en: 'Heritage',   pill: true, special: 'heritage' },
+  { key: 'approved',  emoji: '✔️', vi: 'Approved',    en: 'Approved',   pill: true, special: 'approved' },
+  { key: 'spot',      emoji: '📍', vi: 'Spot',        en: 'Spot',       pill: true, special: 'spot' },
+  { key: 'pending',   emoji: '⏳', vi: 'Chờ duyệt',  en: 'Pending',    pill: true, special: 'pending' },
   { key: 'Bún/Phở',  emoji: '🍜', vi: 'Bún/Phở',     en: 'Noodles',    pill: true },
   { key: 'Cơm',      emoji: '🍚', vi: 'Cơm',          en: 'Rice',       pill: true },
   { key: 'Ăn vặt',   emoji: '🥟', vi: 'Ăn vặt',      en: 'Snacks',     pill: true },
@@ -1555,7 +1572,7 @@ function openAdminEdit(id){
   document.getElementById('edit-cat').value = loc.category || '';
   document.getElementById('edit-must').value = loc.must_try || '';
   document.getElementById('edit-price').value = loc.price_range || '';
-  document.getElementById('edit-stars').value = loc.rating_stars || '3';
+  document.getElementById('edit-stars').value = loc.badge_type || 'spot';
   document.getElementById('edit-hours').value = loc.opening_hours || '';
   document.getElementById('edit-desc').value = loc.description || '';
   
@@ -1641,7 +1658,7 @@ function saveAdminEdit(){
   }else{
     var idx = allLocs.findIndex(function(l){return String(l.id)===String(id);});
     if(idx!==-1){
-      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,rating_stars:parseInt(row[4]),category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]};
+      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]};
       loadMarkers(allLocs, true);
     }
     closeModal('m-admin-edit');
@@ -1722,7 +1739,7 @@ function doAdminAdd(){
       .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
       .addLocation(row);
   }else{
-    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,rating_stars:parseInt(row[4]),category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]});
+    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]});
     loadMarkers(allLocs, true);
     closeModal('m-admin');
     alert('✅ Đã thêm (local test)');
@@ -1778,8 +1795,8 @@ function openSheet(loc){
   var category = fixUtf8(loc.category);
   var desc = fixUtf8(loc.description);
 
-  var stars='⭐'.repeat(Math.min(loc.rating_stars,3));
-  document.getElementById('sh-stars').textContent=stars+' '+loc.rating_stars+' Sao';
+  var badgeName = (loc.badge_type==='heritage'?'🏆 Heritage':loc.badge_type==='approved'?'✔️ Approved':loc.badge_type==='pending'?'⏳ Chờ Duyệt':'📍 Spot');
+  document.getElementById('sh-stars').textContent = badgeName;
   document.getElementById('sh-title').textContent=name;
   document.getElementById('sh-cat').textContent='📍 '+(category||'Ẩm thực');
   document.getElementById('sh-price').textContent=loc.price_range||'';
@@ -1793,11 +1810,25 @@ function openSheet(loc){
   }
 
   var descEl = document.getElementById('sh-desc');
-  if(desc){
-    descEl.textContent = '📝 ' + desc;
+  var priceEl = document.getElementById('sh-price');
+  
+  if(loc.badge_type === 'pending'){
+    descEl.textContent = '⏳ Quán nằm trong danh sách Thao Thức Guide chuẩn bị lên lịch trải nghiệm & thẩm định.';
     descEl.style.display = 'block';
+    descEl.style.color = '#8B5CF6';
+    descEl.style.fontWeight = '700';
+    priceEl.style.display = 'none';
+    hoursEl.style.display = 'none';
   } else {
-    descEl.style.display = 'none';
+    priceEl.style.display = '';
+    descEl.style.color = '';
+    descEl.style.fontWeight = '';
+    if(desc){
+      descEl.textContent = '📝 ' + desc;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
   }
 
   var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'];
@@ -1908,12 +1939,16 @@ function onData(d){
 }
 
 // HTML-based Crisp Map Pins
-function mkPin(stars){
-  var isGold = stars >= 3;
-  var starsText = '⭐'.repeat(Math.min(stars,3));
+function mkPin(badge){
+  var colorClass = 'blue';
+  var iconText = '📍';
+  if(badge==='heritage'){ colorClass='gold'; iconText='🏆'; }
+  else if(badge==='approved'){ colorClass='orange'; iconText='✔️'; }
+  else if(badge==='pending'){ colorClass='purple'; iconText='⏳'; }
+  
   var html = '<div class="map-pin-box">'
-    + '<div class="map-pin-head '+(isGold?'gold':'')+'">'+starsText+'</div>'
-    + '<div class="map-pin-arrow '+(isGold?'gold':'')+'"></div>'
+    + '<div class="map-pin-head '+colorClass+'">'+iconText+'</div>'
+    + '<div class="map-pin-arrow '+colorClass+'"></div>'
     + '</div>';
   return L.divIcon({html:html,iconSize:[80,44],iconAnchor:[40,44],className:'custom-map-pin'});
 }
@@ -1925,7 +1960,7 @@ function loadMarkers(locs, skipFitBounds){
   locs.forEach(function(loc){
     var c = parseCoord(loc.lat, loc.lng);
     if(!c.lat || !c.lng) return;
-    var m = L.marker([c.lat, c.lng], {icon: mkPin(loc.rating_stars)});
+    var m = L.marker([c.lat, c.lng], {icon: mkPin(loc.badge_type)});
     m.on('click', function(e){
       L.DomEvent.stopPropagation(e);
       openSheet(loc);
@@ -1954,7 +1989,7 @@ function filterMap(f,btn){
     document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
   }
-  activeFilter=f;
+  
   updateSubTitle();
   closeSheet();
 
@@ -1963,8 +1998,8 @@ function filterMap(f,btn){
 
   if(f==='all'){
     filtered = allLocs;
-  }else if(f==='3star'){
-    filtered = allLocs.filter(function(l){ return parseInt(l.rating_stars) >= 3; });
+  }else if(['heritage','approved','spot','pending'].indexOf(f) !== -1){
+    filtered = allLocs.filter(function(l){ return l.badge_type === f; });
   }else{
     var searchCat = f.toLowerCase().trim();
     filtered = allLocs.filter(function(l){
