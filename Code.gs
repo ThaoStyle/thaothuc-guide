@@ -165,8 +165,8 @@ function getFoodLocations() {
       var mapUrl = r[9];
       var imgUrl = r[10] ? String(r[10]).trim() : '';
 
-      // Auto purge oversized legacy base64 strings (> 25000 chars) from Google Sheet cells
-      if (imgUrl.length > 25000) {
+      // Auto purge oversized legacy base64 strings (> 48000 chars) from Google Sheet cells
+      if (imgUrl.length > 48000) {
         imgUrl = '';
         sheet.getRange(i + 1, 11).setValue(''); // Clean cell immediately in sheet!
       }
@@ -229,9 +229,9 @@ function addLocation(row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: allow compact base64 (< 45000 chars) and URLs, prevent oversized strings > 48000 chars
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
+    if (typeof row[k] === 'string' && row[k].length > 48000) {
       row[k] = '';
     }
   }
@@ -257,9 +257,9 @@ function updateLocation(id, row) {
     }
   }
 
-  // Safety check: allow compact base64 (< 8500 chars) and URLs, prevent oversized strings > 25000 chars
+  // Safety check: allow compact base64 (< 45000 chars) and URLs, prevent oversized strings > 48000 chars
   for (var k = 0; k < row.length; k++) {
-    if (typeof row[k] === 'string' && row[k].length > 25000) {
+    if (typeof row[k] === 'string' && row[k].length > 48000) {
       row[k] = '';
     }
   }

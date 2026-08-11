@@ -55,7 +55,18 @@ thaothuc-guide/
 
 ---
 
-## 5. CÁCH NHẮC PROMPT CHO AI TRONG PHIÊN LÀM VIỆC MỚI
+## 5. NHỮNG LỖI ĐÃ BIẾT & HƯỚNG XỬ LÝ (KNOWN ISSUES & FUTURE UPGRADES)
+
+### 5.1. Lỗi Upload Ảnh (HEIC / Giới hạn Base64)
+- **Vấn đề 1 (Giới hạn Cell của Google Sheets)**: Google Sheets chỉ cho phép lưu tối đa 50,000 ký tự mỗi ô. Hệ thống hiện tại đang tự động nén Base64 của ảnh xuống mức `< 45,000 ký tự` ở Frontend (`Index.html`) và chặn đứng những chuỗi dài hơn `48,000 ký tự` ở Backend (`Code.gs`) để tránh sập data.
+- **Vấn đề 2 (Định dạng HEIC của iPhone)**: Trình duyệt web (Safari, Chrome) không hỗ trợ đọc ảnh định dạng `.heic` thông qua `FileReader` và `canvas`, dẫn đến việc ảnh bị fail ngầm khi up. Người dùng buộc phải chụp màn hình hoặc dùng ảnh JPEG/PNG để thay thế. 
+- **Vấn đề 3 (Chưa Real-time Render)**: Khi Admin vừa up ảnh và bấm Lưu, popup cũ có thể vẫn lưu cache ảnh. Cần tải lại (Reload map) để ảnh mới hiển thị.
+- **👉 HƯỚNG NÂNG CẤP TRONG TƯƠNG LAI (OPTION 2)**: 
+  Nên chuyển đổi hệ thống lưu trữ ảnh Base64 sang việc **Gọi API Upload ảnh lên ImgBB (hoặc Imgur)**. Nhờ đó, App sẽ giải quyết được 100% giới hạn 50k ký tự, cho phép ảnh đạt chất lượng Full HD, đồng thời giải phóng hoàn toàn bộ nhớ cho Google Sheets (chỉ cần lưu 1 đoạn link URL ngắn `https://i.ibb.co/...`).
+
+---
+
+## 6. CÁCH NHẮC PROMPT CHO AI TRONG PHIÊN LÀM VIỆC MỚI
 
 Khi bắt đầu phiên trò chuyện mới, bạn chỉ cần gửi prompt sau:
 
