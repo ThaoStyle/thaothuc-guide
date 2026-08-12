@@ -2202,30 +2202,22 @@ function handleMapSearch() {
 }
 
 function flyAndOpenLoc(locId) {
-  switchNav('map', true); // skip auto fly to user's location
+  switchNav('map');
   var cap = document.getElementById('map-header');
   if(cap) cap.classList.remove('focused');
   var dd = document.getElementById('map-search-dropdown');
   if(dd) dd.classList.remove('show');
   
-  // Wait 400ms for switchNav's invalidateSize to finish
   setTimeout(function() {
-    filterMap('all', null, true); // skip fitBounds
-    
-    // Wait another 300ms for filterMap's invalidateSize to finish
-    setTimeout(function() {
-      var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
-      if(loc && map && loc.lat && loc.lng) {
-        map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
-        
-        // Wait for flight to finish, then open bottom sheet
-        setTimeout(function() {
-          openSheet(loc);
-        }, 1500);
-      }
-    }, 300);
-    
-  }, 400);
+    filterMap('all');
+    var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
+    if(loc && map && loc.lat && loc.lng) {
+      map.flyTo([loc.lat, loc.lng], 16);
+      setTimeout(function() {
+        openSheet(loc);
+      }, 500);
+    }
+  }, 500);
 }
 </script>
 </body>
