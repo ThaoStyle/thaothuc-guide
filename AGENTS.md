@@ -64,6 +64,13 @@ thaothuc-guide/
 - **👉 HƯỚNG NÂNG CẤP TRONG TƯƠNG LAI (OPTION 2)**: 
   Nên chuyển đổi hệ thống lưu trữ ảnh Base64 sang việc **Gọi API Upload ảnh lên ImgBB (hoặc Imgur)**. Nhờ đó, App sẽ giải quyết được 100% giới hạn 50k ký tự, cho phép ảnh đạt chất lượng Full HD, đồng thời giải phóng hoàn toàn bộ nhớ cho Google Sheets (chỉ cần lưu 1 đoạn link URL ngắn `https://i.ibb.co/...`).
 
+### 5.2. Lỗi Leaflet Animation Collision (Va chạm hiệu ứng trên Mobile)
+- **Vấn đề (Crash `flyTo`)**: Trên thiết bị di động (Mobile), nếu gọi hàm `map.flyTo()` ngay sau khi thực hiện các thao tác DOM nặng nề (như xóa/vẽ lại hàng chục ghim `L.marker` thông qua hàm `filterMap`), trình duyệt sẽ bị nghẽn luồng xử lý chính. Điều này khiến thư viện Leaflet hủy bỏ lệnh bay (animation dropped), làm bản đồ đứng im không nhảy tới vị trí ghim (hoặc chỉ đứng ở vị trí GPS).
+- **👉 NGUYÊN TẮC BẮT BUỘC (CRITICAL RULE)**: 
+  - **KHÔNG BAO GIỜ** nhồi nhét hàm lọc bản đồ (`filterMap`) hoặc tính toán lại kích thước (`invalidateSize`) vào cùng một lúc với lệnh lướt bản đồ (`flyTo`) trong các nút bấm chuyển hướng (như nút "Khám phá ngay" ở Trang chủ).
+  - Để lướt mượt mà, hãy thiết kế các trigger sao cho chỉ gọi `flyTo` trên một bản đồ đang ở trạng thái tĩnh (không bị thay đổi số lượng ghim ở background).
+  - Nếu cần `invalidateSize`, hãy dùng `map.stop()` và đảm bảo một độ trễ (`setTimeout`) thích hợp giữa các thao tác xử lý giao diện và lệnh bay.
+
 ---
 
 ## 6. CÁCH NHẮC PROMPT CHO AI TRONG PHIÊN LÀM VIỆC MỚI
