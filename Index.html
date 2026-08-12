@@ -2211,16 +2211,25 @@ function openHomeCardLoc(locId) {
   var cap = document.getElementById('map-header');
   if(cap) cap.classList.remove('focused');
   
+  // Chờ 800ms cho màn hình Map mở ra hoàn toàn sắc nét
   setTimeout(function() {
     filterMap('all', null, true); // Chặn tự động zoom fitBounds
-    var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
-    if(loc && map && loc.lat && loc.lng) {
-      map.setView([loc.lat, loc.lng], 16); // Dịch chuyển tức thời thay vì bay (tránh kẹt animation trên mobile)
-      setTimeout(function() {
-        openSheet(loc);
-      }, 500);
-    }
-  }, 500);
+    
+    // Ép bản đồ tính toán lại kích thước chuẩn
+    if(map) map.invalidateSize(true);
+    
+    setTimeout(function() {
+      var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
+      if(loc && map && loc.lat && loc.lng) {
+        // Dập tắt mọi hiệu ứng cũ, lướt 1.5s tới quán
+        map.stop(); 
+        map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5}); 
+        
+        // Chờ bay xong mới kéo thẻ thông tin lên
+        setTimeout(function() { openSheet(loc); }, 1500);
+      }
+    }, 100);
+  }, 800);
 }
 </script>
 </body>
