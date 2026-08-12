@@ -2102,7 +2102,7 @@ function renderHomeLatestCards(){
 
     var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
     
-    html += '<div class="home-featured-card" onclick="switchNav(\'map\'); setTimeout(function(){ filterMap(\'all\'); var m=allLocs.find(function(l){return l.id===\''+latestLoc.id+'\'}); if(m) { map.flyTo([m.lat,m.lng], 16); setTimeout(function(){openSheet(m);},500); } }, 500);">'
+    html += '<div class="home-featured-card" onclick="flyAndOpenLoc(\''+latestLoc.id+'\')">'
       + '<div class="hf-img-wrap"><img src="'+imgUrl+'" alt="Loc"/><span class="hf-badge">🔴 MỚI CẮM GHIM</span></div>'
       + '<div class="hf-body">'
       + '<div class="hf-title">'+latestLoc.name+'</div>'
@@ -2180,13 +2180,7 @@ function handleMapSearch() {
       var item = document.createElement('div');
       item.className = 'sc-dropdown-item';
       item.onclick = function() {
-        if(map && loc.lat && loc.lng) {
-          map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
-          var mObj = markersData.find(function(m){ return String(m.id) === String(loc.id); });
-          if(mObj && mObj.marker) {
-            setTimeout(function(){ mObj.marker.openPopup(); }, 1600);
-          }
-        }
+        flyAndOpenLoc(loc.id);
       };
 
       var iconStr = '📍';
@@ -2203,6 +2197,29 @@ function handleMapSearch() {
     });
   }
   dd.classList.add('show');
+}
+
+function flyAndOpenLoc(locId) {
+  switchNav('map');
+  var cap = document.getElementById('map-header');
+  if(cap) cap.classList.remove('focused');
+  var dd = document.getElementById('map-search-dropdown');
+  if(dd) dd.classList.remove('show');
+  
+  setTimeout(function() {
+    filterMap('all');
+    var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
+    if(loc && map && loc.lat && loc.lng) {
+      map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
+      setTimeout(function() {
+        openSheet(loc);
+        var mObj = markersData.find(function(m){ return String(m.id) === String(locId); });
+        if(mObj && mObj.marker) {
+          mObj.marker.openPopup();
+        }
+      }, 1600);
+    }
+  }, 100);
 }
 </script>
 </body>
