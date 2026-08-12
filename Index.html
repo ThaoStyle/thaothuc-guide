@@ -2207,15 +2207,15 @@ function handleMapSearch() {
 }
 
 function openHomeCardLoc(locId) {
-  switchNav('map');
+  switchNav('map', true); // Chặn bay về GPS
   var cap = document.getElementById('map-header');
   if(cap) cap.classList.remove('focused');
   
   setTimeout(function() {
-    filterMap('all');
+    filterMap('all', null, true); // Chặn tự động zoom fitBounds
     var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
     if(loc && map && loc.lat && loc.lng) {
-      map.flyTo([loc.lat, loc.lng], 16);
+      map.setView([loc.lat, loc.lng], 16); // Dịch chuyển tức thời thay vì bay (tránh kẹt animation trên mobile)
       setTimeout(function() {
         openSheet(loc);
       }, 500);
