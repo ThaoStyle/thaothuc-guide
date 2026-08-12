@@ -107,7 +107,7 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 .sc-icon { display: flex; align-items: center; justify-content: center; color: var(--sl); margin-right: 12px; }
 .sc-icon svg { width: 18px; height: 18px; stroke: currentColor; }
 .sc-input {
-  flex: 1; border: none; background: transparent; font-size: 14px; font-weight: 500;
+  flex: 1; border: none; background: transparent; font-size: 16px; font-weight: 500;
   color: var(--nv); font-family: inherit; outline: none; padding: 0; min-width: 0;
 }
 .sc-input::placeholder { color: #94A3B8; font-weight: 400; }
@@ -2034,7 +2034,7 @@ function loadMarkers(locs, skipFitBounds){
   }
 }
 
-function filterMap(f,btn){
+function filterMap(f, btn, skipFitBounds){
   if(btn){
     document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
@@ -2058,7 +2058,7 @@ function filterMap(f,btn){
     });
   }
 
-  loadMarkers(filtered, !!userMarker);
+  loadMarkers(filtered, skipFitBounds || !!userMarker);
 
   if(map){
     setTimeout(function(){ map.invalidateSize(); }, 50);
@@ -2209,7 +2209,7 @@ function flyAndOpenLoc(locId) {
   if(dd) dd.classList.remove('show');
   
   setTimeout(function() {
-    filterMap('all');
+    filterMap('all', null, true); // skip fitBounds
     var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
     if(loc && map && loc.lat && loc.lng) {
       map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
