@@ -2104,7 +2104,7 @@ function renderHomeLatestCards(){
 
     var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
     
-    html += '<div class="home-featured-card" onclick="flyAndOpenLoc(\''+latestLoc.id+'\')">'
+    html += '<div class="home-featured-card" onclick="openHomeCardLoc(\''+latestLoc.id+'\')">'
       + '<div class="hf-img-wrap"><img src="'+imgUrl+'" alt="Loc"/><span class="hf-badge">🔴 MỚI CẮM GHIM</span></div>'
       + '<div class="hf-body">'
       + '<div class="hf-title">'+latestLoc.name+'</div>'
@@ -2153,7 +2153,7 @@ function handleMapSearchBlur() {
   setTimeout(function() {
     var dd = document.getElementById('map-search-dropdown');
     if(dd) dd.classList.remove('show');
-  }, 200);
+  }, 500); // 500ms delay to allow mobile clicks to register
 }
 
 function handleMapSearch() {
@@ -2182,7 +2182,12 @@ function handleMapSearch() {
       var item = document.createElement('div');
       item.className = 'sc-dropdown-item';
       item.onclick = function() {
-        flyAndOpenLoc(loc.id);
+        if(map && loc.lat && loc.lng) {
+          map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
+          setTimeout(function(){ openSheet(loc); }, 1500);
+        }
+        var dd = document.getElementById('map-search-dropdown');
+        if(dd) dd.classList.remove('show');
       };
 
       var iconStr = '📍';
@@ -2201,12 +2206,10 @@ function handleMapSearch() {
   dd.classList.add('show');
 }
 
-function flyAndOpenLoc(locId) {
+function openHomeCardLoc(locId) {
   switchNav('map');
   var cap = document.getElementById('map-header');
   if(cap) cap.classList.remove('focused');
-  var dd = document.getElementById('map-search-dropdown');
-  if(dd) dd.classList.remove('show');
   
   setTimeout(function() {
     filterMap('all');
