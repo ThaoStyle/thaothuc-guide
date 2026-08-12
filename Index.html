@@ -1303,7 +1303,7 @@ function openRecipeDetail(id){
 }
 
 // ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
-function switchNav(tab){
+function switchNav(tab, skipAutoFly){
   ['home','map','cook','admin'].forEach(function(k){
     var btn=document.getElementById('bnav-'+k);
     if(btn) btn.classList.toggle('active',k===tab);
@@ -1323,13 +1323,15 @@ function switchNav(tab){
   if(isMap && window.map){
     setTimeout(function(){
       map.invalidateSize();
-      if(userMarker){
-        map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
-      } else if(markers.length){
-        try{ 
-          var group = L.featureGroup(markers);
-          map.fitBounds(group.getBounds(), { maxZoom: 14, padding: [50, 50] });
-        }catch(e){}
+      if(!skipAutoFly) {
+        if(userMarker){
+          map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
+        } else if(markers.length){
+          try{ 
+            var group = L.featureGroup(markers);
+            map.fitBounds(group.getBounds(), { maxZoom: 14, padding: [50, 50] });
+          }catch(e){}
+        }
       }
     },100);
   }
@@ -2200,7 +2202,7 @@ function handleMapSearch() {
 }
 
 function flyAndOpenLoc(locId) {
-  switchNav('map');
+  switchNav('map', true); // skip auto fly to user's location
   var cap = document.getElementById('map-header');
   if(cap) cap.classList.remove('focused');
   var dd = document.getElementById('map-search-dropdown');
