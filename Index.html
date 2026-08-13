@@ -1256,19 +1256,9 @@ function applyLang(){
   document.getElementById('t-bnav-map').textContent=x.bMap;
   document.getElementById('t-bnav-cook').textContent=x.bCook;
 }
-function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); updateSubTitle(); }
+function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); }
 
-function updateSubTitle(){
-  var subEl=document.getElementById('logo-sub-text');
-  if(activeFilter==='all'){
-    subEl.textContent = (lang==='vi' ? 'Cẩm Nang Ẩm Thực & Lifestyle ✔️' : 'Food & Lifestyle Guide ✔️');
-    subEl.classList.remove('highlight');
-  }else{
-    var labelText = activeFilter==='3star' ? '3 Sao ⭐⭐⭐' : activeFilter;
-    subEl.textContent = (lang==='vi' ? 'Bản đồ ' + labelText : labelText + ' Map');
-    subEl.classList.add('highlight');
-  }
-}
+
 
 // ── AUTO EXTRACT LAT/LNG FROM GOOGLE MAPS LINK
 function extractLatLngFromMapUrl(url){
@@ -2250,12 +2240,12 @@ function loadMarkers(locs, skipFitBounds){
 }
 
 function filterMap(f, btn, skipFitBounds){
+  activeFilter = f;
   if(btn){
     document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
   }
   
-  updateSubTitle();
   closeSheet();
 
   var filtered = [];
