@@ -541,36 +541,67 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 }
 \n
 
-/* BOTTOM SHEET NEW UI */
-.sheet-body { padding: 16px 20px 30px; }
-.sh-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.sh-badge-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.8); border: 1px solid rgba(255,112,67,0.3); color: var(--or); font-size: 13px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-.sh-badge-pill img { margin-right: 6px; }
-.sheet-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #475569; cursor: pointer; transition: 0.2s; }
-.sheet-close:active { transform: scale(0.9); background: #e2e8f0; }
-.sh-title { font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 12px; line-height: 1.3; }
 
-.sh-meta-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.sh-meta-item { font-size: 14px; color: #475569; line-height: 1.5; font-weight: 500; }
-.sh-meta-item strong { color: var(--or); font-weight: 800; }
-.status-badge { display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-left: 6px; }
-.status-badge.green { background: #dcfce7; color: #166534; }
-.status-badge.amber { background: #fef3c7; color: #ea580c; }
-.status-badge.red { background: #fee2e2; color: #991b1b; }
-.type-tag { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 700; background: #f3e8ff; color: #6d28d9; margin-top: 4px; }
+/* ========================================================
+   BOTTOM SHEET REFACTOR (iOS HIG STYLE)
+======================================================== */
+.sheet-body { padding: 20px 20px 30px; }
 
-.sh-must-wrap { margin-top: 16px; margin-bottom: 16px; border-top: 1px dashed #e2e8f0; padding-top: 16px; }
-.sh-must-label { font-size: 12px; font-weight: 800; color: #94a3b8; margin-bottom: 10px; letter-spacing: 0.5px; }
+/* Media Header */
+.sh-cover-wrapper { position: relative; width: 100%; height: 160px; margin-bottom: 20px; border-radius: 16px; overflow: hidden; background: #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.sh-cover-img { width: 100%; height: 100%; object-fit: cover; }
+.sh-badge-overlay { position: absolute; bottom: 12px; left: 12px; display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 100px; background: rgba(255,255,255,0.95); border: 1px solid rgba(255,112,67,0.2); color: var(--or); font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.1); backdrop-filter: blur(4px); }
+.sh-badge-overlay svg { width: 16px; height: 16px; margin-right: 6px; fill: currentColor; }
+.sheet-close-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #475569; cursor: pointer; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: 0.2s; z-index: 10; }
+.sheet-close-btn:active { transform: scale(0.9); background: #f1f5f9; }
+
+/* Title & Meta */
+.sh-title-row { margin-bottom: 12px; }
+.sh-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; line-height: 1.25; letter-spacing: -0.5px; }
+.sh-subtitle { font-size: 14px; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.sh-subtitle .price { color: #d97706; font-weight: 700; }
+
+/* Time & Status */
+.sh-time-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; color: #334155; }
+.sh-time-row svg { width: 16px; height: 16px; fill: #64748b; }
+.sh-time-text { flex: 1; }
+.status-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 800; letter-spacing: 0.2px; }
+.status-pill.green { background: #dcfce7; color: #166534; }
+.status-pill.amber { background: #fef3c7; color: #ea580c; }
+.status-pill.red { background: #fee2e2; color: #991b1b; }
+
+/* Description Block */
+.sh-desc-block { padding-left: 12px; border-left: 3px solid var(--or); margin-bottom: 20px; font-size: 14px; color: #475569; line-height: 1.6; }
+
+/* Utility Grid */
+.sh-utility-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.sh-util-item { display: flex; flex-direction: column; gap: 4px; }
+.sh-util-item.full-width { grid-column: 1 / -1; }
+.sh-util-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+.sh-util-label svg { width: 12px; height: 12px; fill: currentColor; }
+.sh-util-val { font-size: 14px; font-weight: 600; color: #1e293b; }
+.sh-util-val a { color: var(--or); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+
+/* Must Try Tags */
+.sh-must-wrap { margin-bottom: 24px; }
+.sh-must-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
 .sh-must-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.must-tag-pill { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; padding: 6px 12px; border-radius: 100px; font-size: 13px; font-weight: 700; box-shadow: 0 1px 2px rgba(234,88,12,0.05); }
+.must-tag-pill { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; box-shadow: 0 1px 2px rgba(234,88,12,0.05); }
 
-.sh-actions-grid { display: grid; gap: 10px; }
-.sh-btn { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.2s; text-align: center; }
+/* Action Buttons */
+.sh-actions-stack { display: flex; flex-direction: column; gap: 10px; }
+.sh-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sh-btn { display: flex; align-items: center; justify-content: center; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.2s; text-align: center; gap: 8px; }
+.sh-btn svg { width: 18px; height: 18px; fill: currentColor; }
 .sh-btn.primary { background: linear-gradient(135deg, var(--or), #e64a19); color: #fff; box-shadow: 0 4px 12px rgba(255,112,67,0.25); border: none; }
-.sh-btn.secondary { background: #fff; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-.sh-btn.shopee { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-.sh-btn.grab { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.sh-btn.secondary { background: #fff; color: #334155; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+.sh-btn.shopee { background: #fff3ed; color: #ea580c; border: 1px solid #fed7aa; }
+.sh-btn.grab { background: #e6f7ed; color: #16a34a; border: 1px solid #bbf7d0; }
 .sh-btn:active { transform: translateY(2px); }
+
+/* Type Tag */
+.type-tag-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; background: #f3e8ff; color: #6d28d9; margin-left: 8px; }
+.type-tag-pill svg { width: 12px; height: 12px; margin-right: 4px; fill: currentColor; }
 
 </style>
 </head>
@@ -747,44 +778,70 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
   <!-- ── LOCATION DETAIL BOTTOM SHEET ── -->
   <div class="bottom-sheet" id="loc-sheet">
     <div class="sheet-drag"></div>
-    
-    <!-- 16:9 ASPECT RATIO COVER BOX -->
-    <div class="sheet-cover-box" id="sh-cover-box">
-      <img id="sh-cover-img" class="sheet-cover-img" src="" alt="Món ăn"/>
-      <div class="sheet-cover-badge" id="sh-cover-badge">📷 Ẩm thực</div>
-    </div>
-
     <div class="sheet-body">
-      <!-- Title & Badge Row -->
+      
+      <!-- 16:9 Cover Image with Badge Overlay -->
+      <div class="sh-cover-wrapper" id="sh-cover-box">
+        <button class="sheet-close-btn" onclick="closeSheet()">✕</button>
+        <img id="sh-cover-img" class="sh-cover-img" src="" alt="Cover"/>
+        <div class="sh-badge-overlay" id="sh-badge-overlay"></div>
+      </div>
+
+      <!-- Title & Subtitle -->
       <div class="sh-title-row">
-        <div class="sh-badge-pill" id="sh-stars">📍 Spot</div>
-        <button class="sheet-close" onclick="closeSheet()">✕</button>
-      </div>
-      <h2 class="sh-title" id="sh-title">Tên Quán</h2>
-
-      <!-- Meta Details -->
-      <div class="sh-meta-list">
-        <div class="sh-meta-item" id="sh-cat-price">📍 Danh mục • 50k-80k</div>
-        <div class="sh-meta-item" id="sh-hours-wrap" style="display:none;">⏰ Giờ mở cửa: <span id="sh-hours-text"></span> <span id="sh-status"></span></div>
-        <div class="sh-meta-item" id="sh-desc" style="display:none;"></div>
-        <div class="sh-meta-item" id="sh-extra" style="display:none;"></div>
-        <div class="sh-meta-item" id="sh-type-tag" style="display:none;"></div>
+        <h2 class="sh-title" id="sh-title">Tên Quán</h2>
+        <div class="sh-subtitle">
+          <span id="sh-cat">Danh mục</span> • <span class="price" id="sh-price">Giá</span>
+          <span id="sh-type-tag"></span>
+        </div>
       </div>
 
-      <!-- Must-Try Section -->
+      <!-- Opening Hours & Status -->
+      <div class="sh-time-row" id="sh-hours-wrap" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        <span class="sh-time-text" id="sh-hours-text"></span>
+        <span id="sh-status"></span>
+      </div>
+
+      <!-- Description Block -->
+      <div class="sh-desc-block" id="sh-desc" style="display:none;"></div>
+
+      <!-- Utility Grid (Phone, Type, Payment, Parking) -->
+      <div class="sh-utility-card" id="sh-utility-card" style="display:none;">
+        <div class="sh-util-item" id="util-phone" style="display:none;">
+          <div class="sh-util-label"><svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg> LIÊN HỆ</div>
+          <div class="sh-util-val"><a id="sh-phone-link" href="#"></a></div>
+        </div>
+        <div class="sh-util-item" id="util-type" style="display:none;">
+          <div class="sh-util-label"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 19.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.51c-.32-.23-.74-.42-1.22-.42h-1.68V15c0-1.1-.9-2-2-2h-3v-2h2c1.1 0 2-.9 2-2V7.12c1.3.83 2.27 2.1 2.68 3.56.24.87.22 1.83.22 1.83 0 2.52-1.01 4.81-2.65 6.42z"/></svg> HÌNH THỨC</div>
+          <div class="sh-util-val" id="sh-type"></div>
+        </div>
+        <div class="sh-util-item" id="util-payment" style="display:none;">
+          <div class="sh-util-label"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg> THANH TOÁN</div>
+          <div class="sh-util-val" id="sh-payment"></div>
+        </div>
+        <div class="sh-util-item full-width" id="util-parking" style="display:none;">
+          <div class="sh-util-label"><svg viewBox="0 0 24 24"><path d="M14.94 4.66l-2.58-1.5a1.996 1.996 0 00-2.02 0l-2.58 1.5A1.99 1.99 0 006.75 6.4v3.13c0 1.13.6 2.18 1.57 2.7l2.18 1.16v6.1c0 .26.15.5.38.62a.76.76 0 00.75-.02L16.2 16.6a.754.754 0 00.37-.65V6.4c0-.71-.38-1.37-1.01-1.74h-.62zM12 11.23L8.52 9.29V7.12L12 9.17l3.48-2.05v2.17l-3.48 1.94zM12 6.55L8.91 4.75l2.67-1.55 3.09 1.8L12 6.55z"/></svg> GỬI XE</div>
+          <div class="sh-util-val" id="sh-parking"></div>
+        </div>
+      </div>
+
+      <!-- Must Try Section -->
       <div class="sh-must-wrap" id="sh-must-wrap" style="display:none;">
-        <div class="sh-must-label">⭐ MÓN PHẢI THỬ</div>
+        <div class="sh-must-label">MÓN PHẢI THỬ</div>
         <div class="sh-must-tags" id="sh-tags"></div>
       </div>
 
-      <!-- Action Button Grid -->
-      <div class="sh-actions-grid" id="sh-actions-grid">
-        <a href="#" target="_blank" class="sh-btn primary" id="sh-nav-link">📍 Chỉ đường</a>
-        <a href="#" target="_blank" class="sh-btn secondary" id="sh-vid-link">🎬 Review</a>
+      <!-- Actions Stack -->
+      <div class="sh-actions-stack">
+        <!-- Row 1 -->
+        <div class="sh-actions-row" id="sh-row-1"></div>
+        <!-- Row 2 -->
+        <div class="sh-actions-row" id="sh-row-2" style="display:none;"></div>
       </div>
+      
     </div>
   </div>
-
 
   <!-- ── FLOATING ELEVATED BOTTOM NAVIGATION ── -->
   <nav class="bottom-nav" id="main-bottom-nav">
@@ -2143,9 +2200,9 @@ function checkOpenStatus(openingHoursStr) {
       break;
     }
   }
-  if(isOpen && isClosingSoon) return '<span class="status-badge amber">🟠 Sắp đóng cửa</span>';
-  else if (isOpen) return '<span class="status-badge green">🟢 Đang mở cửa</span>';
-  else return '<span class="status-badge red">🔴 Đã đóng cửa</span>';
+  if(isOpen && isClosingSoon) return '<span class="status-pill amber">Sắp đóng cửa</span>';
+  else if (isOpen) return '<span class="status-pill green">Đang mở cửa</span>';
+  else return '<span class="status-pill red">Đã đóng cửa</span>';
 }
 
 function openSheet(loc){
@@ -2154,64 +2211,67 @@ function openSheet(loc){
   var category = fixUtf8(loc.category);
   var desc = fixUtf8(loc.description);
 
+  // 1. Media Header
+  var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+  document.getElementById('sh-cover-img').src = imgUrl;
+
   var badgeName = (loc.badge_type==='heritage'?'Heritage':loc.badge_type==='approved'?'Approved':loc.badge_type==='pending'?'Chờ Duyệt':'Spot');
   var badgeUrl = WEBP_ICONS[loc.badge_type] || WEBP_ICONS['spot'];
-  var shStars = document.getElementById('sh-stars');
-  
+  var badgeIcon = '';
   if (badgeUrl && badgeUrl.length > 50) {
-    shStars.innerHTML = '<img src="' + badgeUrl + '" style="height:16px; margin-right:4px; vertical-align:-2px;" alt="badge"> ' + badgeName;
+    badgeIcon = '<img src="' + badgeUrl + '" style="height:18px; margin-right:4px; vertical-align:-3px;" alt="badge"> ';
   } else {
-    var emoji = (loc.badge_type==='heritage'?'🏆':loc.badge_type==='approved'?'✔️':loc.badge_type==='pending'?'⏳':'📍');
-    shStars.innerHTML = emoji + ' ' + badgeName;
+    if(loc.badge_type==='heritage') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    else if(loc.badge_type==='approved') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+    else badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
   }
-
-  document.getElementById('sh-title').textContent = name;
-  document.getElementById('sh-cat-price').innerHTML = '📍 ' + (category||'Ẩm thực') + ' &nbsp;•&nbsp; <strong>' + (loc.price_range||'Đang cập nhật') + '</strong>';
   
+  document.getElementById('sh-badge-overlay').innerHTML = badgeIcon + badgeName;
+
+  // 2. Title & Meta
+  document.getElementById('sh-title').textContent = name;
+  document.getElementById('sh-cat').textContent = category || 'Ẩm thực';
+  document.getElementById('sh-price').textContent = loc.price_range || 'Đang cập nhật';
+  
+  document.getElementById('sh-type-tag').style.display = 'none';
+
+  // 3. Opening Hours
   var hoursWrap = document.getElementById('sh-hours-wrap');
   if(loc.opening_hours){
     document.getElementById('sh-hours-text').textContent = loc.opening_hours;
     document.getElementById('sh-status').innerHTML = checkOpenStatus(loc.opening_hours);
-    hoursWrap.style.display = 'block';
+    hoursWrap.style.display = 'flex';
   } else {
     hoursWrap.style.display = 'none';
   }
 
+  // 4. Description
   var descEl = document.getElementById('sh-desc');
   if(desc){
-    descEl.innerHTML = '📄 ' + desc;
+    descEl.textContent = desc;
     descEl.style.display = 'block';
   } else {
     descEl.style.display = 'none';
   }
 
-  var extraEl = document.getElementById('sh-extra');
-  var extraArr = [];
-  if(loc.phone) extraArr.push('📞 ' + fixUtf8(loc.phone));
-  if(loc.parking_info) extraArr.push('🅿️ ' + fixUtf8(loc.parking_info));
-  if(loc.payment_methods) extraArr.push('💳 ' + fixUtf8(loc.payment_methods));
-  if(extraArr.length > 0){
-    extraEl.innerHTML = extraArr.join(' &nbsp;•&nbsp; ');
-    extraEl.style.display = 'block';
-  } else {
-    extraEl.style.display = 'none';
-  }
+  // 5. Utility Grid
+  var hasUtil = false;
+  if(loc.phone) { document.getElementById('sh-phone-link').href = 'tel:'+String(loc.phone).replace(/[^0-9]/g,''); document.getElementById('sh-phone-link').textContent = loc.phone; document.getElementById('util-phone').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-phone').style.display = 'none'; }
+  
+  var typeStr = 'Tự do';
+  if(loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
+  else if(loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
+  else if(loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
+  else if(loc.type === 'Both') typeStr = 'Tại chỗ & Mang đi';
+  document.getElementById('sh-type').textContent = typeStr;
+  document.getElementById('util-type').style.display = 'flex';
+  hasUtil = true;
+  
+  if(loc.payment_methods) { document.getElementById('sh-payment').textContent = fixUtf8(loc.payment_methods); document.getElementById('util-payment').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-payment').style.display = 'none'; }
+  if(loc.parking_info) { document.getElementById('sh-parking').textContent = fixUtf8(loc.parking_info); document.getElementById('util-parking').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-parking').style.display = 'none'; }
+  document.getElementById('sh-utility-card').style.display = hasUtil ? 'grid' : 'none';
 
-  var typeTagEl = document.getElementById('sh-type-tag');
-  if(loc.type === 'Take-Away'){
-    typeTagEl.innerHTML = '<span class="type-tag">🛍️ Chỉ bán mang về</span>';
-    typeTagEl.style.display = 'block';
-  } else if(loc.type === 'Online-Only'){
-    typeTagEl.innerHTML = '<span class="type-tag">🛵 Chỉ bán Online</span>';
-    typeTagEl.style.display = 'block';
-  } else {
-    typeTagEl.style.display = 'none';
-  }
-
-  var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
-  document.getElementById('sh-cover-img').src = imgUrl;
-  document.getElementById('sh-cover-badge').innerHTML = '📷 ' + (category || 'Ẩm thực');
-
+  // 6. Must Try
   var mustWrap = document.getElementById('sh-must-wrap');
   var tagsBox = document.getElementById('sh-tags');
   var musts = (must_try||'').split(',').filter(function(s){return s.trim();});
@@ -2222,22 +2282,29 @@ function openSheet(loc){
     mustWrap.style.display='none';
   }
 
-  // Buttons
-  var grid = document.getElementById('sh-actions-grid');
-  var btnHtml = '<a href="'+(loc.map_url||('https://www.google.com/maps/dir/?api=1&destination='+loc.lat+','+loc.lng))+'" target="_blank" class="sh-btn primary">📍 Chỉ đường</a>';
-  if(loc.video_url) btnHtml += '<a href="'+loc.video_url+'" target="_blank" class="sh-btn secondary">🎬 Review</a>';
-  if(loc.shopeefood_link) btnHtml += '<a href="'+loc.shopeefood_link+'" target="_blank" class="sh-btn shopee">🧡 Đặt ShopeeFood</a>';
-  if(loc.grab_link) btnHtml += '<a href="'+loc.grab_link+'" target="_blank" class="sh-btn grab">💚 Đặt Grab</a>';
-  grid.innerHTML = btnHtml;
+  // 7. Actions Grid
+  var row1 = document.getElementById('sh-row-1');
+  var row2 = document.getElementById('sh-row-2');
+  
+  var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination='+loc.lat+','+loc.lng);
+  var btn1Html = '<a href="'+mapLnk+'" target="_blank" class="sh-btn primary"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg> Chỉ đường</a>';
+  if(loc.video_url) btn1Html += '<a href="'+loc.video_url+'" target="_blank" class="sh-btn secondary"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Review</a>';
+  row1.innerHTML = btn1Html;
+  row1.style.gridTemplateColumns = loc.video_url ? '1fr 1fr' : '1fr';
 
-  var btnCount = (grid.innerHTML.match(/<a /g) || []).length;
-  if(btnCount === 1) grid.style.gridTemplateColumns = '1fr';
-  else if(btnCount === 2) grid.style.gridTemplateColumns = '1fr 1fr';
-  else grid.style.gridTemplateColumns = '1fr 1fr';
+  var btn2Html = '';
+  if(loc.shopeefood_link) btn2Html += '<a href="'+loc.shopeefood_link+'" target="_blank" class="sh-btn shopee">🧡 ShopeeFood</a>';
+  if(loc.grab_link) btn2Html += '<a href="'+loc.grab_link+'" target="_blank" class="sh-btn grab">💚 GrabFood</a>';
+  if(btn2Html) {
+    row2.innerHTML = btn2Html;
+    row2.style.display = 'grid';
+    row2.style.gridTemplateColumns = (loc.shopeefood_link && loc.grab_link) ? '1fr 1fr' : '1fr';
+  } else {
+    row2.style.display = 'none';
+  }
 
   document.getElementById('loc-sheet').classList.add('open');
 }
-
 
 function closeSheet(){
   document.getElementById('loc-sheet').classList.remove('open');
