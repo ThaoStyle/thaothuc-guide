@@ -391,3 +391,12 @@ function askGeminiAI(userQuery, userLat, userLng, activeTab) {
     return { success: true, reply: fallbackMsg, isFallback: true };
   }
 }
+
+// ── CÀI ĐẶT API KEY (CHẠY 1 LẦN) ──
+function runOnceToSetAPIKey() {
+  // BƯỚC 1: Dán API Key của bạn vào giữa 2 dấu nháy kép bên dưới
+  var myKey = "DÁN_API_KEY_CỦA_BẠN_VÀO_ĐÂY";
+  
+  // BƯỚC 2: Chọn hàm "runOnceToSetAPIKey" ở thanh công cụ bên trên và bấm Run (Chạy)
+  setGeminiAPIKey(myKey);
+}
