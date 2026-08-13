@@ -540,38 +540,6 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
   cursor: pointer;
 }
 \n
-
-/* BOTTOM SHEET NEW UI */
-.sheet-body { padding: 16px 20px 30px; }
-.sh-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.sh-badge-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.8); border: 1px solid rgba(255,112,67,0.3); color: var(--or); font-size: 13px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-.sh-badge-pill img { margin-right: 6px; }
-.sheet-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #475569; cursor: pointer; transition: 0.2s; }
-.sheet-close:active { transform: scale(0.9); background: #e2e8f0; }
-.sh-title { font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 12px; line-height: 1.3; }
-
-.sh-meta-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.sh-meta-item { font-size: 14px; color: #475569; line-height: 1.5; font-weight: 500; }
-.sh-meta-item strong { color: var(--or); font-weight: 800; }
-.status-badge { display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-left: 6px; }
-.status-badge.green { background: #dcfce7; color: #166534; }
-.status-badge.amber { background: #fef3c7; color: #ea580c; }
-.status-badge.red { background: #fee2e2; color: #991b1b; }
-.type-tag { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 700; background: #f3e8ff; color: #6d28d9; margin-top: 4px; }
-
-.sh-must-wrap { margin-top: 16px; margin-bottom: 16px; border-top: 1px dashed #e2e8f0; padding-top: 16px; }
-.sh-must-label { font-size: 12px; font-weight: 800; color: #94a3b8; margin-bottom: 10px; letter-spacing: 0.5px; }
-.sh-must-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.must-tag-pill { background: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; padding: 6px 12px; border-radius: 100px; font-size: 13px; font-weight: 700; box-shadow: 0 1px 2px rgba(234,88,12,0.05); }
-
-.sh-actions-grid { display: grid; gap: 10px; }
-.sh-btn { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; transition: 0.2s; text-align: center; }
-.sh-btn.primary { background: linear-gradient(135deg, var(--or), #e64a19); color: #fff; box-shadow: 0 4px 12px rgba(255,112,67,0.25); border: none; }
-.sh-btn.secondary { background: #fff; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-.sh-btn.shopee { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-.sh-btn.grab { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.sh-btn:active { transform: translateY(2px); }
-
 </style>
 </head>
 <body>
@@ -743,7 +711,6 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     </div>
   </div>
 
-  
   <!-- ── LOCATION DETAIL BOTTOM SHEET ── -->
   <div class="bottom-sheet" id="loc-sheet">
     <div class="sheet-drag"></div>
@@ -751,40 +718,40 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <!-- 16:9 ASPECT RATIO COVER BOX -->
     <div class="sheet-cover-box" id="sh-cover-box">
       <img id="sh-cover-img" class="sheet-cover-img" src="" alt="Món ăn"/>
-      <div class="sheet-cover-badge" id="sh-cover-badge">📷 Ẩm thực</div>
+      <div class="sheet-cover-badge" id="sh-cover-badge"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Ảnh quán & Món ăn</div>
     </div>
 
-    <div class="sheet-body">
-      <!-- Title & Badge Row -->
-      <div class="sh-title-row">
-        <div class="sh-badge-pill" id="sh-stars">📍 Spot</div>
-        <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-badge" id="sh-stars">⭐ 3 Sao</div>
+        <div class="sheet-title" id="sh-title">Tên Quán</div>
+        <div class="sheet-meta">
+          <span id="sh-cat"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Loại</span>
+          <span>•</span>
+          <span class="sheet-price" id="sh-price">50k-80k</span>
+        </div>
+        <div id="sh-hours" style="font-size:14px;font-weight:800;color:var(--or);margin-top:6px;display:none;"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 06:00 - 22:00</div>
+        <div id="sh-desc" style="font-size:14px;color:var(--sl);font-weight:600;margin-top:8px;line-height:1.4;display:none;"></div>
       </div>
-      <h2 class="sh-title" id="sh-title">Tên Quán</h2>
+      <button class="sheet-close" onclick="closeSheet()">✕</button>
+    </div>
 
-      <!-- Meta Details -->
-      <div class="sh-meta-list">
-        <div class="sh-meta-item" id="sh-cat-price">📍 Danh mục • 50k-80k</div>
-        <div class="sh-meta-item" id="sh-hours-wrap" style="display:none;">⏰ Giờ mở cửa: <span id="sh-hours-text"></span> <span id="sh-status"></span></div>
-        <div class="sh-meta-item" id="sh-desc" style="display:none;"></div>
-        <div class="sh-meta-item" id="sh-extra" style="display:none;"></div>
-        <div class="sh-meta-item" id="sh-type-tag" style="display:none;"></div>
-      </div>
+    <div class="sheet-section" id="sh-must-wrap">
+      <div class="section-label" id="t-sh-must"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Món Phải Thử</div>
+      <div class="tag-list" id="sh-tags"></div>
+    </div>
 
-      <!-- Must-Try Section -->
-      <div class="sh-must-wrap" id="sh-must-wrap" style="display:none;">
-        <div class="sh-must-label">⭐ MÓN PHẢI THỬ</div>
-        <div class="sh-must-tags" id="sh-tags"></div>
-      </div>
-
-      <!-- Action Button Grid -->
-      <div class="sh-actions-grid" id="sh-actions-grid">
-        <a href="#" target="_blank" class="sh-btn primary" id="sh-nav-link">📍 Chỉ đường</a>
-        <a href="#" target="_blank" class="sh-btn secondary" id="sh-vid-link">🎬 Review</a>
-      </div>
+    <div class="sheet-actions">
+      <a href="#" target="_blank" class="btn-action btn-primary" id="sh-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <span id="t-sh-dir"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Chỉ đường</span>
+      </a>
+      <a href="#" target="_blank" class="btn-action btn-secondary" id="sh-vid-link">
+        <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <span id="t-sh-vid">🎬 Review</span>
+      </a>
     </div>
   </div>
-
 
   <!-- ── FLOATING ELEVATED BOTTOM NAVIGATION ── -->
   <nav class="bottom-nav" id="main-bottom-nav">
@@ -949,25 +916,6 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
     <input class="input-box" id="edit-hours" placeholder="Khung giờ bán (vd: 06:00 - 22:00)"/>
     <textarea class="input-box" id="edit-desc" rows="3" placeholder="Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
-    <select class="input-box" id="edit-type" style="cursor:pointer;">
-      <option value="">Loại hình kinh doanh (Tùy chọn)</option>
-      <option value="Dine-In">Ăn tại chỗ</option>
-      <option value="Take-Away">Chỉ bán mang về (Take-Away)</option>
-      <option value="Online-Only">Bếp ảo / Chỉ bán Online</option>
-    </select>
-    <div class="input-row">
-      <input class="input-box" id="edit-phone" placeholder="Số điện thoại"/>
-      <input class="input-box" id="edit-dayoff" placeholder="Ngày nghỉ (vd: CN)"/>
-    </div>
-    <input class="input-box" id="edit-address" placeholder="Địa chỉ chi tiết"/>
-    <div class="input-row">
-      <input class="input-box" id="edit-shopeefood" placeholder="Link ShopeeFood"/>
-      <input class="input-box" id="edit-grab" placeholder="Link Grab"/>
-    </div>
-    <div class="input-row">
-      <input class="input-box" id="edit-parking" placeholder="Chỗ để xe"/>
-      <input class="input-box" id="edit-payment" placeholder="Thanh toán (vd: Tiền mặt, Ck)"/>
-    </div>
 
     <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
     <div style="margin-bottom:16px;">
@@ -1021,25 +969,6 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
     <input class="input-box" id="a-hours" placeholder="Khung giờ bán (vd: 06:00 - 22:00)"/>
     <textarea class="input-box" id="a-desc" rows="3" placeholder="Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
-    <select class="input-box" id="a-type" style="cursor:pointer;">
-      <option value="">Loại hình kinh doanh (Tùy chọn)</option>
-      <option value="Dine-In">Ăn tại chỗ</option>
-      <option value="Take-Away">Chỉ bán mang về (Take-Away)</option>
-      <option value="Online-Only">Bếp ảo / Chỉ bán Online</option>
-    </select>
-    <div class="input-row">
-      <input class="input-box" id="a-phone" placeholder="Số điện thoại"/>
-      <input class="input-box" id="a-dayoff" placeholder="Ngày nghỉ (vd: CN)"/>
-    </div>
-    <input class="input-box" id="a-address" placeholder="Địa chỉ chi tiết"/>
-    <div class="input-row">
-      <input class="input-box" id="a-shopeefood" placeholder="Link ShopeeFood"/>
-      <input class="input-box" id="a-grab" placeholder="Link Grab"/>
-    </div>
-    <div class="input-row">
-      <input class="input-box" id="a-parking" placeholder="Chỗ để xe"/>
-      <input class="input-box" id="a-payment" placeholder="Thanh toán (vd: Tiền mặt, Ck)"/>
-    </div>
 
     <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
     <div style="margin-bottom:16px;">
@@ -1327,9 +1256,19 @@ function applyLang(){
   document.getElementById('t-bnav-map').textContent=x.bMap;
   document.getElementById('t-bnav-cook').textContent=x.bCook;
 }
-function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); }
+function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); updateSubTitle(); }
 
-
+function updateSubTitle(){
+  var subEl=document.getElementById('logo-sub-text');
+  if(activeFilter==='all'){
+    subEl.textContent = (lang==='vi' ? 'Cẩm Nang Ẩm Thực & Lifestyle ✔️' : 'Food & Lifestyle Guide ✔️');
+    subEl.classList.remove('highlight');
+  }else{
+    var labelText = activeFilter==='3star' ? '3 Sao ⭐⭐⭐' : activeFilter;
+    subEl.textContent = (lang==='vi' ? 'Bản đồ ' + labelText : labelText + ' Map');
+    subEl.classList.add('highlight');
+  }
+}
 
 // ── AUTO EXTRACT LAT/LNG FROM GOOGLE MAPS LINK
 function extractLatLngFromMapUrl(url){
@@ -1871,14 +1810,6 @@ function openAdminEdit(id){
   document.getElementById('edit-stars').value = loc.badge_type || 'spot';
   document.getElementById('edit-hours').value = loc.opening_hours || '';
   document.getElementById('edit-desc').value = loc.description || '';
-  document.getElementById('edit-type').value = loc.type || '';
-  document.getElementById('edit-phone').value = loc.phone || '';
-  document.getElementById('edit-address').value = loc.address || '';
-  document.getElementById('edit-shopeefood').value = loc.shopeefood_link || '';
-  document.getElementById('edit-grab').value = loc.grab_link || '';
-  document.getElementById('edit-parking').value = loc.parking_info || '';
-  document.getElementById('edit-payment').value = loc.payment_methods || '';
-  document.getElementById('edit-dayoff').value = loc.day_off || '';
   
   var imgVal = loc.image_url ? String(loc.image_url).trim() : '';
   if (imgVal.indexOf('data:image/') === 0) {
@@ -1947,15 +1878,7 @@ function saveAdminEdit(){
     mapUrl,
     finalImg,
     document.getElementById('edit-hours').value.trim(),
-    document.getElementById('edit-desc').value.trim(),
-    document.getElementById('edit-type').value,
-    document.getElementById('edit-phone').value.trim(),
-    document.getElementById('edit-address').value.trim(),
-    document.getElementById('edit-shopeefood').value.trim(),
-    document.getElementById('edit-grab').value.trim(),
-    document.getElementById('edit-parking').value.trim(),
-    document.getElementById('edit-payment').value.trim(),
-    document.getElementById('edit-dayoff').value.trim()
+    document.getElementById('edit-desc').value.trim()
   ];
 
   if(typeof google!=='undefined'&&google.script&&google.script.run){
@@ -1970,7 +1893,7 @@ function saveAdminEdit(){
   }else{
     var idx = allLocs.findIndex(function(l){return String(l.id)===String(id);});
     if(idx!==-1){
-      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12],type:row[13],phone:row[14],address:row[15],shopeefood_link:row[16],grab_link:row[17],parking_info:row[18],payment_methods:row[19],day_off:row[20]};
+      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]};
       loadMarkers(allLocs, true);
     }
     closeModal('m-admin-edit');
@@ -2038,15 +1961,7 @@ function doAdminAdd(){
     mapUrl,
     finalAddImg,
     document.getElementById('a-hours').value.trim(),
-    document.getElementById('a-desc').value.trim(),
-    document.getElementById('a-type').value,
-    document.getElementById('a-phone').value.trim(),
-    document.getElementById('a-address').value.trim(),
-    document.getElementById('a-shopeefood').value.trim(),
-    document.getElementById('a-grab').value.trim(),
-    document.getElementById('a-parking').value.trim(),
-    document.getElementById('a-payment').value.trim(),
-    document.getElementById('a-dayoff').value.trim()
+    document.getElementById('a-desc').value.trim()
   ];
 
   if(typeof google!=='undefined'&&google.script&&google.script.run){
@@ -2059,7 +1974,7 @@ function doAdminAdd(){
       .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
       .addLocation(row);
   }else{
-    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12],type:row[13],phone:row[14],address:row[15],shopeefood_link:row[16],grab_link:row[17],parking_info:row[18],payment_methods:row[19],day_off:row[20]});
+    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12]});
     loadMarkers(allLocs, true);
     closeModal('m-admin');
     alert('✅ Đã thêm (local test)');
@@ -2109,45 +2024,6 @@ function parseCoord(rawLat, rawLng) {
 }
 
 // ── LOCATION DETAIL BOTTOM SHEET WITH FOOD PHOTO, HOURS & DESCRIPTION
-
-function checkOpenStatus(openingHoursStr) {
-  if(!openingHoursStr) return '';
-  var normalizedStr = String(openingHoursStr).replace(/–|—/g, '-');
-  var shifts = normalizedStr.split(',').map(function(s) { return s.trim(); });
-  var now = new Date();
-  var currentMins = now.getHours() * 60 + now.getMinutes();
-  var isOpen = false, isClosingSoon = false;
-  for(var i=0; i<shifts.length; i++) {
-    var parts = shifts[i].split('-');
-    if(parts.length !== 2) continue;
-    var startParts = parts[0].trim().split(':');
-    var endParts = parts[1].trim().split(':');
-    if(startParts.length !== 2 || endParts.length !== 2) continue;
-    var startMins = parseInt(startParts[0],10)*60 + parseInt(startParts[1],10);
-    var endMins = parseInt(endParts[0],10)*60 + parseInt(endParts[1],10);
-    var active = false, minsLeft = 0;
-    if(endMins < startMins) {
-      if(currentMins >= startMins || currentMins <= endMins) {
-        active = true;
-        minsLeft = currentMins <= endMins ? (endMins - currentMins) : (endMins + 1440 - currentMins);
-      }
-    } else {
-      if(currentMins >= startMins && currentMins <= endMins) {
-        active = true;
-        minsLeft = endMins - currentMins;
-      }
-    }
-    if(active) {
-      isOpen = true;
-      if(minsLeft <= 30) isClosingSoon = true;
-      break;
-    }
-  }
-  if(isOpen && isClosingSoon) return '<span class="status-badge amber">🟠 Sắp đóng cửa</span>';
-  else if (isOpen) return '<span class="status-badge green">🟢 Đang mở cửa</span>';
-  else return '<span class="status-badge red">🔴 Đã đóng cửa</span>';
-}
-
 function openSheet(loc){
   var name = fixUtf8(loc.name);
   var must_try = fixUtf8(loc.must_try);
@@ -2159,85 +2035,65 @@ function openSheet(loc){
   var shStars = document.getElementById('sh-stars');
   
   if (badgeUrl && badgeUrl.length > 50) {
-    shStars.innerHTML = '<img src="' + badgeUrl + '" style="height:16px; margin-right:4px; vertical-align:-2px;" alt="badge"> ' + badgeName;
+    shStars.innerHTML = '<img src="' + badgeUrl + '" style="height:20px; margin-right:6px; vertical-align:middle;" alt="badge"> ' + badgeName;
   } else {
     var emoji = (loc.badge_type==='heritage'?'🏆':loc.badge_type==='approved'?'✔️':loc.badge_type==='pending'?'⏳':'📍');
-    shStars.innerHTML = emoji + ' ' + badgeName;
+    shStars.textContent = emoji + ' ' + badgeName;
   }
 
-  document.getElementById('sh-title').textContent = name;
-  document.getElementById('sh-cat-price').innerHTML = '📍 ' + (category||'Ẩm thực') + ' &nbsp;•&nbsp; <strong>' + (loc.price_range||'Đang cập nhật') + '</strong>';
+  document.getElementById('sh-title').textContent=name;
+  document.getElementById('sh-cat').innerHTML = UI_ICONS.pin + (category||'Ẩm thực');
+  document.getElementById('sh-price').textContent=loc.price_range||'';
   
-  var hoursWrap = document.getElementById('sh-hours-wrap');
+  var hoursEl = document.getElementById('sh-hours');
   if(loc.opening_hours){
-    document.getElementById('sh-hours-text').textContent = loc.opening_hours;
-    document.getElementById('sh-status').innerHTML = checkOpenStatus(loc.opening_hours);
-    hoursWrap.style.display = 'block';
+    hoursEl.innerHTML = UI_ICONS.clock + 'Giờ mở cửa: ' + loc.opening_hours;
+    hoursEl.style.display = 'block';
   } else {
-    hoursWrap.style.display = 'none';
+    hoursEl.style.display = 'none';
   }
 
   var descEl = document.getElementById('sh-desc');
-  if(desc){
-    descEl.innerHTML = '📄 ' + desc;
+  var priceEl = document.getElementById('sh-price');
+  
+  if(loc.badge_type === 'pending'){
+    descEl.textContent = '⏳ Quán nằm trong danh sách Thao Thức Guide chuẩn bị lên lịch trải nghiệm & thẩm định.';
     descEl.style.display = 'block';
+    descEl.style.color = '#8B5CF6';
+    descEl.style.fontWeight = '700';
+    priceEl.style.display = 'none';
+    hoursEl.style.display = 'none';
   } else {
-    descEl.style.display = 'none';
+    priceEl.style.display = '';
+    descEl.style.color = '';
+    descEl.style.fontWeight = '';
+    if(desc){
+      descEl.innerHTML = UI_ICONS.text + desc;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
   }
 
-  var extraEl = document.getElementById('sh-extra');
-  var extraArr = [];
-  if(loc.phone) extraArr.push('📞 ' + fixUtf8(loc.phone));
-  if(loc.parking_info) extraArr.push('🅿️ ' + fixUtf8(loc.parking_info));
-  if(loc.payment_methods) extraArr.push('💳 ' + fixUtf8(loc.payment_methods));
-  if(extraArr.length > 0){
-    extraEl.innerHTML = extraArr.join(' &nbsp;•&nbsp; ');
-    extraEl.style.display = 'block';
-  } else {
-    extraEl.style.display = 'none';
-  }
-
-  var typeTagEl = document.getElementById('sh-type-tag');
-  if(loc.type === 'Take-Away'){
-    typeTagEl.innerHTML = '<span class="type-tag">🛍️ Chỉ bán mang về</span>';
-    typeTagEl.style.display = 'block';
-  } else if(loc.type === 'Online-Only'){
-    typeTagEl.innerHTML = '<span class="type-tag">🛵 Chỉ bán Online</span>';
-    typeTagEl.style.display = 'block';
-  } else {
-    typeTagEl.style.display = 'none';
-  }
-
-  var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+  var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'];
   document.getElementById('sh-cover-img').src = imgUrl;
-  document.getElementById('sh-cover-badge').innerHTML = '📷 ' + (category || 'Ẩm thực');
+  document.getElementById('sh-cover-badge').innerHTML = UI_ICONS.camera + (category || 'Món ngon');
 
-  var mustWrap = document.getElementById('sh-must-wrap');
-  var tagsBox = document.getElementById('sh-tags');
-  var musts = (must_try||'').split(',').filter(function(s){return s.trim();});
+  var mustWrap=document.getElementById('sh-must-wrap');
+  var tagsBox=document.getElementById('sh-tags');
+  var musts=(must_try||'').split(',').filter(function(s){return s.trim();});
   if(musts.length){
     mustWrap.style.display='block';
-    tagsBox.innerHTML = musts.map(function(m){return '<span class="must-tag-pill">'+fixUtf8(m)+'</span>';}).join('');
+    tagsBox.innerHTML=musts.map(function(m){return '<span class="tag-item">'+fixUtf8(m)+'</span>';}).join('');
   }else{
     mustWrap.style.display='none';
   }
 
-  // Buttons
-  var grid = document.getElementById('sh-actions-grid');
-  var btnHtml = '<a href="'+(loc.map_url||('https://www.google.com/maps/dir/?api=1&destination='+loc.lat+','+loc.lng))+'" target="_blank" class="sh-btn primary">📍 Chỉ đường</a>';
-  if(loc.video_url) btnHtml += '<a href="'+loc.video_url+'" target="_blank" class="sh-btn secondary">🎬 Review</a>';
-  if(loc.shopeefood_link) btnHtml += '<a href="'+loc.shopeefood_link+'" target="_blank" class="sh-btn shopee">🧡 Đặt ShopeeFood</a>';
-  if(loc.grab_link) btnHtml += '<a href="'+loc.grab_link+'" target="_blank" class="sh-btn grab">💚 Đặt Grab</a>';
-  grid.innerHTML = btnHtml;
-
-  var btnCount = (grid.innerHTML.match(/<a /g) || []).length;
-  if(btnCount === 1) grid.style.gridTemplateColumns = '1fr';
-  else if(btnCount === 2) grid.style.gridTemplateColumns = '1fr 1fr';
-  else grid.style.gridTemplateColumns = '1fr 1fr';
+  document.getElementById('sh-nav-link').href=loc.map_url||'#';
+  document.getElementById('sh-vid-link').href=loc.video_url||'#';
 
   document.getElementById('loc-sheet').classList.add('open');
 }
-
 
 function closeSheet(){
   document.getElementById('loc-sheet').classList.remove('open');
@@ -2394,12 +2250,12 @@ function loadMarkers(locs, skipFitBounds){
 }
 
 function filterMap(f, btn, skipFitBounds){
-  activeFilter = f;
   if(btn){
     document.querySelectorAll('.pill').forEach(function(b){b.classList.remove('active');});
     btn.classList.add('active');
   }
   
+  updateSubTitle();
   closeSheet();
 
   var filtered = [];

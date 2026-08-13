@@ -201,15 +201,7 @@ function getFoodLocations() {
         map_url: mapUrl,
         image_url: imgUrl,
         opening_hours: r[11] || '',
-        description: r[12] || '',
-        type: r[13] || '',
-        phone: r[14] || '',
-        address: r[15] || '',
-        shopeefood_link: r[16] || '',
-        grab_link: r[17] || '',
-        parking_info: r[18] || '',
-        payment_methods: r[19] || '',
-        day_off: r[20] || ''
+        description: r[12] || ''
       });
     }
     return locations;
@@ -222,7 +214,7 @@ function addLocation(row) {
   var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Locations');
   if (!sheet) {
     sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").insertSheet('Locations');
-    sheet.appendRow(['id','name','lat','lng','badge_type','category','must_try','price_range','video_url','map_url','image_url','opening_hours','description','type','phone','address','shopeefood_link','grab_link','parking_info','payment_methods','day_off']);
+    sheet.appendRow(['id','name','lat','lng','badge_type','category','must_try','price_range','video_url','map_url','image_url','opening_hours','description']);
   }
 
   var lat = parseFloat(row[2]);
