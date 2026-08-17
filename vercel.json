@@ -1,1 +1,13 @@
-{"buildCommand":"","outputDirectory":".","framework":null}
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": null,
+  "functions": {
+    "api/proxy.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/proxy", "destination": "/api/proxy.js" }
+  ]
+}
