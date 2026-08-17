@@ -2095,12 +2095,16 @@ function buildShareUrl(type, id){
 }
 
 // Cập nhật SCRIPT_URL bất đồng bộ để chống lỗi cache
-if (typeof google !== 'undefined' && google.script) {
-  google.script.run.withSuccessHandler(function(url) {
-    if (url && url.indexOf('script.google.com') !== -1) {
-      SCRIPT_URL = url;
-    }
-  }).getScriptUrlLive();
+try {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(function(url) {
+      if (url && url.indexOf('script.google.com') !== -1) {
+        SCRIPT_URL = url;
+      }
+    }).getScriptUrlLive();
+  }
+} catch(e) {
+  console.log("getScriptUrlLive not available on this deployment yet.");
 }
 
 function showToast(msg){
