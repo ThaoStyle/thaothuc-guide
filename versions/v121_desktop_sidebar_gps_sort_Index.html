@@ -167,16 +167,13 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
   }
   body.desktop-map-view .desktop-sidebar-header{padding:16px 18px;border-bottom:1px solid rgba(0,0,0,0.06);font-size:15px;font-weight:800;color:var(--nv);}
   body.desktop-map-view .desktop-sidebar-list{padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+  .desktop-loc-card{display:flex;gap:12px;padding:10px;border-radius:12px;cursor:pointer;transition:background .15s;}
+  .desktop-loc-card:hover{background:#F5F3EF;}
+  .desktop-loc-card img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#eee;}
+  .desktop-loc-card-name{font-weight:700;font-size:13px;color:var(--nv);margin-bottom:2px;}
+  .desktop-loc-card-sub{font-size:11px;color:var(--sl);}
   /* search-capsule/filter-pills đã được định vị ở khối DESKTOP MODE phía trên (cạnh nhau) */
 }
-
-/* THẺ QUÁN ĂN (Dùng chung cho cả Mobile và Desktop) */
-.desktop-loc-card{display:flex;gap:12px;padding:10px;border-radius:12px;cursor:pointer;transition:background .15s;}
-.desktop-loc-card:hover{background:#F5F3EF;}
-.desktop-loc-card img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#eee;}
-.desktop-loc-card-name{font-weight:700;font-size:13px;color:var(--nv);margin-bottom:2px;}
-.desktop-loc-card-sub{font-size:11px;color:var(--sl);}
-
 /* MAP SEARCH CAPSULE */
 .search-capsule {
   position: absolute; top: calc(16px + var(--st)); left: 16px; right: 16px; z-index: 400;
@@ -461,16 +458,6 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 .admin-page-btn{background:rgba(255,255,255,.85);border:1px solid rgba(15,23,42,.12);color:var(--nv);padding:8px 16px;border-radius:14px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .admin-page-btn:disabled{opacity:.4;cursor:not-allowed;}
 .admin-page-info{font-size:13px;color:var(--sl);font-weight:600;}
-/* MOBILE LIST */
-.center-pill-btn{position:absolute;bottom:calc(134px + var(--sb));left:0;right:0;margin:0 auto;width:max-content;white-space:nowrap;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,0.05);box-shadow:0 8px 24px rgba(15,23,42,0.12);padding:8px 16px;border-radius:999px;font-size:14px;font-weight:800;color:var(--nv);display:flex;align-items:center;gap:8px;cursor:pointer;transition:transform 0.2s;z-index:9999!important;}
-.center-pill-btn:active{transform:scale(0.96);}
-body.desktop-map-view .center-pill-btn{display:none!important;}
-body.desktop-map-view #mobile-list-sheet{display:none!important;}
-#mobile-list-sheet{padding:0;display:flex;flex-direction:column;overflow:hidden;height:85vh;max-height:85vh;}
-#mobile-list-sheet .sheet-header{padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;}
-#mobile-list-sheet .sheet-title{font-size:17px;font-weight:800;color:var(--nv);}
-#mobile-list-sheet .sheet-close{font-size:24px;color:var(--sl);background:none;border:none;padding:4px;cursor:pointer;line-height:1;}
-#mobile-list-sheet .sheet-content{padding:12px;overflow-y:auto;flex:1;padding-bottom:calc(40px + var(--sb));}
 /* BOTTOM SHEET */
 .bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;background:rgba(255,255,255,.95);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-radius:32px 32px 0 0;border-top:1px solid rgba(255,255,255,.8);box-shadow:0 -16px 60px rgba(15,23,42,.20);padding:22px 22px calc(28px + var(--sb));transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-height:86vh;overflow-y:auto;}
 .bottom-sheet.open{transform:translateY(0);}
@@ -931,14 +918,7 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
 
   <!-- ── DESKTOP SIDEBAR: Danh sách quán (chỉ hiện khi màn hình rộng, JS bật class desktop-map-view) ── -->
   <div class="desktop-sidebar" id="desktop-sidebar">
-    <div class="desktop-sidebar-header" style="display:flex;justify-content:space-between;align-items:center;">
-      <span id="desktop-sidebar-title">Danh sách quán</span>
-      <span id="desktop-sidebar-meta" style="font-size:11px;font-weight:600;color:var(--sl);background:#f1f5f9;padding:3px 8px;border-radius:6px;"></span>
-    </div>
-    <div id="desktop-sidebar-gps-status" style="display:none;align-items:center;gap:6px;padding:6px 12px 6px 10px;background:#dcfce7;margin:8px 10px 0;border-radius:8px;font-size:11px;font-weight:700;color:#166534;">
-      <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;flex-shrink:0;opacity:1;transition:opacity 0.75s ease-in-out;" id="gps-pulse-dot"></div>
-      Đã định vị — sắp xếp theo khoảng cách
-    </div>
+    <div class="desktop-sidebar-header">Quán ăn gần bạn</div>
     <div class="desktop-sidebar-list" id="desktop-sidebar-list"></div>
   </div>
 
@@ -948,10 +928,6 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
       <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
       <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" stroke-opacity=".4"/>
     </svg>
-  </button>
-
-  <button class="center-pill-btn" onclick="openMobileList()" id="mobile-list-btn" style="display:none;">
-    <span style="font-size:16px;">📜</span> Danh sách (<span id="mobile-list-count">0</span>)
   </button>
 
     <!-- ── HOME PAGE OVERLAY ── -->
@@ -1115,22 +1091,6 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
   </div>
 
   
-  <!-- ── MOBILE LIST BOTTOM SHEET ── -->
-  <div class="bottom-sheet" id="mobile-list-sheet">
-    <div style="padding:12px;display:flex;justify-content:center;cursor:pointer;" onclick="closeMobileList()">
-      <div style="width:40px;height:5px;background:#cbd5e1;border-radius:999px;"></div>
-    </div>
-    <div class="sheet-header">
-      <div class="sheet-title">Danh sách quán (<span id="mobile-sheet-count">0</span>)</div>
-      <button class="sheet-close" onclick="closeMobileList()">&times;</button>
-    </div>
-    <div id="mobile-list-gps-status" style="display:none;align-items:center;gap:6px;padding:8px 16px;background:#dcfce7;font-size:11px;font-weight:700;color:#166534;">
-      <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;flex-shrink:0;opacity:1;transition:opacity 0.75s ease-in-out;" id="mobile-gps-pulse-dot"></div>
-      Đã định vị — ưu tiên quán gần nhất
-    </div>
-    <div class="sheet-content" id="mobile-list-content"></div>
-  </div>
-
   <!-- ── LOCATION DETAIL BOTTOM SHEET ── -->
   <div class="bottom-sheet" id="loc-sheet">
     <div class="sheet-drag"></div>
@@ -2065,8 +2025,6 @@ function switchNav(tab, skipAutoFly){
   document.getElementById('map-header').style.display = isMap ? 'flex' : 'none';
   document.getElementById('pill-bar').style.display = isMap ? 'flex' : 'none';
   document.getElementById('locate-btn').style.display = isMap ? 'flex' : 'none';
-  var mobileListBtn = document.getElementById('mobile-list-btn');
-  if(mobileListBtn) { mobileListBtn.style.display = isMap && window.innerWidth < 1024 ? 'flex' : 'none'; }
   if(!isMap) closeSheet();
 
   // ── DESKTOP SPLIT-VIEW: chỉ bật khi đang ở trang map VÀ màn hình rộng ≥1024px ──
@@ -3105,172 +3063,34 @@ function getBadgeIconHtml(badgeType){
 function renderDesktopSidebar(locs){
   var list = document.getElementById('desktop-sidebar-list');
   if(!list) return;
-
-  var meta = document.getElementById('desktop-sidebar-meta');
-  if(meta) meta.textContent = (locs ? locs.length : 0) + ' quán';
-
-  var title = document.getElementById('desktop-sidebar-title');
-  if(title){
-    title.textContent = (activeFilter && activeFilter !== 'all') ? '🔍 ' + activeFilter : '🍜 Danh sách quán';
-  }
-
   if(!Array.isArray(locs) || !locs.length){
-    list.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
+    list.innerHTML = '<div style="padding:20px;color:var(--sl);font-size:14px;">Chưa có dữ liệu quán ăn.</div>';
     return;
   }
 
   var uLat = userMarker ? userMarker.getLatLng().lat : null;
   var uLng = userMarker ? userMarker.getLatLng().lng : null;
-  var hasGPS = !!(uLat && uLng);
 
-  var gpsStatus = document.getElementById('desktop-sidebar-gps-status');
-  if(gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
-
-  var sortedLocs = locs.map(function(loc){
-    var dist = null;
-    if(hasGPS){
-      var c = parseCoord(loc.lat, loc.lng);
-      if(c.lat && c.lng){
-        dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
-      }
-    }
-    return {
-      loc: loc,
-      originalIdx: allLocs.indexOf(loc), // Use global index for navigation
-      dist: dist
-    };
-  });
-
-  if(hasGPS){
-    sortedLocs.sort(function(a, b){
-      var da = a.dist !== null ? a.dist : 99999;
-      var db = b.dist !== null ? b.dist : 99999;
-      return da - db;
-    });
-  }
-
-  var rankColors = ['#f59e0b','#94a3b8','#b45309'];
-
-  list.innerHTML = sortedLocs.map(function(item, i){
-    var loc = item.loc;
-    var idx = item.originalIdx;
-    
+  list.innerHTML = locs.map(function(loc, idx){
     var img = loc.image_url || '';
-    var thumb = img ? '<img src="'+img+'" loading="lazy" onerror="this.style.display=\'none\'"/>' : '<div style="width:52px;height:52px;border-radius:10px;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">' + (loc.emoji || '🍜') + '</div>';
+    var thumb = img ? '<img src="'+img+'" loading="lazy" onerror="this.style.display=\'none\'"/>' : '<div style="width:52px;height:52px;border-radius:10px;background:#eee;flex-shrink:0;"></div>';
 
     var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:'+badge.color+';background:'+badge.color+'20;padding:2px 7px;border-radius:10px;margin-right:6px;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
+    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:'+badge.color+';background:'+badge.color+'1A;padding:2px 7px;border-radius:10px;margin-right:6px;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
 
-    var isNear = false;
     var distHtml = '';
-    if(hasGPS && item.dist !== null){
-      isNear = item.dist < 1;
-      distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
-               + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
-               + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
-    }
-
-    var rankHtml = '';
-    if(hasGPS && i < 3){
-      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:'+rankColors[i]+';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;">'+(i+1)+'</div>';
-    }
-
-    var bgStyle = (isNear && i===0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
-
-    return '<div class="desktop-loc-card" style="position:relative;'+bgStyle+'" onclick="desktopSidebarGoTo('+idx+')">'
-      + rankHtml
-      + thumb
-      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(loc.name||'')+'</span>'+distHtml+'</div>'
-      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+badgeHtml+'<span>'+(loc.category||'')+(loc.must_try ? ' · '+loc.must_try : '')+'</span></div></div>'
-      + '</div>';
-  }).join('');
-}
-
-function openMobileList() { document.getElementById('mobile-list-sheet').classList.add('open'); }
-function closeMobileList() { document.getElementById('mobile-list-sheet').classList.remove('open'); }
-function mobileListGoTo(idx) {
-  closeMobileList();
-  setTimeout(function(){
-    var loc = allLocs[idx];
-    if(!loc) return;
-    var c = parseCoord(loc.lat, loc.lng);
-    if(c.lat && c.lng) map.flyTo([c.lat, c.lng], 16, {animate: true, duration: 0.8});
-    openSheet(loc);
-  }, 350);
-}
-
-function renderMobileList(locs) {
-  var countEl = document.getElementById('mobile-list-count');
-  var countSheetEl = document.getElementById('mobile-sheet-count');
-  var btn = document.getElementById('mobile-list-btn');
-  if(btn) btn.style.display = 'flex';
-  if(countEl) countEl.textContent = locs ? locs.length : 0;
-  if(countSheetEl) countSheetEl.textContent = locs ? locs.length : 0;
-
-  var content = document.getElementById('mobile-list-content');
-  if(!content) return;
-  if(!Array.isArray(locs) || !locs.length){
-    content.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
-    return;
-  }
-  
-  var uLat = userMarker ? userMarker.getLatLng().lat : null;
-  var uLng = userMarker ? userMarker.getLatLng().lng : null;
-  var hasGPS = !!(uLat && uLng);
-
-  var gpsStatus = document.getElementById('mobile-list-gps-status');
-  if(gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
-
-  var sortedLocs = locs.map(function(loc){
-    var dist = null;
-    if(hasGPS){
+    if(uLat && uLng){
       var c = parseCoord(loc.lat, loc.lng);
       if(c.lat && c.lng){
-        dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
+        var d = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
+        distHtml = '<span style="font-size:11px;color:var(--sl);font-weight:600;margin-left:6px;">· '+d.toFixed(1)+' km</span>';
       }
     }
-    return { loc: loc, originalIdx: allLocs.indexOf(loc), dist: dist };
-  });
 
-  if(hasGPS){
-    sortedLocs.sort(function(a, b){
-      var da = a.dist !== null ? a.dist : 99999;
-      var db = b.dist !== null ? b.dist : 99999;
-      return da - db;
-    });
-  }
-
-  var rankColors = ['#f59e0b','#94a3b8','#b45309'];
-  content.innerHTML = sortedLocs.map(function(item, i){
-    var loc = item.loc;
-    var idx = item.originalIdx;
-    var img = loc.image_url || '';
-    var thumb = img ? '<img src="'+img+'" loading="lazy" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>' : '<div style="width:60px;height:60px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">' + (loc.emoji || '🍜') + '</div>';
-
-    var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:'+badge.color+';background:'+badge.color+'20;padding:2px 7px;border-radius:10px;margin-right:6px;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
-
-    var isNear = false;
-    var distHtml = '';
-    if(hasGPS && item.dist !== null){
-      isNear = item.dist < 1;
-      distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
-               + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
-               + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
-    }
-
-    var rankHtml = '';
-    if(hasGPS && i < 3){
-      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:'+rankColors[i]+';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:10;">'+(i+1)+'</div>';
-    }
-
-    var bgStyle = (isNear && i===0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
-
-    return '<div class="desktop-loc-card" style="position:relative;'+bgStyle+'" onclick="mobileListGoTo('+idx+')">'
-      + rankHtml
+    return '<div class="desktop-loc-card" onclick="desktopSidebarGoTo('+idx+')">'
       + thumb
-      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(loc.name||'')+'</span>'+distHtml+'</div>'
-      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+badgeHtml+'<span>'+(loc.category||'')+(loc.must_try ? ' · '+loc.must_try : '')+'</span></div></div>'
+      + '<div><div class="desktop-loc-card-name">'+(loc.name||'')+distHtml+'</div>'
+      + '<div class="desktop-loc-card-sub">'+badgeHtml+(loc.category||'')+(loc.must_try ? ' · '+loc.must_try : '')+'</div></div>'
       + '</div>';
   }).join('');
 }
@@ -3390,24 +3210,11 @@ function filterMap(f, btn, skipFitBounds){
 
   loadMarkers(filtered, skipFitBounds || !!userMarker);
 
-  if(document.body.classList.contains('desktop-map-view')) {
-    renderDesktopSidebar(filtered);
-  }
-  renderMobileList(filtered);
-
   if(map){
     setTimeout(function(){ map.invalidateSize(); }, 50);
     setTimeout(function(){ map.invalidateSize(); }, 250);
   }
 }
-
-// Simple pulse animation for GPS dot since we can't inject @keyframes easily here without touching global CSS
-setInterval(function(){
-  var dot = document.getElementById('gps-pulse-dot');
-  var mdot = document.getElementById('mobile-gps-pulse-dot');
-  if(dot) dot.style.opacity = dot.style.opacity === '0.4' ? '1' : '0.4';
-  if(mdot) mdot.style.opacity = mdot.style.opacity === '0.4' ? '1' : '0.4';
-}, 750);
 
 // ── PWA PROMPT
 var deferredPrompt=null;

@@ -330,76 +330,118 @@ function getSuggestions() {
   }
 }
 
-// ── AI CHATBOT ENGINE ──
-
+// ── AI CHATBOT ENGINE (Dùng generateContent - ỔN ĐỊNH, KHÔNG DÙNG INTERACTIONS API) ──
+ 
 function setGeminiAPIKey(apiKey) {
-  var props = PropertiesService.getScriptProperties();
-  props.setProperty('GEMINI_API_KEY', apiKey);
-  return { success: true, message: 'API Key saved securely!' };
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('GEMINI_API_KEY', apiKey);
+  return { success: true, message: 'API Key saved securely!' };
 }
-
+ 
+var GEMINI_MODEL = 'gemini-3.1-flash-lite';
+ 
 function askGeminiAI(userQuery, userLat, userLng, activeTab) {
-  try {
-    var props = PropertiesService.getScriptProperties();
-    var apiKey = props.getProperty('GEMINI_API_KEY');
-    var locs = getFoodLocations(); // Get the context data
-    
-    if (!apiKey) {
-      throw new Error('No API Key');
-    }
-
-    // Build the context string
-    var contextData = locs.map(function(l) {
-      return "[" + l.name + "] (" + l.category + ") - Món khuyên thử: " + l.must_try + " (Lat: " + l.lat + ", Lng: " + l.lng + ")";
-    }).join("\n");
-
-    var systemInstruction = "You are 'Thao Thức AI' 🤖 — a friendly, witty Vietnamese culinary guide for Thao Thức Guide. Address yourself as 'tớ' and user as 'bạn'. Keep replies under 3 concise sentences. Here is the list of verified locations you can recommend:\n\n" + contextData;
-
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
-    var payload = {
-      "system_instruction": {
-        "parts": [{ "text": systemInstruction }]
-      },
-      "contents": [{
-        "parts": [{
-          "text": "User asks: " + userQuery + (userLat ? " (User Location: " + userLat + ", " + userLng + ")" : "")
-        }]
-      }],
-      "generationConfig": {
-        "temperature": 0.7,
-        "maxOutputTokens": 256
-      }
-    };
-
-    var options = {
-      "method": "post",
-      "contentType": "application/json",
-      "payload": JSON.stringify(payload),
-      "muteHttpExceptions": true
-    };
-
-    var response = UrlFetchApp.fetch(url, options);
-    var json = JSON.parse(response.getContentText());
-
-    if (json.error || !json.candidates || json.candidates.length === 0) {
-      throw new Error('Gemini API Error');
-    }
-
-    var textReply = json.candidates[0].content.parts[0].text;
-    return { success: true, reply: textReply };
-
-  } catch (e) {
-    // SMART FALLBACK MECHANISM
-    var fallbackLocs = getFoodLocations();
-    var randomSpot = fallbackLocs[Math.floor(Math.random() * fallbackLocs.length)];
-    if (!randomSpot) randomSpot = { name: "Quán ngon", must_try: "Đặc sản Đà Nẵng", lat: 16.0544, lng: 108.2022 };
-    
-    var fallbackMsg = "Tớ đang bị quá tải nhẹ một xíu 🤖! Nhưng tớ bật mí ngay cho bạn quán ngon chuẩn vị này từ Thao Thức Guide nè: " + randomSpot.name + " - " + randomSpot.must_try + ". Bạn ghé thử nhé! (Lat: " + randomSpot.lat + ", Lng: " + randomSpot.lng + ")";
-    
-    return { success: true, reply: fallbackMsg, isFallback: true };
-  }
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var apiKey = (props.getProperty('GEMINI_API_KEY') || '').trim();
+    var locs = getFoodLocations();
+ 
+    if (!apiKey) {
+      throw new Error('No API Key');
+    }
+ 
+    var contextData = locs.map(function(l) {
+      return "[" + l.name + "] (" + l.category + ") - Món khuyên thử: " + l.must_try + " (Lat: " + l.lat + ", Lng: " + l.lng + ")";
+    }).join("\n");
+ 
+    var systemInstruction = "You are 'Thao Thức AI' 🤖 — a friendly, witty Vietnamese culinary guide for Thao Thức Guide. Address yourself as 'tớ' and user as 'bạn'. Keep replies under 3 concise sentences. Here is the list of verified locations you can recommend:\n\n" + contextData;
+ 
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent";
+ 
+    var payload = {
+      "systemInstruction": {
+        "parts": [{ "text": systemInstruction }]
+      },
+      "contents": [{
+        "role": "user",
+        "parts": [{
+          "text": "User asks: " + userQuery + (userLat ? " (User Location: " + userLat + ", " + userLng + ")" : "")
+        }]
+      }],
+      "generationConfig": {
+        "temperature": 0.7,
+        "maxOutputTokens": 256
+      }
+    };
+ 
+    var options = {
+      "method": "post",
+      "contentType": "application/json",
+      "headers": {
+        "x-goog-api-key": apiKey
+      },
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+    };
+ 
+    var response = UrlFetchApp.fetch(url, options);
+    var statusCode = response.getResponseCode();
+    var jsonText = response.getContentText();
+ 
+    Logger.log('Gemini statusCode: ' + statusCode);
+    Logger.log('Gemini raw response: ' + jsonText);
+ 
+    if (statusCode !== 200) {
+      throw new Error('GeminiHTTPError (' + statusCode + '): ' + jsonText);
+    }
+ 
+    var json = JSON.parse(jsonText);
+ 
+    if (json.error) {
+      throw new Error("GeminiAPIError: " + JSON.stringify(json.error));
+    }
+ 
+    if (!json.candidates || json.candidates.length === 0) {
+      throw new Error('EmptyCandidates: ' + jsonText);
+    }
+ 
+    var candidate = json.candidates[0];
+    if (!candidate.content || !candidate.content.parts || !candidate.content.parts[0]) {
+      throw new Error('NoTextInCandidate: ' + JSON.stringify(candidate));
 }
-
+ 
+    var textReply = candidate.content.parts[0].text;
+    return { success: true, reply: textReply };
+ 
+  } catch (e) {
+    Logger.log('Lỗi askGeminiAI: ' + e.message);
+ 
+    var fallbackLocs = getFoodLocations();
+    var randomSpot = fallbackLocs[Math.floor(Math.random() * fallbackLocs.length)];
+    if (!randomSpot) randomSpot = { name: "Quán ngon", must_try: "Đặc sản Đà Nẵng", lat: 16.0544, lng: 108.2022 };
+ 
+    var fallbackMsg = "Tớ đang bị quá tải nhẹ một xíu 🤖! (LỖI: " + e.message + ") Nhưng tớ bật mí ngay cho bạn quán ngon chuẩn vị này từ Thao Thức Guide nè: " + randomSpot.name + " - " + randomSpot.must_try + ". Bạn ghé thử nhé!";
+ 
+    return { success: true, reply: fallbackMsg, isFallback: true };
+  }
+}
+ 
+// ── HÀM TEST ──
+function testAskGeminiAI() {
+  var result = askGeminiAI('Gợi ý quán bún gần đây', 16.0544, 108.2022, null);
+  Logger.log(JSON.stringify(result));
+}
+ 
+// ── KIỂM TRA MODEL KHẢ DỤNG ──
+function checkAvailableModels() {
+  var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  var url = "https://generativelanguage.googleapis.com/v1beta/models";
+  var response = UrlFetchApp.fetch(url, {
+    headers: { 'x-goog-api-key': apiKey },
+    muteHttpExceptions: true
+  });
+  Logger.log(response.getContentText());
+}
 // ── CÀI ĐẶT API KEY (CHẠY 1 LẦN) ──
 function runOnceToSetAPIKey() {
   // BƯỚC 1: Dán API Key của bạn vào giữa 2 dấu nháy kép bên dưới

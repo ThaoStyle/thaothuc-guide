@@ -78,3 +78,27 @@ thaothuc-guide/
 Khi bắt đầu phiên trò chuyện mới, bạn chỉ cần gửi prompt sau:
 
 > *"Hãy đọc file `AGENTS.md` trong project `thaothuc-guide` để nắm toàn bộ ngữ cảnh, quy chuẩn UI Glassmorphism và kiến trúc hệ thống. Chúng ta chuẩn bị phát triển tiếp [TÊN TÍNH NĂNG MỚI]."*
+
+---
+
+## 7. SKILL ROUTING — WORKFLOW CHO DỰ ÁN NÀY
+
+AI phải tự động kích hoạt đúng skill theo từng loại yêu cầu, KHÔNG đợi người dùng nhớ tên skill:
+
+| Tình huống | Trigger từ người dùng | Skill cần dùng |
+|---|---|---|
+| Bắt đầu tính năng mới | "làm thêm X", "thêm tính năng Y", "muốn có Z" | `grill-with-docs` → phỏng vấn + lập docs |
+| Gặp lỗi / bug | paste lỗi, "không chạy", "bị crash", "lỗi" | `diagnosing-bugs` → đi theo phase |
+| Lên kế hoạch | "plan", "kế hoạch", "bước tiếp theo" | `to-spec` → `to-tickets` |
+| Nghiên cứu API/docs | "cách làm X", "API nào", "tra cứu" | `research` → background agent |
+| Thử nghiệm UI | "thử xem", "prototype", "trông thế nào" | `prototype` → HTML throwaway |
+| Trước khi deploy | "deploy", "push", "xong rồi" | `code-review` → kiểm tra chuẩn |
+| Logic phức tạp | filter, sort, state, calculation | đề xuất `tdd` |
+| Session dài | > 20 turns, "mai làm tiếp" | `handoff` → tóm tắt context |
+| File phình to | Index.html > 3000 dòng, muốn refactor | `improve-codebase-architecture` |
+
+### Quy tắc bắt buộc với dự án Thao Thức Guide:
+- **Không bao giờ sửa code khi chưa backup** → luôn backup vào `versions/vXX_description` trước.
+- **Không sửa `Index.html` bằng `Set-Content` / `WriteAllLines`** → luôn dùng `replace_file_content` tool.
+- **Không deploy khi chưa kiểm tra encoding tiếng Việt** → kiểm tra UTF8-NoBOM.
+- **Không gọi `flyTo` khi đang chạy `filterMap`** → xem mục 5.2 để hiểu lý do.
