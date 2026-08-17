@@ -2062,7 +2062,25 @@ function collapseNav(){ var n=document.getElementById('main-bottom-nav'); if(n) 
 function navTap(tab){ switchNav(tab); expandNav(); }
 ['page-home','page-cook','page-admin'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el) el.addEventListener('scroll', collapseNav, {passive:true});
+  if(el) {
+    var lastScrollTop = 0;
+    el.addEventListener('scroll', function() {
+      var st = el.scrollTop;
+      if (st <= 0) {
+        expandNav();
+        lastScrollTop = 0;
+        return;
+      }
+      if (Math.abs(lastScrollTop - st) <= 5) return; // Bỏ qua cuộn quá nhẹ
+      
+      if (st > lastScrollTop) {
+        collapseNav(); // Cuộn xuống (kéo lên) -> đọc nội dung -> thu nhỏ
+      } else {
+        expandNav();   // Cuộn lên (kéo xuống) -> về đầu trang -> phóng to
+      }
+      lastScrollTop = st;
+    }, {passive:true});
+  }
 });
 
 // ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
