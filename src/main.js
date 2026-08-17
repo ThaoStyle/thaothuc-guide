@@ -107,16 +107,30 @@ var SCRIPT_URL     = API_URL || window.location.href;
     get: function(target, methodName) {
       if (methodName === 'withSuccessHandler') {
         return function(successCb) {
-          return new Proxy({}, {
-            get: function(t2, gasMethod) {
-              return function() {
-                var args = Array.prototype.slice.call(arguments);
-                shimCall(gasMethod, args).then(function(result) {
-                  if (successCb) successCb(result);
-                });
-              };
-            }
-          });
+          // Tạo proxy hỗ trợ chain: .withSuccessHandler(fn).withFailureHandler(fn).method()
+          var makeChainProxy = function(sc, fc) {
+            return new Proxy({}, {
+              get: function(t2, gasMethod) {
+                // Hỗ trợ chain thêm withFailureHandler
+                if (gasMethod === 'withFailureHandler') {
+                  return function(failureCb) { return makeChainProxy(sc, failureCb); };
+                }
+                if (gasMethod === 'withSuccessHandler') {
+                  return function(newSc) { return makeChainProxy(newSc, fc); };
+                }
+                // Gọi API thật
+                return function() {
+                  var args = Array.prototype.slice.call(arguments);
+                  shimCall(gasMethod, args).then(function(result) {
+                    if (sc) sc(result);
+                  }).catch(function(e) {
+                    if (fc) fc(e); else console.error('[SHIM] Failure:', e);
+                  });
+                };
+              }
+            });
+          };
+          return makeChainProxy(successCb, null);
         };
       }
       if (methodName === 'withFailureHandler') {
