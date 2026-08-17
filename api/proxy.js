@@ -43,9 +43,9 @@ module.exports = async function handler(req, res) {
       const data = JSON.parse(text);
       return res.status(200).json(data);
     } catch {
-      // GAS trả về HTML (lỗi deploy) — log để debug
-      console.error('[Proxy] GAS returned non-JSON:', text.substring(0, 200));
-      return res.status(502).json({ error: 'GAS returned non-JSON', preview: text.substring(0, 200) });
+      console.error('[Proxy] GAS returned non-JSON. First 500 chars:', text.substring(0, 500));
+      // Trả thẳng nguyên văn response của GAS ra frontend (dù là HTML) để debug
+      return res.status(400).send(`--- GAS Error HTML Preview ---\n\n${text}`);
     }
   } catch (error) {
     console.error('[Proxy Error]', error);
