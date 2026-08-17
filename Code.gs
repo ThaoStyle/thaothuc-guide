@@ -1,6 +1,9 @@
 function doGet(e) {
-  return HtmlService.createTemplateFromFile('Index')
-    .evaluate()
+  // Deep-link: ?id=<id location hoặc recipe>&type=recipe (bỏ &type nếu là địa điểm)
+  var tpl = HtmlService.createTemplateFromFile('Index');
+  tpl.deepLinkId = (e && e.parameter && e.parameter.id) ? String(e.parameter.id) : '';
+  tpl.deepLinkType = (e && e.parameter && e.parameter.type) ? String(e.parameter.type) : '';
+  return tpl.evaluate()
     .setTitle('Thao Thức Guide – Cẩm Nang Ẩm Thực & Lifestyle')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover');
