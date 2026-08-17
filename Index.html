@@ -2087,19 +2087,20 @@ var deepLinkLocResolved = false; // đảm bảo deep-link địa điểm chỉ 
 function buildShareUrl(type, id){
   var base = window.location.origin + window.location.pathname;
   
-  // 1. Ưu tiên SCRIPT_URL từ backend truyền xuống
-  if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
+  if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL && SCRIPT_URL.indexOf('script.google.com') !== -1) {
     base = SCRIPT_URL;
   }
-  // 2. Fallback tự động thông minh: Dùng document.referrer (link mẹ chứa iframe)
-  else if (base.indexOf('googleusercontent.com') !== -1) {
-    var ref = document.referrer || "";
-    if (ref.indexOf('script.google.com') !== -1 || ref.indexOf('script.google.a.com') !== -1) {
-      base = ref.split('?')[0]; // Lấy link gốc, cắt bỏ các query parameter cũ
-    }
-  }
-
+  
   return base + '?id=' + encodeURIComponent(id) + (type === 'recipe' ? '&type=recipe' : '');
+}
+
+// Cập nhật SCRIPT_URL bất đồng bộ để chống lỗi cache
+if (typeof google !== 'undefined' && google.script) {
+  google.script.run.withSuccessHandler(function(url) {
+    if (url && url.indexOf('script.google.com') !== -1) {
+      SCRIPT_URL = url;
+    }
+  }).getScriptUrlLive();
 }
 
 function showToast(msg){

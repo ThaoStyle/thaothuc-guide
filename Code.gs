@@ -513,3 +513,8 @@ function runOnceToSetAPIKey() {
   // BƯỚC 2: Chọn hàm "runOnceToSetAPIKey" ở thanh công cụ bên trên và bấm Run (Chạy)
   setGeminiAPIKey(myKey);
 }
+
+// ── LẤY URL ĐỂ SHARE ──
+function getScriptUrlLive() {
+  return ScriptApp.getService().getUrl();
+}
