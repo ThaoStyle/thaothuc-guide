@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover"/>
 <title>Thao Thức Guide – Cẩm Nang Ẩm Thực & Lifestyle</title>
 <meta name="description" content="Thao Thức Guide - Cẩm nang ẩm thực, nấu ăn Chồng Cook Vợ Look và địa điểm du lịch"/>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- PWA META -->
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -77,7 +78,7 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
   body.desktop-mode{padding-left:88px;}
   body.desktop-mode .app-viewport{margin-left:0;}
   body.desktop-mode .bottom-nav{
-    position:fixed !important;left:0;top:0;right:auto;bottom:auto;
+    position:fixed !important;left:0;top:0;right:auto;bottom:auto;transform:none !important;
     width:88px;height:100vh;border-radius:0 !important;
     display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
     padding:28px 8px;gap:10px;z-index:9000;
@@ -86,7 +87,18 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
     border:none;border-right:1px solid rgba(0,0,0,0.06);
     backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
   }
-  body.desktop-mode .bottom-nav .nav-item{width:64px;}
+  body.desktop-mode .bottom-nav .nav-item{
+    width:64px;height:64px;border-radius:20px;font-size:22px;
+  }
+  body.desktop-mode .bottom-nav .nav-item i{font-size:26px;margin-top:0;}
+  body.desktop-mode .bottom-nav .nav-item span{
+    display:block;max-height:none;opacity:1;overflow:visible;white-space:normal;
+    font-size:10.5px;font-weight:500;margin-top:3px;
+  }
+  body.desktop-mode .bottom-nav .nav-item.active span{font-weight:700;}
+  body.desktop-mode .bottom-nav .nav-item.active{background:linear-gradient(135deg,rgba(255,112,67,.15),rgba(230,74,25,.1));}
+  body.desktop-mode .bottom-nav.expanded{height:100vh;}
+  body.desktop-mode .bottom-nav.expanded .nav-item{width:64px;height:64px;border-radius:20px;}
 
   /* Mở rộng khung cho Home/Cook/Admin ở desktop (full chiều rộng còn lại sau rail trái) */
   body.desktop-mode .app-viewport{
@@ -279,7 +291,7 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 #app-splash .splash-sub{font-size:13px;color:var(--sl);font-weight:500;}
 /* GPS FAB */
 .locate-fab{
-  position:absolute;bottom:calc(124px + var(--sb));right:16px;z-index:400;
+  position:absolute;bottom:calc(104px + var(--sb));right:16px;z-index:400;
   width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,#FF7043,#E64A19);
   border:none;box-shadow:0 8px 24px rgba(255,112,67,.35),0 0 0 3px rgba(255,255,255,.5);
@@ -308,26 +320,30 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 .map-pin-head.red{background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;box-shadow:0 6px 18px rgba(239,68,68,.35);}
 .map-pin-arrow.red{border-top-color:#b91c1c;}
 .desktop-sidebar{display:none;}
-/* BOTTOM NAV */
+/* BOTTOM NAV — gọn mặc định (icon-only); bấm 1 tab -> CẢ THANH phình cao + hiện label;
+   cuộn trang / kéo bản đồ -> tự thu gọn lại (xem collapseNav/expandNav trong JS) */
 .bottom-nav{
-  position:absolute;bottom:calc(12px + var(--sb));left:12px;right:12px;z-index:450;
+  position:fixed;bottom:calc(16px + var(--sb));left:50%;transform:translateX(-50%);
+  max-width:min(360px,calc(100% - 32px));height:56px;
   background:rgba(255,255,255,0.65) !important;
   backdrop-filter:blur(25px) !important;
   -webkit-backdrop-filter:blur(25px) !important;
   border:1px solid rgba(255,255,255,0.8);
-  border-radius:100px !important;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.95) !important;
-  padding:8px 10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;align-items:center;min-height:80px;transition:all .3s;
+  border-radius:999px !important;
+  box-shadow:0 8px 24px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.95) !important;
+padding:0 8px;display:flex;justify-content:center;align-items:center;gap:4px;z-index:450;
+  transition:height .3s cubic-bezier(.2,.8,.2,1);
 }
-.bottom-nav.admin-mode{grid-template-columns:1fr 1fr 1fr 1fr;}
-.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sl);cursor:pointer;padding:6px 4px;border-radius:18px;transition:all .2s;border:none;background:none;width:100%;}
-.nav-icon-box{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .25s;margin:0 auto;}
-.nav-item svg{width:28px;height:28px;fill:currentColor;stroke:none;}
-.nav-item span{margin-top:3px;font-size:11px;font-weight:400;text-align:center;display:block;}
-.nav-item.active{color:#FF7043;}
-.nav-item.active .nav-icon-box{background:linear-gradient(135deg,rgba(255,112,67,.15),rgba(230,74,25,.1));}
-.nav-item.active svg{fill:#FF7043;}
-.nav-item.active span{font-weight:600;}
+.bottom-nav.expanded{height:74px;}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#64748b;cursor:pointer;border:none;background:transparent;width:44px;height:40px;border-radius:999px;transition:background .3s ease,color .3s ease,width .3s ease,height .3s ease;}
+.nav-item i{font-size:22px;line-height:1;transition:font-size .25s ease,margin-top .25s ease;}
+.nav-item span{display:block;max-height:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:10px;font-weight:600;letter-spacing:-.1px;margin-top:0;transition:max-height .26s ease,opacity .2s ease,margin-top .26s ease;}
+.nav-item.active{color:#ea580c;}
+.bottom-nav:not(.expanded) .nav-item.active{background:rgba(249,115,22,.12);}
+.bottom-nav.expanded .nav-item{width:66px;height:52px;border-radius:999px;}
+.bottom-nav.expanded .nav-item i{font-size:20px;margin-top:3px;}
+.bottom-nav.expanded .nav-item span{max-height:12px;opacity:1;margin-top:2px;}
+.bottom-nav.expanded .nav-item.active{background:linear-gradient(135deg,rgba(255,112,67,.18),rgba(230,74,25,.12));}
 /* PAGE OVERLAYS */
 .page-overlay{position:absolute;inset:0;z-index:350;background:linear-gradient(160deg,#F7F4F0 0%,#ECF0F7 100%);overflow-y:auto;padding-top:calc(12px + var(--st));padding-bottom:calc(104px + var(--sb));display:none;flex-direction:column;}
 .page-overlay.show{display:flex;}
@@ -462,7 +478,7 @@ body{background:#D4CECA;font-family:Inter,system-ui,-apple-system,sans-serif;col
 .admin-page-btn:disabled{opacity:.4;cursor:not-allowed;}
 .admin-page-info{font-size:13px;color:var(--sl);font-weight:600;}
 /* MOBILE LIST */
-.center-pill-btn{position:absolute;bottom:calc(134px + var(--sb));left:0;right:0;margin:0 auto;width:max-content;white-space:nowrap;background:rgba(255,255,255,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.8);box-shadow:0 12px 32px rgba(15,23,42,0.15);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:700;color:var(--nv);display:flex;align-items:center;gap:8px;cursor:pointer;transition:transform 0.2s;z-index:9999!important;}
+.center-pill-btn{position:absolute;bottom:calc(114px + var(--sb));left:0;right:0;margin:0 auto;width:max-content;white-space:nowrap;background:rgba(255,255,255,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.8);box-shadow:0 12px 32px rgba(15,23,42,0.15);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:700;color:var(--nv);display:flex;align-items:center;gap:8px;cursor:pointer;transition:transform 0.2s;z-index:9999!important;}
 .center-pill-btn:active{transform:scale(0.96);}
 body.desktop-map-view .center-pill-btn{display:none!important;}
 body.desktop-map-view #mobile-list-sheet{display:none!important;}
@@ -546,7 +562,7 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
 /* ── AI CHATBOT CSS ── */
 .ai-fab {
   position: fixed;
-  bottom: calc(var(--sb) + 196px); /* perfectly above locate btn */
+  bottom: calc(var(--sb) + 176px); /* perfectly above locate btn */
   right: 16px;
   width: 56px;
   height: 56px;
@@ -1202,33 +1218,21 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
 
   <!-- ── FLOATING ELEVATED BOTTOM NAVIGATION ── -->
   <nav class="bottom-nav" id="main-bottom-nav">
-    <button class="nav-item" id="bnav-home" onclick="switchNav('home')">
-      <div class="nav-icon-box">
-        <!-- Home filled icon -->
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      </div>
+    <button class="nav-item" id="bnav-home" onclick="navTap('home')" data-icon="house">
+      <i class="ph ph-house"></i>
       <span>Trang Chủ</span>
     </button>
-    <button class="nav-item active" id="bnav-map" onclick="switchNav('map')">
-      <div class="nav-icon-box">
-        <!-- Map filled icon -->
-        <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-      </div>
+    <button class="nav-item active" id="bnav-map" onclick="navTap('map')" data-icon="map-trifold">
+      <i class="ph-fill ph-map-trifold"></i>
       <span id="t-bnav-map">Bản Đồ</span>
     </button>
-    <button class="nav-item" id="bnav-cook" onclick="switchNav('cook')">
-      <div class="nav-icon-box">
-        <!-- Restaurant/cook filled icon -->
-        <svg viewBox="0 0 24 24"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-4.5-15.03-5-15.03 0h15.03zM1.02 17h15v2h-15z"/></svg>
-      </div>
+    <button class="nav-item" id="bnav-cook" onclick="navTap('cook')" data-icon="bowl-food">
+      <i class="ph ph-bowl-food"></i>
       <span id="t-bnav-cook">Nấu Ăn</span>
     </button>
     <!-- TAB THỨ 4: CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP GOOGLE ACCOUNT ADMIN -->
-    <button class="nav-item" id="bnav-admin" onclick="switchNav('admin')" style="display:none;">
-      <div class="nav-icon-box">
-        <!-- Settings/admin filled icon -->
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      </div>
+    <button class="nav-item" id="bnav-admin" onclick="navTap('admin')" data-icon="sliders-horizontal" style="display:none;">
+      <i class="ph ph-sliders-horizontal"></i>
       <span>Admin</span>
     </button>
   </nav>
@@ -2052,11 +2056,25 @@ function openRecipeDetail(id){
   openModal('m-recipe-detail');
 }
 
+// ── BOTTOM NAV: gọn mặc định; bấm vào tab -> cả thanh phình hiện label; cuộn trang/kéo map -> thu gọn lại
+function expandNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.add('expanded'); }
+function collapseNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.remove('expanded'); }
+function navTap(tab){ switchNav(tab); expandNav(); }
+['page-home','page-cook','page-admin'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('scroll', collapseNav, {passive:true});
+});
+
 // ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
 function switchNav(tab, skipAutoFly){
   ['home','map','cook','admin'].forEach(function(k){
     var btn=document.getElementById('bnav-'+k);
-    if(btn) btn.classList.toggle('active',k===tab);
+    if(btn){
+      var isActive = (k===tab);
+      btn.classList.toggle('active', isActive);
+      var icon = btn.querySelector('i');
+      if(icon) icon.className = (isActive ? 'ph-fill ph-' : 'ph ph-') + btn.dataset.icon;
+    }
     var p=document.getElementById('page-'+k);
     if(p) p.classList.toggle('show',k===tab);
   });
@@ -2341,7 +2359,7 @@ function locateMe(){
       // Smooth flyTo animation to user's exact GPS coordinates
       map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
 
-      renderDesktopSidebar(allLocs); // cập nhật lại khoảng cách trong danh sách bên phải
+      filterMap(activeFilter, null, true); // cập nhật khoảng cách cho cả desktop & mobile
 
       setTimeout(function(){ map.invalidateSize(); }, 300);
     },
@@ -2964,6 +2982,8 @@ function initMap(){
   tileLayer.addTo(map);
 
   map.on('click',function(){ closeSheet(); });
+  map.on('dragstart',function(){ collapseNav(); });
+  map.on('zoomstart',function(){ collapseNav(); });
 
   loadData();
   checkAdminAuth();
@@ -3073,6 +3093,7 @@ function onData(d){
   }
   renderHomeLatestCards();
   renderDesktopSidebar(d);
+  renderMobileList(d);
 }
 
 // ── DESKTOP SIDEBAR: render danh sách quán bên phải (chỉ có ý nghĩa khi màn hình rộng, mobile không bị ảnh hưởng vì CSS ẩn sẵn) ──
