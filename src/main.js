@@ -2606,3 +2606,34 @@ function sendAiMsg(overrideText) {
     }, 1000);
   }
 }
+// --- VITE ES MODULE FIX: ATTACH GLOBALS FOR INLINE HTML HANDLERS ---
+window.clearImageSelect = clearImageSelect;
+window.closeMobileList = closeMobileList;
+window.closeModal = closeModal;
+window.closeSheet = closeSheet;
+window.dismissPWA = dismissPWA;
+window.doAdminAdd = doAdminAdd;
+window.doAdminAddRecipe = doAdminAddRecipe;
+window.doAdminUpdateRecipe = doAdminUpdateRecipe;
+window.doSuggest = doSuggest;
+window.filterRecipesByCategory = filterRecipesByCategory;
+window.gpsForSuggest = gpsForSuggest;
+window.handleImageFileSelect = handleImageFileSelect;
+window.handleMapSearch = handleMapSearch;
+window.installPWA = installPWA;
+window.locateMe = locateMe;
+window.navTap = navTap;
+window.openAdminModal = openAdminModal;
+window.openMobileList = openMobileList;
+window.openModal = openModal;
+window.saveAdminEdit = saveAdminEdit;
+window.sendAiMsg = sendAiMsg;
+window.setAdminLocFilter = setAdminLocFilter;
+window.setAdminRcpFilter = setAdminRcpFilter;
+window.shareCurrentLocation = shareCurrentLocation;
+window.shareCurrentRecipe = shareCurrentRecipe;
+window.switchAdminSec = switchAdminSec;
+window.switchNav = switchNav;
+window.toggleAiDrawer = toggleAiDrawer;
+window.toggleLang = toggleLang;
+// --------------------------------------------------------------------
