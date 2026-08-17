@@ -6,7 +6,7 @@
 // ── API CONFIG ──
 // Điền URL Web App GAS mới vào đây sau khi bạn deploy backend-api/Code.gs
 // Để trống ('') sẽ dùng mock data để chạy local preview
-const API_URL = 'https://script.google.com/macros/s/AKfycbylLfGUGxxTOk6S8G4kweo36MNJpiKH7EZ33-dKHTSInd3fq6ZlDPoTQrN-XX38uvQJ/exec';
+const API_URL = '/api/proxy'; // Vercel proxy - tranh CORS
 
 // Deep link support (thay cho GAS scriptlet)
 var DEEP_LINK_ID   = new URLSearchParams(window.location.search).get('id')   || '';
