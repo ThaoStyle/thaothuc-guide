@@ -3,6 +3,7 @@ function doGet(e) {
   var tpl = HtmlService.createTemplateFromFile('Index');
   tpl.deepLinkId = (e && e.parameter && e.parameter.id) ? String(e.parameter.id) : '';
   tpl.deepLinkType = (e && e.parameter && e.parameter.type) ? String(e.parameter.type) : '';
+  tpl.scriptUrl = ScriptApp.getService().getUrl();
   return tpl.evaluate()
     .setTitle('Thao Thức Guide – Cẩm Nang Ẩm Thực & Lifestyle')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)

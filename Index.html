@@ -11,6 +11,7 @@
 <script>
 var DEEP_LINK_ID = <?!= JSON.stringify(deepLinkId || '') ?>;
 var DEEP_LINK_TYPE = <?!= JSON.stringify(deepLinkType || '') ?>;
+var SCRIPT_URL = <?!= typeof scriptUrl !== 'undefined' ? JSON.stringify(scriptUrl) : '""' ?>;
 </script>
 
 <!-- PWA META -->
@@ -2084,7 +2085,12 @@ var currentSheetRecipeId = null; // id công thức đang mở trong modal
 var deepLinkLocResolved = false; // đảm bảo deep-link địa điểm chỉ tự mở đúng 1 lần
 
 function buildShareUrl(type, id){
+  // Ưu tiên SCRIPT_URL chuẩn nếu đang chạy trong iframe googleusercontent
+  // Nếu có custom domain (không chứa googleusercontent), giữ nguyên window.location
   var base = window.location.origin + window.location.pathname;
+  if(base.indexOf('googleusercontent.com') !== -1 && SCRIPT_URL) {
+    base = SCRIPT_URL;
+  }
   return base + '?id=' + encodeURIComponent(id) + (type === 'recipe' ? '&type=recipe' : '');
 }
 
