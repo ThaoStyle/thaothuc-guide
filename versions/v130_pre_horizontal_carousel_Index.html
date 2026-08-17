@@ -1009,21 +1009,10 @@ body.desktop-mode .sheet-share-btn{ position:absolute; top:14px; right:56px; z-i
         <div class="h-sec-accent"></div>
         <div class="h-sec-title">QUÁN NGON CẬP NHẬT</div>
       </div>
-      <div class="h-carousel-container" id="home-loc-cards">
+      <div class="h-carousel-container" id="home-dynamic-cards">
         <!-- Cards injected by JS -->
       </div>
-      <div class="h-carousel-dots" id="home-loc-dots">
-        <!-- Dots injected by JS -->
-      </div>
-
-      <div class="h-sec-title-wrap" style="margin-top: 24px;">
-        <div class="h-sec-accent" style="background:#FFB74D;"></div>
-        <div class="h-sec-title">MÓN MỚI LÊN SÓNG</div>
-      </div>
-      <div class="h-carousel-container" id="home-recipe-cards">
-        <!-- Cards injected by JS -->
-      </div>
-      <div class="h-carousel-dots" id="home-recipe-dots">
+      <div class="h-carousel-dots" id="h-carousel-dots">
         <!-- Dots injected by JS -->
       </div>
 
@@ -3589,168 +3578,54 @@ function dismissPWA(){document.getElementById('pwa-banner').classList.remove('sh
 function chkOnline(){document.getElementById('offline-bar').style.display=navigator.onLine?'none':'block';}
 window.addEventListener('online',chkOnline); window.addEventListener('offline',chkOnline); chkOnline();
 
-var globalCarouselTimer = null;
-var carouselInstances = [];
-
 // ── HOME PAGE CARDS RENDER
 function renderHomeLatestCards(){
-  var locContainer = document.getElementById('home-loc-cards');
-  var recipeContainer = document.getElementById('home-recipe-cards');
-  
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
-  carouselInstances = [];
-  
-  // 1. Latest Locations (Map)
-  if(locContainer && typeof allLocs!=='undefined' && allLocs.length > 0){
-    var html = '';
-    var count = Math.min(4, allLocs.length);
-    for(var i=0; i<count; i++){
-      var latestLoc = allLocs[allLocs.length - 1 - i];
-      
-      var badgeStat = '📍 Thao Thức Spot';
-      if (WEBP_ICONS[latestLoc.badge_type] && WEBP_ICONS[latestLoc.badge_type].length > 50) {
-        var badgeText = (latestLoc.badge_type === 'heritage') ? 'Thao Thức Heritage' : (latestLoc.badge_type === 'approved') ? 'Thao Thức Approved' : (latestLoc.badge_type === 'pending') ? 'Chờ duyệt' : 'Thao Thức Spot';
-        badgeStat = '<img src="' + WEBP_ICONS[latestLoc.badge_type] + '" style="height:14px;vertical-align:-2px;margin-right:4px;" alt="badge">' + badgeText;
-      } else {
-        if(latestLoc.badge_type === 'heritage') badgeStat = '🏆 Thao Thức Heritage';
-        else if(latestLoc.badge_type === 'approved') badgeStat = '✔️ Thao Thức Approved';
-        else if(latestLoc.badge_type === 'pending') badgeStat = '⏳ Chờ duyệt';
-      }
-
-      var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
-      
-      html += '<div class="home-featured-card" onclick="openHomeCardLoc(\''+latestLoc.id+'\')">'
-        + '<div class="hf-img-wrap"><img src="'+imgUrl+'" alt="Loc"/>'
-        + (i===0 ? '<span class="hf-badge">🔴 MỚI REVIEW</span>' : '')
-        + '</div>'
-        + '<div class="hf-body">'
-        + '<div class="hf-title">'+latestLoc.name+'</div>'
-        + '<div class="hf-sub">'+badgeStat+' • '+(latestLoc.category||'Khác')+'</div>'
-        + '<div class="hf-desc">Must try: '+(latestLoc.must_try||'')+'<br>'+(latestLoc.price_range||'')+'</div>'
-        + '<button class="hf-btn">Khám phá ngay →</button>'
-        + '</div></div>';
+  var container = document.getElementById('home-dynamic-cards');
+  if(!container) return;
+  var html = '';
+  // 1. Latest Location (Map)
+  if(typeof allLocs!=='undefined' && allLocs.length > 0){
+    var latestLoc = allLocs[allLocs.length - 1]; // Assume last is newest
+    
+    var badgeStat = '📍 Thao Thức Spot';
+    if (WEBP_ICONS[latestLoc.badge_type] && WEBP_ICONS[latestLoc.badge_type].length > 50) {
+      var badgeText = (latestLoc.badge_type === 'heritage') ? 'Thao Thức Heritage' : (latestLoc.badge_type === 'approved') ? 'Thao Thức Approved' : (latestLoc.badge_type === 'pending') ? 'Chờ duyệt' : 'Thao Thức Spot';
+      badgeStat = '<img src="' + WEBP_ICONS[latestLoc.badge_type] + '" style="height:14px;vertical-align:-2px;margin-right:4px;" alt="badge">' + badgeText;
+    } else {
+      if(latestLoc.badge_type === 'heritage') badgeStat = '🏆 Thao Thức Heritage';
+      else if(latestLoc.badge_type === 'approved') badgeStat = '✔️ Thao Thức Approved';
+      else if(latestLoc.badge_type === 'pending') badgeStat = '⏳ Chờ duyệt';
     }
-    locContainer.innerHTML = html;
-    if(typeof initCarouselDots === 'function') initCarouselDots('home-loc-cards', 'home-loc-dots', count);
-  }
 
-  // 2. Latest Recipes (Cook)
-  if(recipeContainer && typeof RECIPES_DATA!=='undefined' && RECIPES_DATA.length > 0){
-    var rhtml = '';
-    var rcount = Math.min(4, RECIPES_DATA.length);
+    var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+    
+    html += '<div class="home-featured-card" onclick="openHomeCardLoc(\''+latestLoc.id+'\')">'
+      + '<div class="hf-img-wrap"><img src="'+imgUrl+'" alt="Loc"/><span class="hf-badge">🔴 MỚI REVIEW</span></div>'
+      + '<div class="hf-body">'
+      + '<div class="hf-title">'+latestLoc.name+'</div>'
+      + '<div class="hf-sub">'+badgeStat+' • '+(latestLoc.category||'Khác')+'</div>'
+      + '<div class="hf-desc">Must try: '+(latestLoc.must_try||'')+'<br>'+(latestLoc.price_range||'')+'</div>'
+      + '<button class="hf-btn">Khám phá ngay →</button>'
+      + '</div></div>';
+  }
+  // 2. Latest Recipe (Cook)
+  if(typeof RECIPES_DATA!=='undefined' && RECIPES_DATA.length > 0){
+    var latestRcp = RECIPES_DATA[0]; // Assume index 0 is newest
     var chibiImg = document.querySelector('.cook-hero-avatar img');
     var chibiSrc = chibiImg ? chibiImg.src : '';
-    
-    for(var j=0; j<rcount; j++){
-      var latestRcp = RECIPES_DATA[j];
-      var serving = latestRcp.serving || '4 người';
-      rhtml += '<div class="home-featured-card" onclick="switchNav(\'cook\'); setTimeout(function(){ openRecipeDetail(\''+latestRcp.id+'\'); }, 300);">'
-        + '<div class="hf-img-wrap"><img src="'+latestRcp.image+'" alt="Recipe"/>'
-        + (j===0 ? '<span class="hf-badge">🔥 MÓN MỚI LÊN SÓNG</span>' : '')
-        + (chibiSrc ? '<div class="hf-avatar"><img src="'+chibiSrc+'" alt="Logo"/></div>' : '')
-        + '</div>'
-        + '<div class="hf-body">'
-        + '<div class="hf-title">'+latestRcp.name+'</div>'
-        + '<div class="hf-sub">⏱️ '+latestRcp.time+' • 👨‍👩‍👧 '+serving+' • 🧑‍🍳 '+latestRcp.level+'</div>'
-        + '<div class="hf-desc">'+(latestRcp.category||'Cẩm nang nấu ăn chuẩn vị gia đình')+'</div>'
-        + '<button class="hf-btn">Xem công thức 🎬</button>'
-        + '</div></div>';
-    }
-    recipeContainer.innerHTML = rhtml;
-    if(typeof initCarouselDots === 'function') initCarouselDots('home-recipe-cards', 'home-recipe-dots', rcount);
+    var serving = latestRcp.serving || '4 người';
+    html += '<div class="home-featured-card" onclick="switchNav(\'cook\'); setTimeout(function(){ openRecipeDetail(\''+latestRcp.id+'\'); }, 300);">'
+      + '<div class="hf-img-wrap"><img src="'+latestRcp.image+'" alt="Recipe"/><span class="hf-badge">🔥 MÓN MỚI LÊN SÓNG</span>'
+      + (chibiSrc ? '<div class="hf-avatar"><img src="'+chibiSrc+'" alt="Logo"/></div>' : '')
+      + '</div>'
+      + '<div class="hf-body">'
+      + '<div class="hf-title">'+latestRcp.name+'</div>'
+      + '<div class="hf-sub">⏱️ '+latestRcp.time+' • 👨‍👩‍👧 '+serving+' • 🧑‍🍳 '+latestRcp.level+'</div>'
+      + '<div class="hf-desc">'+(latestRcp.category||'Cẩm nang nấu ăn chuẩn vị gia đình')+'</div>'
+      + '<button class="hf-btn">Xem công thức 🎬</button>'
+      + '</div></div>';
   }
-  
-  startGlobalCarouselTimer();
-}
-
-function initCarouselDots(containerId, dotsId, count) {
-  var container = document.getElementById(containerId);
-  var dotsContainer = document.getElementById(dotsId);
-  if(!container || !dotsContainer || count <= 1) {
-    if(dotsContainer) dotsContainer.innerHTML = '';
-    return;
-  }
-  
-  var dotsHtml = '';
-  for(var i=0; i<count; i++){
-    dotsHtml += '<div class="h-dot '+(i===0?'active':'')+'" data-index="'+i+'"></div>';
-  }
-  dotsContainer.innerHTML = dotsHtml;
-  
-  var dots = dotsContainer.querySelectorAll('.h-dot');
-  
-  var instance = {
-    container: container,
-    count: count,
-    currentIndex: 0,
-    direction: 1
-  };
-  carouselInstances.push(instance);
-  
-  container.addEventListener('scroll', function(){
-    var scrollLeft = container.scrollLeft;
-    var cardWidth = container.offsetWidth;
-    var index = Math.round(scrollLeft / cardWidth);
-    if(index < 0) index = 0;
-    if(index >= count) index = count - 1;
-    
-    instance.currentIndex = index;
-    
-    dots.forEach(function(d, i){
-      if(i === index) d.classList.add('active');
-      else d.classList.remove('active');
-    });
-  });
-  
-  dots.forEach(function(dot, i){
-    dot.addEventListener('click', function(){
-      var cardWidth = container.offsetWidth;
-      container.scrollTo({
-        left: cardWidth * i,
-        behavior: 'smooth'
-      });
-    });
-  });
-  
-  container.addEventListener('touchstart', stopGlobalCarouselTimer, {passive: true});
-  container.addEventListener('touchend', startGlobalCarouselTimer, {passive: true});
-  container.addEventListener('mouseenter', stopGlobalCarouselTimer);
-  container.addEventListener('mouseleave', startGlobalCarouselTimer);
-}
-
-function startGlobalCarouselTimer() {
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
-  globalCarouselTimer = setInterval(function(){
-    carouselInstances.forEach(function(instance) {
-      if(instance.direction === 1) {
-        instance.currentIndex++;
-        if(instance.currentIndex >= instance.count) {
-          instance.currentIndex = instance.count - 2;
-          instance.direction = -1;
-        }
-      } else {
-        instance.currentIndex--;
-        if(instance.currentIndex < 0) {
-          instance.currentIndex = 1;
-          instance.direction = 1;
-        }
-      }
-      
-      if(instance.currentIndex < 0) instance.currentIndex = 0;
-      if(instance.currentIndex >= instance.count) instance.currentIndex = instance.count - 1;
-      
-      var cardWidth = instance.container.offsetWidth;
-      instance.container.scrollTo({
-        left: cardWidth * instance.currentIndex,
-        behavior: 'smooth'
-      });
-    });
-  }, 4000);
-}
-
-function stopGlobalCarouselTimer() {
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
-  globalCarouselTimer = null;
+  container.innerHTML = html;
 }
 
 function renderCriteriaIcons() {
