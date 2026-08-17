@@ -339,16 +339,75 @@ function setGeminiAPIKey(apiKey) {
 }
  
 var GEMINI_MODEL = 'gemini-3.1-flash-lite';
- 
+
+// ── GIỚI HẠN LƯỢT CHAT AI (tránh vượt quota free của Gemini) ──
+var GLOBAL_DAILY_LIMIT = 700; // tổng số lượt/ngày cho cả app (free tier Gemini cho phép 1000/ngày)
+var USER_DAILY_LIMIT = 20;    // số lượt/ngày cho mỗi người dùng (ẩn danh theo trình duyệt)
+
+function checkAndConsumeQuota() {
+  var props = PropertiesService.getScriptProperties();
+  var tz = Session.getScriptTimeZone();
+  var today = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
+  var key = 'quota_' + today;
+
+  var raw = props.getProperty(key);
+  var data = raw ? JSON.parse(raw) : { total: 0, users: {} };
+
+  if (data.total >= GLOBAL_DAILY_LIMIT) return false;
+
+  var userKey = Session.getTemporaryActiveUserKey() || 'anon';
+  var userCount = data.users[userKey] || 0;
+  if (userCount >= USER_DAILY_LIMIT) return false;
+
+  data.total += 1;
+  data.users[userKey] = userCount + 1;
+  props.setProperty(key, JSON.stringify(data));
+
+  // Dọn property của hôm qua để không phình to theo thời gian
+  var yesterday = Utilities.formatDate(new Date(new Date().getTime() - 86400000), tz, 'yyyy-MM-dd');
+  props.deleteProperty('quota_' + yesterday);
+
+  return true;
+}
+
+// Tìm quán gần vị trí (lat,lng) nhất trong danh sách - dùng khi không gọi được Gemini
+function findNearestLocation(locs, lat, lng) {
+  var uLat = parseFloat(lat), uLng = parseFloat(lng);
+  if (!locs || !locs.length || isNaN(uLat) || isNaN(uLng)) return null;
+
+  var nearest = null, minDist = Infinity;
+  for (var i = 0; i < locs.length; i++) {
+    var l = locs[i];
+    var lLat = parseFloat(l.lat), lLng = parseFloat(l.lng);
+    if (isNaN(lLat) || isNaN(lLng)) continue;
+    var dLat = lLat - uLat, dLng = lLng - uLng;
+    var dist = dLat * dLat + dLng * dLng;
+    if (dist < minDist) { minDist = dist; nearest = l; }
+  }
+  return nearest;
+}
+
 function askGeminiAI(userQuery, userLat, userLng, activeTab) {
-  try {
-    var props = PropertiesService.getScriptProperties();
-    var apiKey = (props.getProperty('GEMINI_API_KEY') || '').trim();
-    var locs = getFoodLocations();
- 
-    if (!apiKey) {
-      throw new Error('No API Key');
-    }
+  try {
+    if (!checkAndConsumeQuota()) {
+      var qLocs = getFoodLocations();
+      var qSpot = findNearestLocation(qLocs, userLat, userLng) || qLocs[Math.floor(Math.random() * qLocs.length)];
+      if (!qSpot) qSpot = { name: "Quán ngon", must_try: "món đặc sản địa phương" };
+      return {
+        success: true,
+        isFallback: true,
+        isQuotaLimited: true,
+        reply: "Tớ hơi quá tải hôm nay rồi 😅! Bạn ghé thử " + qSpot.name + " - " + qSpot.must_try + " gần bạn nhé, mai tớ khoẻ lại liền!"
+      };
+    }
+
+    var props = PropertiesService.getScriptProperties();
+    var apiKey = (props.getProperty('GEMINI_API_KEY') || '').trim();
+    var locs = getFoodLocations();
+
+    if (!apiKey) {
+      throw new Error('No API Key');
+    }
  
     var contextData = locs.map(function(l) {
       return "[" + l.name + "] (" + l.category + ") - Món khuyên thử: " + l.must_try + " (Lat: " + l.lat + ", Lng: " + l.lng + ")";
@@ -417,10 +476,10 @@ function askGeminiAI(userQuery, userLat, userLng, activeTab) {
     Logger.log('Lỗi askGeminiAI: ' + e.message);
  
     var fallbackLocs = getFoodLocations();
-    var randomSpot = fallbackLocs[Math.floor(Math.random() * fallbackLocs.length)];
-    if (!randomSpot) randomSpot = { name: "Quán ngon", must_try: "Đặc sản Đà Nẵng", lat: 16.0544, lng: 108.2022 };
+    var randomSpot = findNearestLocation(fallbackLocs, userLat, userLng) || fallbackLocs[Math.floor(Math.random() * fallbackLocs.length)];
+    if (!randomSpot) randomSpot = { name: "Quán ngon", must_try: "món đặc sản địa phương" };
  
-    var fallbackMsg = "Tớ đang bị quá tải nhẹ một xíu 🤖! (LỖI: " + e.message + ") Nhưng tớ bật mí ngay cho bạn quán ngon chuẩn vị này từ Thao Thức Guide nè: " + randomSpot.name + " - " + randomSpot.must_try + ". Bạn ghé thử nhé!";
+    var fallbackMsg = "Tớ đang bị quá tải nhẹ một xíu 🤖! (LỖI: " + e.message + ") Nhưng tớ bật mí ngay cho bạn quán ngon gần bạn nè: " + randomSpot.name + " - " + randomSpot.must_try + ". Bạn ghé thử nhé!";
  
     return { success: true, reply: fallbackMsg, isFallback: true };
   }
