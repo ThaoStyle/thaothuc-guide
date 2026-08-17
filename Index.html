@@ -2085,12 +2085,20 @@ var currentSheetRecipeId = null; // id công thức đang mở trong modal
 var deepLinkLocResolved = false; // đảm bảo deep-link địa điểm chỉ tự mở đúng 1 lần
 
 function buildShareUrl(type, id){
-  // Ưu tiên SCRIPT_URL chuẩn nếu đang chạy trong iframe googleusercontent
-  // Nếu có custom domain (không chứa googleusercontent), giữ nguyên window.location
   var base = window.location.origin + window.location.pathname;
-  if(base.indexOf('googleusercontent.com') !== -1 && SCRIPT_URL) {
+  
+  // 1. Ưu tiên SCRIPT_URL từ backend truyền xuống
+  if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL) {
     base = SCRIPT_URL;
   }
+  // 2. Fallback tự động thông minh: Dùng document.referrer (link mẹ chứa iframe)
+  else if (base.indexOf('googleusercontent.com') !== -1) {
+    var ref = document.referrer || "";
+    if (ref.indexOf('script.google.com') !== -1 || ref.indexOf('script.google.a.com') !== -1) {
+      base = ref.split('?')[0]; // Lấy link gốc, cắt bỏ các query parameter cũ
+    }
+  }
+
   return base + '?id=' + encodeURIComponent(id) + (type === 'recipe' ? '&type=recipe' : '');
 }
 
