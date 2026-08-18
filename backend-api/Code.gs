@@ -1,26 +1,26 @@
-// ═══════════════════════════════════════════════════════════════════
-//  THAO THỨC GUIDE — BACKEND API (Version 2 — REST JSON API)
-//  File này là BACKEND MỚI, độc lập với dự án cũ.
-//  Sau khi deploy GAS mới, trả link Web App URL cho AI để cấu hình Frontend.
+﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  THAO THá»¨C GUIDE â€” BACKEND API (Version 2 â€” REST JSON API)
+//  File nÃ y lÃ  BACKEND Má»šI, Ä‘á»™c láº­p vá»›i dá»± Ã¡n cÅ©.
+//  Sau khi deploy GAS má»›i, tráº£ link Web App URL cho AI Ä‘á»ƒ cáº¥u hÃ¬nh Frontend.
 //
-//  ⚠️ QUAN TRỌNG: Thay SHEET_ID bên dưới bằng ID Google Sheets của bạn.
-//     (Lấy từ URL Sheets: https://docs.google.com/spreadsheets/d/<<SHEET_ID>>/edit)
-// ═══════════════════════════════════════════════════════════════════
+//  âš ï¸ QUAN TRá»ŒNG: Thay SHEET_ID bÃªn dÆ°á»›i báº±ng ID Google Sheets cá»§a báº¡n.
+//     (Láº¥y tá»« URL Sheets: https://docs.google.com/spreadsheets/d/<<SHEET_ID>>/edit)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 var SHEET_ID = "1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg";
 
-// ────────────────────────────────────────────────────────────────────
-// CORS Helper — cho phép Frontend Vercel gọi API này
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// CORS Helper â€” cho phÃ©p Frontend Vercel gá»i API nÃ y
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function jsonOut(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ────────────────────────────────────────────────────────────────────
-// ROUTER — doGet & doPost
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ROUTER â€” doGet & doPost
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function doGet(e) {
   var action = e && e.parameter && e.parameter.action ? e.parameter.action : '';
 
@@ -28,9 +28,28 @@ function doGet(e) {
   if (action === 'getRecipes')     return jsonOut(getRecipes());
   if (action === 'getSuggestions') return jsonOut(getSuggestions());
   if (action === 'getAdminStatus') return jsonOut(getAdminStatus());
+  if (action) {
+    return jsonOut({ status: 'ok', version: '2.0', message: 'Thao Thá»©c Guide API is running.' });
+  }
 
-  // Health check
-  return jsonOut({ status: 'ok', version: '2.0', message: 'Thao Thức Guide API is running.' });
+  var email = '';
+  try { email = Session.getActiveUser().getEmail(); } catch (e1) {}
+  var ownerEmail = '';
+  try { ownerEmail = SpreadsheetApp.openById(SHEET_ID).getOwner().getEmail(); } catch (e2) {}
+
+  if (email && ownerEmail && email.toLowerCase() === ownerEmail.toLowerCase()) {
+    var tpl = HtmlService.createTemplateFromFile('Admin');
+    tpl.currentEmail = email;
+    return tpl.evaluate()
+      .setTitle('Thao Thá»©c Guide â€” Admin')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  return HtmlService.createHtmlOutput(
+    '<div style="font-family:sans-serif;padding:40px;text-align:center;">' +
+    '<h2>ðŸ”’ Truy cáº­p bá»‹ tá»« chá»‘i</h2>' +
+    '<p>Báº¡n cáº§n Ä‘Äƒng nháº­p Ä‘Ãºng tÃ i khoáº£n Google chá»§ sá»Ÿ há»¯u Ä‘á»ƒ vÃ o trang quáº£n trá»‹.</p>' +
+    '</div>'
+  );
 }
 
 function doPost(e) {
@@ -38,12 +57,8 @@ function doPost(e) {
     var body = JSON.parse(e.postData.contents);
     var action = body.action || '';
 
-    if (action === 'addLocation')    return jsonOut(addLocation(body.row));
-    if (action === 'updateLocation') return jsonOut(updateLocation(body.id, body.row));
-    if (action === 'deleteLocation') return jsonOut(deleteLocation(body.id));
     if (action === 'saveSuggestion') return jsonOut(saveSuggestion(body.data));
     if (action === 'askAI')          return jsonOut(askGeminiAI(body.query, body.lat, body.lng, body.tab));
-    if (action === 'setApiKey')      return jsonOut(setGeminiAPIKey(body.key));
 
     return jsonOut({ success: false, error: 'Unknown action: ' + action });
   } catch(err) {
@@ -51,9 +66,9 @@ function doPost(e) {
   }
 }
 
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ADMIN AUTH
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getAdminStatus() {
   try {
     var email = Session.getActiveUser().getEmail();
@@ -67,9 +82,9 @@ function getAdminStatus() {
   }
 }
 
-// ────────────────────────────────────────────────────────────────────
-// GOOGLE MAPS URL PARSER — Trích xuất tọa độ từ link Google Maps
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// GOOGLE MAPS URL PARSER â€” TrÃ­ch xuáº¥t tá»a Ä‘á»™ tá»« link Google Maps
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function extractLatLngRegex(str) {
   if (!str) return null;
   var s = String(str).trim();
@@ -120,9 +135,9 @@ function resolveLatLngFromMapUrl(mapUrl) {
   return null;
 }
 
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // LOCATIONS CRUD
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getFoodLocations() {
   try {
     var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Locations');
@@ -203,9 +218,9 @@ function deleteLocation(id) {
   return { success: false, error: 'ID not found' };
 }
 
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // RECIPES
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getRecipes() {
   try {
     var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
@@ -221,15 +236,44 @@ function getRecipes() {
         level: r[4] || '', serving: r[5] || '', image: r[6] || '',
         ingredients: r[7] || '', steps: r[8] || '', video_url: r[9] || '',
         tips: r[10] || ''
-      });
+      }
+function addRecipe(row) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  sheet.appendRow(row);
+  return { success: true };
+}
+
+function updateRecipe(id, row) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) {
+      sheet.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { success: true };
+    }
+  }
+  return { success: false, error: 'ID not found' };
+}
+
+function deleteRecipe(id) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) { sheet.deleteRow(i + 1); return { success: true }; }
+  }
+  return { success: false, error: 'ID not found' };
+});
     }
     return recipes;
   } catch(e) { return []; }
 }
 
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // SUGGESTIONS
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function saveSuggestion(data) {
   var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Suggestions');
   if (!sheet) { sheet = SpreadsheetApp.openById(SHEET_ID).insertSheet('Suggestions'); sheet.appendRow(['timestamp','place_name','address','lat','lng','category','must_try_notes','image_url']); }
@@ -253,9 +297,9 @@ function getSuggestions() {
   } catch (e) { return []; }
 }
 
-// ────────────────────────────────────────────────────────────────────
-// AI CHATBOT — Gemini
-// ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// AI CHATBOT â€” Gemini
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 var GEMINI_MODEL = 'gemini-3.1-flash-lite';
 var GLOBAL_DAILY_LIMIT = 700;
 var USER_DAILY_LIMIT = 20;
@@ -297,14 +341,14 @@ function askGeminiAI(userQuery, userLat, userLng, activeTab) {
   try {
     if (!checkAndConsumeQuota()) {
       var qLocs = getFoodLocations();
-      var qSpot = findNearestLocation(qLocs, userLat, userLng) || qLocs[Math.floor(Math.random() * qLocs.length)] || { name: "Quán ngon", must_try: "món đặc sản" };
-      return { success: true, isFallback: true, isQuotaLimited: true, reply: "Tớ hơi quá tải hôm nay 😅! Bạn ghé thử " + qSpot.name + " - " + qSpot.must_try + " nhé!" };
+      var qSpot = findNearestLocation(qLocs, userLat, userLng) || qLocs[Math.floor(Math.random() * qLocs.length)] || { name: "QuÃ¡n ngon", must_try: "mÃ³n Ä‘áº·c sáº£n" };
+      return { success: true, isFallback: true, isQuotaLimited: true, reply: "Tá»› hÆ¡i quÃ¡ táº£i hÃ´m nay ðŸ˜…! Báº¡n ghÃ© thá»­ " + qSpot.name + " - " + qSpot.must_try + " nhÃ©!" };
     }
     var apiKey = (PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY') || '').trim();
     if (!apiKey) throw new Error('No API Key');
     var locs = getFoodLocations();
     var ctx = locs.map(function(l) { return "[" + l.name + "] (" + l.category + ") - " + l.must_try + " (Lat: " + l.lat + ", Lng: " + l.lng + ")"; }).join("\n");
-    var sysInst = "You are 'Thao Thức AI' 🤖 — a friendly Vietnamese culinary guide. Address yourself as 'tớ' and user as 'bạn'. Keep replies under 3 sentences.\n\n" + ctx;
+    var sysInst = "You are 'Thao Thá»©c AI' ðŸ¤– â€” a friendly Vietnamese culinary guide. Address yourself as 'tá»›' and user as 'báº¡n'. Keep replies under 3 sentences.\n\n" + ctx;
     var payload = {
       systemInstruction: { parts: [{ text: sysInst }] },
       contents: [{ role: "user", parts: [{ text: "User asks: " + userQuery + (userLat ? " (Location: " + userLat + ", " + userLng + ")" : "") }] }],
@@ -321,7 +365,8 @@ function askGeminiAI(userQuery, userLat, userLng, activeTab) {
     return { success: true, reply: json.candidates[0].content.parts[0].text };
   } catch (e) {
     var fb = getFoodLocations();
-    var spot = findNearestLocation(fb, userLat, userLng) || fb[0] || { name: "Quán ngon", must_try: "món đặc sản" };
-    return { success: true, reply: "Tớ đang bận xíu 🤖! Bạn ghé " + spot.name + " - " + spot.must_try + " thử nhé!", isFallback: true };
+    var spot = findNearestLocation(fb, userLat, userLng) || fb[0] || { name: "QuÃ¡n ngon", must_try: "mÃ³n Ä‘áº·c sáº£n" };
+    return { success: true, reply: "Tá»› Ä‘ang báº­n xÃ­u ðŸ¤–! Báº¡n ghÃ© " + spot.name + " - " + spot.must_try + " thá»­ nhÃ©!", isFallback: true };
   }
 }
+
