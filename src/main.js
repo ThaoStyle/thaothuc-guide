@@ -280,10 +280,10 @@ var WEBP_ICONS = {
 // 9 nhóm danh mục chính thức cho Map Spots
 var CATEGORIES = [
   { key: 'all',       emoji: '🟢', vi: 'Tất cả',     en: 'All',        pill: true, special: 'all' },
-  { key: 'heritage',  emoji: '🏆', vi: 'Heritage',    en: 'Heritage',   pill: true, special: 'heritage' },
-  { key: 'approved',  emoji: '✔️', vi: 'Approved',    en: 'Approved',   pill: true, special: 'approved' },
-  { key: 'spot',      emoji: UI_ICONS.pin, vi: 'Spot',        en: 'Spot',       pill: true, special: 'spot' },
-  { key: 'pending',   emoji: '⏳', vi: 'Chờ duyệt',  en: 'Pending',    pill: true, special: 'pending' },
+  
+  
+  
+  
   { key: 'Bún / Phở / Món Nước',      emoji: '🍜', vi: 'Bún/Phở/Món Nước',     en: 'Noodle Soup',    pill: true },
   { key: 'Cơm / Bữa Chính',           emoji: '🍚', vi: 'Cơm/Bữa Chính',        en: 'Rice/Main',      pill: true },
   { key: 'Lẩu / Nướng / Nhậu',        emoji: '🍲', vi: 'Lẩu/Nướng/Nhậu',       en: 'Hotpot/BBQ',     pill: true },
