@@ -2607,10 +2607,15 @@ function sendAiMsg(overrideText) {
   }
 }
 // --- VITE ES MODULE FIX: ATTACH GLOBALS FOR INLINE HTML HANDLERS ---
+window.changeAdminLocPage = changeAdminLocPage;
+window.changeAdminRcpPage = changeAdminRcpPage;
 window.clearImageSelect = clearImageSelect;
 window.closeMobileList = closeMobileList;
 window.closeModal = closeModal;
 window.closeSheet = closeSheet;
+window.deleteAdminLoc = deleteAdminLoc;
+window.deleteRecipeItem = deleteRecipeItem;
+window.desktopSidebarGoTo = desktopSidebarGoTo;
 window.dismissPWA = dismissPWA;
 window.doAdminAdd = doAdminAdd;
 window.doAdminAddRecipe = doAdminAddRecipe;
@@ -2622,10 +2627,15 @@ window.handleImageFileSelect = handleImageFileSelect;
 window.handleMapSearch = handleMapSearch;
 window.installPWA = installPWA;
 window.locateMe = locateMe;
+window.mobileListGoTo = mobileListGoTo;
 window.navTap = navTap;
+window.openAdminEdit = openAdminEdit;
+window.openAdminEditRecipe = openAdminEditRecipe;
 window.openAdminModal = openAdminModal;
+window.openHomeCardLoc = openHomeCardLoc;
 window.openMobileList = openMobileList;
 window.openModal = openModal;
+window.openRecipeDetail = openRecipeDetail;
 window.saveAdminEdit = saveAdminEdit;
 window.sendAiMsg = sendAiMsg;
 window.setAdminLocFilter = setAdminLocFilter;
