@@ -25,13 +25,8 @@ var SCRIPT_URL     = API_URL || window.location.href;
     'getFoodLocations':  { action: 'getLocations',   method: 'GET' },
     'getRecipes':        { action: 'getRecipes',      method: 'GET' },
     'getSuggestions':    { action: 'getSuggestions',  method: 'GET' },
-    'getAdminStatus':    { action: 'getAdminStatus',  method: 'GET' },
-    'addLocation':       { action: 'addLocation',     method: 'POST' },
-    'updateLocation':    { action: 'updateLocation',  method: 'POST' },
-    'deleteLocation':    { action: 'deleteLocation',  method: 'POST' },
     'saveSuggestion':    { action: 'saveSuggestion',  method: 'POST' },
     'askGeminiAI':       { action: 'askAI',           method: 'POST' },
-    'setGeminiAPIKey':   { action: 'setApiKey',       method: 'POST' },
     'getScriptUrlLive':  { action: null,               method: null  },
   };
 
@@ -334,7 +329,7 @@ function initCategories(){
 
   // 2. Populate category <select> dropdowns (admin add + edit forms, suggest) — chỉ dùng danh mục Map Spots
   var selectable = CATEGORIES.filter(function(c){ return !c.special; });
-  ['a-cat','edit-cat','s-cat'].forEach(function(id){
+  ['s-cat'].forEach(function(id){
     var sel = document.getElementById(id);
     if(!sel) return;
     sel.innerHTML = '<option value="" disabled selected>📂 Chọn danh mục...</option>';
@@ -732,7 +727,7 @@ function shareCurrentRecipe(){
 function expandNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.add('expanded'); }
 function collapseNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.remove('expanded'); }
 function navTap(tab){ switchNav(tab); expandNav(); }
-['page-home','page-cook','page-admin'].forEach(function(id){
+['page-home','page-cook'].forEach(function(id){
   var el=document.getElementById(id);
   if(el) {
     var lastScrollTop = 0;
@@ -757,7 +752,7 @@ function navTap(tab){ switchNav(tab); expandNav(); }
 
 // ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
 function switchNav(tab, skipAutoFly){
-  ['home','map','cook','admin'].forEach(function(k){
+  ['home','map','cook'].forEach(function(k){
     var btn=document.getElementById('bnav-'+k);
     if(btn){
       var isActive = (k===tab);
@@ -784,13 +779,11 @@ function switchNav(tab, skipAutoFly){
   if(isMap && window.map){ setTimeout(function(){ map.invalidateSize(true); map.setView(map.getCenter(), map.getZoom()); }, 350); }
 
   if(tab==='cook') renderRecipes();
-  if(tab==='admin') renderAdminTab();
-
+  
   // ── CHATBOT OVERLAY FIX: ẩn nút AI khi ở tab Admin để không che nút Sửa/Xóa ──
   var aiFab = document.getElementById('ai-fab') || document.querySelector('.ai-fab');
   if(aiFab){
-    if(tab==='admin'){ aiFab.style.opacity='0'; aiFab.style.pointerEvents='none'; aiFab.style.zIndex='-1'; }
-    else{ aiFab.style.opacity=''; aiFab.style.pointerEvents=''; aiFab.style.zIndex=''; }
+    aiFab.style.opacity=''; aiFab.style.pointerEvents=''; aiFab.style.zIndex='';
   }
 
   if(isMap && window.map){
@@ -1677,8 +1670,7 @@ function initMap(){
   map.on('zoomstart',function(){ collapseNav(); });
 
   loadData();
-  checkAdminAuth();
-  document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
+    document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
   document.body.classList.toggle('desktop-map-view', window.innerWidth >= 1024);
   setTimeout(function(){ map.invalidateSize(true); }, 400);
   autoLocateOnLaunch();
@@ -1779,9 +1771,7 @@ function onData(d){
     map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
   }
 
-  if(document.getElementById('page-admin').classList.contains('show')){
-    renderAdminLocList();
-  }
+  
   renderHomeLatestCards();
   renderDesktopSidebar(d);
   renderMobileList(d);
@@ -2607,19 +2597,12 @@ function sendAiMsg(overrideText) {
   }
 }
 // --- VITE ES MODULE FIX: ATTACH GLOBALS FOR INLINE HTML HANDLERS ---
-window.changeAdminLocPage = changeAdminLocPage;
-window.changeAdminRcpPage = changeAdminRcpPage;
 window.clearImageSelect = clearImageSelect;
 window.closeMobileList = closeMobileList;
 window.closeModal = closeModal;
 window.closeSheet = closeSheet;
-window.deleteAdminLoc = deleteAdminLoc;
-window.deleteRecipeItem = deleteRecipeItem;
 window.desktopSidebarGoTo = desktopSidebarGoTo;
 window.dismissPWA = dismissPWA;
-window.doAdminAdd = doAdminAdd;
-window.doAdminAddRecipe = doAdminAddRecipe;
-window.doAdminUpdateRecipe = doAdminUpdateRecipe;
 window.doSuggest = doSuggest;
 window.filterRecipesByCategory = filterRecipesByCategory;
 window.gpsForSuggest = gpsForSuggest;
@@ -2629,20 +2612,13 @@ window.installPWA = installPWA;
 window.locateMe = locateMe;
 window.mobileListGoTo = mobileListGoTo;
 window.navTap = navTap;
-window.openAdminEdit = openAdminEdit;
-window.openAdminEditRecipe = openAdminEditRecipe;
-window.openAdminModal = openAdminModal;
 window.openHomeCardLoc = openHomeCardLoc;
 window.openMobileList = openMobileList;
 window.openModal = openModal;
 window.openRecipeDetail = openRecipeDetail;
-window.saveAdminEdit = saveAdminEdit;
 window.sendAiMsg = sendAiMsg;
-window.setAdminLocFilter = setAdminLocFilter;
-window.setAdminRcpFilter = setAdminRcpFilter;
 window.shareCurrentLocation = shareCurrentLocation;
 window.shareCurrentRecipe = shareCurrentRecipe;
-window.switchAdminSec = switchAdminSec;
 window.switchNav = switchNav;
 window.toggleAiDrawer = toggleAiDrawer;
 window.toggleLang = toggleLang;

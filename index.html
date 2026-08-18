@@ -203,81 +203,7 @@
   </div>
 
   <!-- ── DEDICATED ADMIN TAB OVERLAY (#page-admin - THAO THỨC GUIDE ADMIN) ── -->
-  <div class="page-overlay" id="page-admin">
-    <div class="page-container">
-      
-      <div class="admin-hero-card">
-        <div class="admin-hero-avatar">⚙️</div>
-        <div>
-          <div class="admin-hero-ttl">Thao Thức Guide Admin</div>
-          <div class="admin-hero-sub">👑 Đã đăng nhập: Google Account Admin System</div>
-        </div>
-      </div>
-
-      <div class="admin-sec-tabs">
-        <button class="admin-tab-btn active" id="atab-locs" onclick="switchAdminSec('locs')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Địa Điểm Bản Đồ</button>
-        <button class="admin-tab-btn"        id="atab-rcps" onclick="switchAdminSec('rcps')">🍳 Công Thức Nấu Ăn</button>
-        <button class="admin-tab-btn"        id="atab-sugs" onclick="switchAdminSec('sugs')">📩 Gợi Ý Khán Giả</button>
-      </div>
-
-      <!-- SECTION 1: MAP LOCATIONS MANAGER -->
-      <div id="asec-locs">
-        <div class="admin-metric-bar" id="admin-metric-bar">
-          <div class="admin-metric-item"><div class="admin-metric-num" id="am-total">0</div><div class="admin-metric-lbl">📊 Tổng</div></div>
-          <div class="admin-metric-item"><div class="admin-metric-num" id="am-pending">0</div><div class="admin-metric-lbl">⏳ Chờ duyệt</div></div>
-          <div class="admin-metric-item"><div class="admin-metric-num" id="am-approved">0</div><div class="admin-metric-lbl">🥇 Approved</div></div>
-          <div class="admin-metric-item"><div class="admin-metric-num" id="am-heritage">0</div><div class="admin-metric-lbl">🏆 Heritage</div></div>
-        </div>
-
-        <div style="display:flex;gap:10px;margin-bottom:16px;">
-          <button class="btn-submit" style="margin-top:0;flex:1;background:var(--or);" onclick="openAdminModal('manual')">➕ Thêm Địa Điểm Mới</button>
-          <button class="btn-submit" style="margin-top:0;flex:1;background:var(--nv);" onclick="openAdminModal('gps')">📡 Dùng GPS Hiện Tại</button>
-        </div>
-
-        <input class="input-box" id="admin-search-input" placeholder="🔍 Tìm kiếm địa điểm theo tên hoặc loại..." oninput="adminLocPage=1;renderAdminLocList()"/>
-
-        <div class="admin-filter-pills" id="admin-loc-filter-pills">
-          <div class="admin-fpill active" data-f="all" onclick="setAdminLocFilter('all')">Tất cả</div>
-          <div class="admin-fpill" data-f="pending" onclick="setAdminLocFilter('pending')">⏳ Chờ duyệt</div>
-          <div class="admin-fpill" data-f="heritage" onclick="setAdminLocFilter('heritage')">🏆 Heritage</div>
-          <div class="admin-fpill" data-f="approved" onclick="setAdminLocFilter('approved')">🥇 Approved</div>
-          <div class="admin-fpill" data-f="spot" onclick="setAdminLocFilter('spot')">📍 Spot</div>
-          <div class="admin-fpill" data-f="Take-Away" onclick="setAdminLocFilter('Take-Away')">🛍️ Mang đi</div>
-          <div class="admin-fpill" data-f="Online-Only" onclick="setAdminLocFilter('Online-Only')">🛵 Online-Only</div>
-        </div>
-
-        <div id="admin-loc-container">
-          <!-- Rendered dynamically -->
-        </div>
-        <div class="admin-pagination" id="admin-loc-pagination"></div>
-      </div>
-
-      <!-- SECTION 2: RECIPES MANAGER (CHỒNG COOK VỢ LOOK) -->
-      <div id="asec-rcps" style="display:none;">
-        <button class="btn-submit" style="margin-top:0;margin-bottom:16px;background:linear-gradient(135deg,#FF7043,#E64A19);" onclick="openModal('m-admin-add-recipe')">➕ Thêm Công Thức Nấu Ăn Mới</button>
-
-        <input class="input-box" id="admin-rcp-search" placeholder="🔍 Tìm công thức theo tên, nguyên liệu..." oninput="adminRcpPage=1;renderAdminRcpList()"/>
-
-        <div class="admin-filter-pills" id="admin-rcp-filter-pills">
-          <div class="admin-fpill active" data-f="all" onclick="setAdminRcpFilter('all')">Tất cả</div>
-        </div>
-
-        <div id="admin-rcp-container">
-          <!-- Rendered dynamically -->
-        </div>
-        <div class="admin-pagination" id="admin-rcp-pagination"></div>
-      </div>
-
-      <!-- SECTION 3: USER SUGGESTIONS INBOX -->
-      <div id="asec-sugs" style="display:none;">
-        <div style="font-size:16px;font-weight:900;color:var(--nv);margin-bottom:14px;">📩 Danh Sách Gợi Ý Địa Điểm Từ Khán Giả:</div>
-        <div id="admin-sug-container">
-          <!-- Rendered dynamically -->
-        </div>
-      </div>
-
-    </div>
-  </div>
+  
 
   
   <!-- ── MOBILE LIST BOTTOM SHEET ── -->
@@ -382,11 +308,7 @@
       <i class="ph ph-bowl-food"></i>
       <span id="t-bnav-cook">Nấu Ăn</span>
     </button>
-    <!-- TAB THỨ 4: CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP GOOGLE ACCOUNT ADMIN -->
-    <button class="nav-item" id="bnav-admin" onclick="navTap('admin')" data-icon="sliders-horizontal" style="display:none;">
-      <i class="ph ph-sliders-horizontal"></i>
-      <span>Admin</span>
-    </button>
+    
   </nav>
 
 
@@ -495,205 +417,16 @@
 </div>
 
 <!-- ── MODAL ADMIN EDIT LOCATION ── -->
-<div class="modal-backdrop" id="m-admin-edit" onclick="if(event.target===this)closeModal('m-admin-edit')">
-  <div class="modal-card">
-    <div class="modal-bar"></div>
-    <div class="modal-h2">✏️ Chỉnh Sửa Địa Điểm</div>
-    <input type="hidden" id="edit-id"/>
-    <input  class="input-box" id="edit-name"  placeholder="Tên quán *"/>
-    
-    <!-- OPTIONAL LAT & LNG -->
-    <div class="input-row">
-      <input class="input-box" id="edit-lat" placeholder="Lat (Không bắt buộc)"/>
-      <input class="input-box" id="edit-lng" placeholder="Lng (Không bắt buộc)"/>
-    </div>
-    
-    <select class="input-box" id="edit-cat" style="cursor:pointer;"></select>
-    <input  class="input-box" id="edit-must"  placeholder="Món phải thử (cách bởi phẩy)"/>
-    
-    <div class="input-row">
-      <input class="input-box" id="edit-price" placeholder="Giá (vd: 50k-80k)"/>
-      <select class="input-box" id="edit-stars" style="cursor:pointer;">
-        <option value="heritage">🏆 Thao Thức Heritage</option>
-        <option value="approved">✔️ Thao Thức Approved</option>
-        <option value="spot" selected>Thao Thức Spot</option>
-        <option value="pending">⏳ Chờ xác nhận</option>
-      </select>
-    </div>
 
-    <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
-    <input class="input-box" id="edit-hours" placeholder="Khung giờ bán (vd: 06:00 - 22:00)"/>
-    <textarea class="input-box" id="edit-desc" rows="3" placeholder="Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
-    <select class="input-box" id="edit-type" style="cursor:pointer;">
-      <option value="">Loại hình kinh doanh (Tùy chọn)</option>
-      <option value="Dine-In">Ăn tại chỗ</option>
-      <option value="Take-Away">Chỉ bán mang về (Take-Away)</option>
-      <option value="Online-Only">Bếp ảo / Chỉ bán Online</option>
-    </select>
-    <div class="input-row">
-      <input class="input-box" id="edit-phone" placeholder="Số điện thoại"/>
-      <input class="input-box" id="edit-dayoff" placeholder="Ngày nghỉ (vd: CN)"/>
-    </div>
-    <input class="input-box" id="edit-address" placeholder="Địa chỉ chi tiết"/>
-    <div class="input-row">
-      <input class="input-box" id="edit-shopeefood" placeholder="Link ShopeeFood"/>
-      <input class="input-box" id="edit-grab" placeholder="Link Grab"/>
-    </div>
-    <div class="input-row">
-      <input class="input-box" id="edit-parking" placeholder="Chỗ để xe"/>
-      <input class="input-box" id="edit-payment" placeholder="Thanh toán (vd: Tiền mặt, Ck)"/>
-    </div>
-
-    <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
-    <div style="margin-bottom:16px;">
-      <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Ảnh Quán & Món Ăn (Tỉ lệ chuẩn 16:9):</label>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
-        <button type="button" class="btn-submit" style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;" onclick="document.getElementById('edit-img-file').click();">
-          <span>📷 Chọn ảnh từ máy / camera</span>
-        </button>
-        <input type="file" id="edit-img-file" accept="image/*" style="display:none;" onchange="handleImageFileSelect(this, 'edit-img', 'edit-img-preview')"/>
-      </div>
-      <div id="edit-img-preview" style="display:none;position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px dashed var(--or);margin-bottom:10px;background:#E2E8F0;">
-        <img id="edit-img-preview-img" src="" style="width:100%;height:100%;object-fit:cover;" alt="Preview"/>
-        <button type="button" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:50%;width:32px;height:32px;font-weight:900;cursor:pointer;" onclick="clearImageSelect('edit-img', 'edit-img-preview', 'edit-img-file')">✕</button>
-      </div>
-      <input class="input-box" id="edit-img" placeholder="Hoặc dán URL Ảnh (HTTP link)" style="margin-bottom:0;"/>
-    </div>
-
-    <input  class="input-box" id="edit-video" placeholder="YouTube URL"/>
-    <input  class="input-box" id="edit-map"   placeholder="Google Maps URL"/>
-    <button class="btn-submit" onclick="saveAdminEdit()">💾 Lưu Thay Đổi</button>
-  </div>
-</div>
 
 <!-- ── MODAL ADMIN ADD NEW LOCATION ── -->
-<div class="modal-backdrop" id="m-admin" onclick="if(event.target===this)closeModal('m-admin')">
-  <div class="modal-card">
-    <div class="modal-bar"></div>
-    <div class="modal-h2"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Thêm Địa Điểm Mới</div>
-    <div class="modal-p">Dữ liệu sẽ lưu vào Google Sheet</div>
-    <input  class="input-box" id="a-name"  placeholder="Tên quán *"/>
-    
-    <!-- OPTIONAL LAT & LNG -->
-    <div class="input-row">
-      <input class="input-box" id="a-lat" placeholder="Lat (Không bắt buộc)"/>
-      <input class="input-box" id="a-lng" placeholder="Lng (Không bắt buộc)"/>
-    </div>
-    <div id="a-gps-status" style="display:none;font-size:12px;font-weight:700;padding:5px 12px;border-radius:12px;margin-bottom:12px;width:fit-content;"></div>
-    
-    <select class="input-box" id="a-cat" style="cursor:pointer;"></select>
-    <input  class="input-box" id="a-must"  placeholder="Món phải thử (cách bởi dấu phẩy)"/>
-    
-    <div class="input-row">
-      <input class="input-box" id="a-price" placeholder="Giá (vd: 50k-80k)"/>
-      <select class="input-box" id="a-stars" style="cursor:pointer;">
-        <option value="heritage">🏆 Thao Thức Heritage</option>
-        <option value="approved">✔️ Thao Thức Approved</option>
-        <option value="spot" selected>Thao Thức Spot</option>
-        <option value="pending">⏳ Chờ xác nhận</option>
-      </select>
-    </div>
 
-    <!-- KHUNG GIỜ BÁN & MÔ TẢ QUÁN -->
-    <input class="input-box" id="a-hours" placeholder="Khung giờ bán (vd: 06:00 - 22:00)"/>
-    <textarea class="input-box" id="a-desc" rows="3" placeholder="Mô tả / Giới thiệu quán (gia truyền, không gian...)"></textarea>
-    <select class="input-box" id="a-type" style="cursor:pointer;">
-      <option value="">Loại hình kinh doanh (Tùy chọn)</option>
-      <option value="Dine-In">Ăn tại chỗ</option>
-      <option value="Take-Away">Chỉ bán mang về (Take-Away)</option>
-      <option value="Online-Only">Bếp ảo / Chỉ bán Online</option>
-    </select>
-    <div class="input-row">
-      <input class="input-box" id="a-phone" placeholder="Số điện thoại"/>
-      <input class="input-box" id="a-dayoff" placeholder="Ngày nghỉ (vd: CN)"/>
-    </div>
-    <input class="input-box" id="a-address" placeholder="Địa chỉ chi tiết"/>
-    <div class="input-row">
-      <input class="input-box" id="a-shopeefood" placeholder="Link ShopeeFood"/>
-      <input class="input-box" id="a-grab" placeholder="Link Grab"/>
-    </div>
-    <div class="input-row">
-      <input class="input-box" id="a-parking" placeholder="Chỗ để xe"/>
-      <input class="input-box" id="a-payment" placeholder="Thanh toán (vd: Tiền mặt, Ck)"/>
-    </div>
-
-    <!-- ATTACH PHOTO UPLOAD FIELD WITH 16:9 PREVIEW -->
-    <div style="margin-bottom:16px;">
-      <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Ảnh Quán & Món Ăn (Tỉ lệ chuẩn 16:9):</label>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
-        <button type="button" class="btn-submit" style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;" onclick="document.getElementById('a-img-file').click();">
-          <span>📷 Chọn ảnh từ máy / camera</span>
-        </button>
-        <input type="file" id="a-img-file" accept="image/*" style="display:none;" onchange="handleImageFileSelect(this, 'a-img', 'a-img-preview')"/>
-      </div>
-      <div id="a-img-preview" style="display:none;position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px dashed var(--or);margin-bottom:10px;background:#E2E8F0;">
-        <img id="a-img-preview-img" src="" style="width:100%;height:100%;object-fit:cover;" alt="Preview"/>
-        <button type="button" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:50%;width:32px;height:32px;font-weight:900;cursor:pointer;" onclick="clearImageSelect('a-img', 'a-img-preview', 'a-img-file')">✕</button>
-      </div>
-      <input class="input-box" id="a-img" placeholder="Hoặc dán URL Ảnh (HTTP link)" style="margin-bottom:0;"/>
-    </div>
-
-    <input  class="input-box" id="a-video" placeholder="YouTube URL"/>
-    <input  class="input-box" id="a-map"   placeholder="Google Maps URL"/>
-    <button class="btn-submit" onclick="doAdminAdd()">➕ Thêm vào Sheet</button>
-  </div>
-</div>
 
 <!-- ── MODAL ADMIN ADD NEW RECIPE ── -->
-<div class="modal-backdrop" id="m-admin-add-recipe" onclick="if(event.target===this)closeModal('m-admin-add-recipe')">
-  <div class="modal-card">
-    <div class="modal-bar"></div>
-    <div class="modal-h2">🍳 Thêm Công Thức Mới</div>
-    <div class="modal-p">Chồng Cook Vợ Look Recipes</div>
-    <input  class="input-box" id="ar-name"  placeholder="Tên món ăn *"/>
-    <select class="input-box" id="ar-cat" style="cursor:pointer;"></select>
-    <div class="input-row">
-      <input class="input-box" id="ar-time" placeholder="Thời gian (vd: 45 phút)"/>
-      <input class="input-box" id="ar-level" placeholder="Cấp độ (vd: Dễ làm)"/>
-    </div>
-    
-    <div style="margin-bottom:16px;">
-      <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Ảnh Món Ăn (Tỉ lệ chuẩn 16:9):</label>
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
-        <button type="button" class="btn-submit" style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;" onclick="document.getElementById('ar-img-file').click();">
-          <span>📷 Chọn ảnh từ máy</span>
-        </button>
-        <input type="file" id="ar-img-file" accept="image/*" style="display:none;" onchange="handleImageFileSelect(this, 'ar-img', 'ar-img-preview')"/>
-      </div>
-      <div id="ar-img-preview" style="display:none;position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px dashed var(--or);margin-bottom:10px;background:#E2E8F0;">
-        <img id="ar-img-preview-img" src="" style="width:100%;height:100%;object-fit:cover;" alt="Preview"/>
-        <button type="button" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:50%;width:32px;height:32px;font-weight:900;cursor:pointer;" onclick="clearImageSelect('ar-img', 'ar-img-preview', 'ar-img-file')">✕</button>
-      </div>
-      <input type="hidden" id="ar-img" />
-    </div>
 
-    <input  class="input-box" id="ar-video" placeholder="Link Video TikTok / YouTube"/>
-    <textarea class="input-box" id="ar-ing"   rows="3" placeholder="Nguyên liệu (phân cách bởi dấu xuống dòng)"></textarea>
-    <textarea class="input-box" id="ar-steps" rows="4" placeholder="Các bước nấu (phân cách bởi dấu xuống dòng)"></textarea>
-    <button class="btn-submit" onclick="doAdminAddRecipe()">➕ Thêm Công Thức Nấu Ăn</button>
-  </div>
-</div>
 
 <!-- ── MODAL ADMIN EDIT RECIPE ── -->
-<div class="modal-backdrop" id="m-admin-edit-recipe" onclick="if(event.target===this)closeModal('m-admin-edit-recipe')">
-  <div class="modal-card">
-    <div class="modal-bar"></div>
-    <div class="modal-h2">✏️ Sửa Công Thức</div>
-    <div class="modal-p">Chồng Cook Vợ Look Recipes</div>
-    <input type="hidden" id="er-id"/>
-    <input  class="input-box" id="er-name"  placeholder="Tên món ăn *"/>
-    <select class="input-box" id="er-cat" style="cursor:pointer;"></select>
-    <div class="input-row">
-      <input class="input-box" id="er-time" placeholder="Thời gian (vd: 45 phút)"/>
-      <input class="input-box" id="er-level" placeholder="Cấp độ (vd: Dễ làm)"/>
-    </div>
-    <input  class="input-box" id="er-img"   placeholder="URL ảnh món ăn"/>
-    <input  class="input-box" id="er-video" placeholder="Link Video TikTok / YouTube"/>
-    <textarea class="input-box" id="er-ing"   rows="3" placeholder="Nguyên liệu (phân cách bởi dấu xuống dòng)"></textarea>
-    <textarea class="input-box" id="er-steps" rows="4" placeholder="Các bước nấu (phân cách bởi dấu xuống dòng)"></textarea>
-    <button class="btn-submit" onclick="doAdminUpdateRecipe()">💾 Lưu Thay Đổi</button>
-  </div>
-</div>
+
 
 <!-- ── PWA BANNER ── -->
 <div id="pwa-banner">
