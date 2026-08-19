@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "thaothuc-guide-root",
   "private": true,
   "scripts": {
     "vercel-build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/dist dist",
     "build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/dist dist",
-    "install": "echo 'Root install not needed'"
+    "install": "echo Root install not needed"
   }
 }
