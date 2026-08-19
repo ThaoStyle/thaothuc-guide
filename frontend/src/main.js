@@ -9,9 +9,9 @@
 const API_URL = '/api/proxy'; // Vercel proxy - tranh CORS
 
 // Deep link support (thay cho GAS scriptlet)
-var DEEP_LINK_ID   = new URLSearchParams(window.location.search).get('id')   || '';
+var DEEP_LINK_ID = new URLSearchParams(window.location.search).get('id') || '';
 var DEEP_LINK_TYPE = new URLSearchParams(window.location.search).get('type') || '';
-var SCRIPT_URL     = API_URL || window.location.href;
+var SCRIPT_URL = API_URL || window.location.href;
 
 // ─────────────────────────────────────────────────────────────────
 // GOOGLE SCRIPT SHIM — Tạo đối tượng google.script.run giả
@@ -19,15 +19,15 @@ var SCRIPT_URL     = API_URL || window.location.href;
 // Code cũ gọi: google.script.run.withSuccessHandler(fn).methodName(args)
 // Shim này bắt đúng pattern đó và chuyển sang fetch(API_URL)
 // ─────────────────────────────────────────────────────────────────
-(function() {
+(function () {
   // Map tên hàm GAS → action + method
   var GAS_ACTION_MAP = {
-    'getFoodLocations':  { action: 'getLocations',   method: 'GET' },
-    'getRecipes':        { action: 'getRecipes',      method: 'GET' },
-    'getSuggestions':    { action: 'getSuggestions',  method: 'GET' },
-    'saveSuggestion':    { action: 'saveSuggestion',  method: 'POST' },
-    'askGeminiAI':       { action: 'askAI',           method: 'POST' },
-    'getScriptUrlLive':  { action: null,               method: null  },
+    'getFoodLocations': { action: 'getLocations', method: 'GET' },
+    'getRecipes': { action: 'getRecipes', method: 'GET' },
+    'getSuggestions': { action: 'getSuggestions', method: 'GET' },
+    'saveSuggestion': { action: 'saveSuggestion', method: 'POST' },
+    'askGeminiAI': { action: 'askAI', method: 'POST' },
+    'getScriptUrlLive': { action: null, method: null },
   };
 
   // Mock data cho chế độ local (khi API_URL rỗng)
@@ -65,8 +65,8 @@ var SCRIPT_URL     = API_URL || window.location.href;
 
     if (mapping.method === 'GET') {
       return fetch(API_URL + '?action=' + mapping.action)
-        .then(function(r) { return r.json(); })
-        .catch(function(e) {
+        .then(function (r) { return r.json(); })
+        .catch(function (e) {
           console.error('[SHIM] Error:', e);
           return MOCK_DATA[mapping.action] || { success: false, error: e.message };
         });
@@ -86,11 +86,11 @@ var SCRIPT_URL     = API_URL || window.location.href;
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(body)
       })
-      .then(function(r) { return r.json(); })
-      .catch(function(e) {
-        console.error('[SHIM] Error:', e);
-        return { success: false, error: e.message };
-      });
+        .then(function (r) { return r.json(); })
+        .catch(function (e) {
+          console.error('[SHIM] Error:', e);
+          return { success: false, error: e.message };
+        });
     }
   }
 
@@ -99,26 +99,26 @@ var SCRIPT_URL     = API_URL || window.location.href;
   window.google = window.google || {};
   window.google.script = window.google.script || {};
   window.google.script.run = new Proxy({}, {
-    get: function(target, methodName) {
+    get: function (target, methodName) {
       if (methodName === 'withSuccessHandler') {
-        return function(successCb) {
+        return function (successCb) {
           // Tạo proxy hỗ trợ chain: .withSuccessHandler(fn).withFailureHandler(fn).method()
-          var makeChainProxy = function(sc, fc) {
+          var makeChainProxy = function (sc, fc) {
             return new Proxy({}, {
-              get: function(t2, gasMethod) {
+              get: function (t2, gasMethod) {
                 // Hỗ trợ chain thêm withFailureHandler
                 if (gasMethod === 'withFailureHandler') {
-                  return function(failureCb) { return makeChainProxy(sc, failureCb); };
+                  return function (failureCb) { return makeChainProxy(sc, failureCb); };
                 }
                 if (gasMethod === 'withSuccessHandler') {
-                  return function(newSc) { return makeChainProxy(newSc, fc); };
+                  return function (newSc) { return makeChainProxy(newSc, fc); };
                 }
                 // Gọi API thật
-                return function() {
+                return function () {
                   var args = Array.prototype.slice.call(arguments);
-                  shimCall(gasMethod, args).then(function(result) {
+                  shimCall(gasMethod, args).then(function (result) {
                     if (sc) sc(result);
-                  }).catch(function(e) {
+                  }).catch(function (e) {
                     if (fc) fc(e); else console.error('[SHIM] Failure:', e);
                   });
                 };
@@ -129,10 +129,10 @@ var SCRIPT_URL     = API_URL || window.location.href;
         };
       }
       if (methodName === 'withFailureHandler') {
-        return function() { return window.google.script.run; };
+        return function () { return window.google.script.run; };
       }
       // Direct call không có handler
-      return function() {
+      return function () {
         var args = Array.prototype.slice.call(arguments);
         return shimCall(methodName, args);
       };
@@ -150,45 +150,49 @@ var UI_ICONS = {
   star: '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
   play: '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>'
 };
-var TR={
-  vi:{l:'EN',cr:'Tiêu chí',sg:'Gợi ý',
-    all:'🍽️ Tất cả',ld:'Đang tải bản đồ...',
-    ckT:'🍳 Công Thức Nấu Ăn — Chồng Cook Vợ Look',ckS:'Món ngon chuẩn vị từ bếp nhà Chồng Cook Vợ Look 👨‍🍳',
-    mcH:'Tiêu Chí Đánh Giá',mcP:'Tiêu chí đánh giá riêng của Thao Thức Guide',
-    s3t:'Thao Thức Heritage',s3d:'Quán quen lâu đời, mang tính di sản và được dân bản địa yêu thích.',
-    s2t:'Thao Thức Approved',s2d:'Món ngon chuẩn vị, trải nghiệm trọn vẹn, thử 1 lần là DÍNH.',
-    s1t:'Thao Thức Spot',s1d:'Địa điểm ăn uống xung quanh bạn, được cộng đồng đánh giá tốt.',
-    s0t:'Chờ duyệt',s0d:'Các quán nằm trong danh sách chuẩn bị lên lịch thẩm định.',
-    mcok:'✓ Đã hiểu',
-    msH:'Gợi Ý Địa Điểm',msP:'Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!',
-    gps:'📍 Lấy vị trí GPS của tôi',send:'🚀 Gửi gợi ý tới Thao Thức Guide',
-    navd: UI_ICONS.pin+'Chỉ đường',navv: UI_ICONS.play+'Review',must: UI_ICONS.star+'Món Phải Thử',
-    bMap:'Bản Đồ',bCook:'Nấu Ăn',
-    nameReq:'Vui lòng nhập tên địa điểm',sent:'✅ Đã gửi gợi ý tới Thao Thức Guide! Cảm ơn bạn 💖',
-    locErr:'Không lấy được vị trí. Hãy cho phép truy cập vị trí.',
-    ios:'🍎 Trên iPhone: nhấn Share (⬆) → "Thêm vào Màn hình chính"'},
-  en:{l:'VI',cr:'Criteria',sg:'Suggest',
-    all:'🍽️ All',ld:'Loading map...',
-    ckT:'Recipes — Chồng Cook Vợ Look',ckS:"Delicious dishes from Chồng Cook Vợ Look's kitchen 👨‍🍳",
-    mcH:'Rating Criteria',mcP:'How Thao Thức Guide selects locations',
-    s3t:'Thao Thức Heritage',s3d:'Historic local favorites, deeply rooted in the community’s heritage.',
-    s2t:'Thao Thức Approved',s2d:'Authentic flavors and complete experiences. One try and you are hooked!',
-    s1t:'Thao Thức Spot',s1d:'Great local dining spots nearby, highly rated by the community.',
-    s0t:'Pending Review',s0d:'Places currently on the waitlist for our upcoming evaluations.',
-    mcok:'✓ Got it',
-    msH:'Suggest a Place',msP:'Know a great spot? Share with Thao Thức Guide!',
-    gps:'📍 Use my GPS location',send:'🚀 Send Suggestion',
-    navd: UI_ICONS.pin+'Directions',navv: UI_ICONS.play+'Review',must: UI_ICONS.star+'Must Try',
-    bMap:'Map',bCook:'Recipes',
-    nameReq:'Please enter a place name',sent:'✅ Suggestion sent! Thank you 💖',
-    locErr:'Could not get location. Please allow location access.',
-    ios:'🍎 On iPhone: tap Share (⬆) → "Add to Home Screen"'}
+var TR = {
+  vi: {
+    l: 'EN', cr: 'Tiêu chí', sg: 'Gợi ý',
+    all: '🍽️ Tất cả', ld: 'Đang tải bản đồ...',
+    ckT: '🍳 Công Thức Nấu Ăn — Chồng Cook Vợ Look', ckS: 'Món ngon chuẩn vị từ bếp nhà Chồng Cook Vợ Look 👨‍🍳',
+    mcH: 'Tiêu Chí Đánh Giá', mcP: 'Tiêu chí đánh giá riêng của Thao Thức Guide',
+    s3t: 'Thao Thức Heritage', s3d: 'Quán quen lâu đời, mang tính di sản và được dân bản địa yêu thích.',
+    s2t: 'Thao Thức Approved', s2d: 'Món ngon chuẩn vị, trải nghiệm trọn vẹn, thử 1 lần là DÍNH.',
+    s1t: 'Thao Thức Spot', s1d: 'Địa điểm ăn uống xung quanh bạn, được cộng đồng đánh giá tốt.',
+    s0t: 'Chờ duyệt', s0d: 'Các quán nằm trong danh sách chuẩn bị lên lịch thẩm định.',
+    mcok: '✓ Đã hiểu',
+    msH: 'Gợi Ý Địa Điểm', msP: 'Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!',
+    gps: '📍 Lấy vị trí GPS của tôi', send: '🚀 Gửi gợi ý tới Thao Thức Guide',
+    navd: UI_ICONS.pin + 'Chỉ đường', navv: UI_ICONS.play + 'Review', must: UI_ICONS.star + 'Món Phải Thử',
+    bMap: 'Bản Đồ', bCook: 'Nấu Ăn',
+    nameReq: 'Vui lòng nhập tên địa điểm', sent: '✅ Đã gửi gợi ý tới Thao Thức Guide! Cảm ơn bạn 💖',
+    locErr: 'Không lấy được vị trí. Hãy cho phép truy cập vị trí.',
+    ios: '🍎 Trên iPhone: nhấn Share (⬆) → "Thêm vào Màn hình chính"'
+  },
+  en: {
+    l: 'VI', cr: 'Criteria', sg: 'Suggest',
+    all: '🍽️ All', ld: 'Loading map...',
+    ckT: 'Recipes — Chồng Cook Vợ Look', ckS: "Delicious dishes from Chồng Cook Vợ Look's kitchen 👨‍🍳",
+    mcH: 'Rating Criteria', mcP: 'How Thao Thức Guide selects locations',
+    s3t: 'Thao Thức Heritage', s3d: 'Historic local favorites, deeply rooted in the community’s heritage.',
+    s2t: 'Thao Thức Approved', s2d: 'Authentic flavors and complete experiences. One try and you are hooked!',
+    s1t: 'Thao Thức Spot', s1d: 'Great local dining spots nearby, highly rated by the community.',
+    s0t: 'Pending Review', s0d: 'Places currently on the waitlist for our upcoming evaluations.',
+    mcok: '✓ Got it',
+    msH: 'Suggest a Place', msP: 'Know a great spot? Share with Thao Thức Guide!',
+    gps: '📍 Use my GPS location', send: '🚀 Send Suggestion',
+    navd: UI_ICONS.pin + 'Directions', navv: UI_ICONS.play + 'Review', must: UI_ICONS.star + 'Must Try',
+    bMap: 'Map', bCook: 'Recipes',
+    nameReq: 'Please enter a place name', sent: '✅ Suggestion sent! Thank you 💖',
+    locErr: 'Could not get location. Please allow location access.',
+    ios: '🍎 On iPhone: tap Share (⬆) → "Add to Home Screen"'
+  }
 };
 
-var CAT_IMAGES={
+var CAT_IMAGES = {
   'Bún/Phở': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80',
-  'Ăn vặt':  'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
-  'Cafe':    'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
+  'Ăn vặt': 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
+  'Cafe': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
   'Hải sản': 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
   'Default': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80'
 };
@@ -196,8 +200,8 @@ var CAT_IMAGES={
 var RECIPES_DATA = [];
 var isRecipesLoaded = false;
 
-var lang='vi';
-var activeFilter='all';
+var lang = 'vi';
+var activeFilter = 'all';
 
 // ── BASE64 WEBP ICON ASSETS (PASTE YOUR STRINGS HERE) ──
 
@@ -213,61 +217,61 @@ var WEBP_ICONS = {
 // ── CENTRALIZED CATEGORY LIST (syncs filter pills + admin dropdown) ──
 // 9 nhóm danh mục chính thức cho Map Spots
 var CATEGORIES = [
-  { key: 'all',       emoji: '🟢', vi: 'Tất cả',     en: 'All',        pill: true, special: 'all' },
-  
-  
-  
-  
-  { key: 'Bún / Phở / Món Nước',      emoji: '🍜', vi: 'Bún/Phở/Món Nước',     en: 'Noodle Soup',    pill: true },
-  { key: 'Cơm / Bữa Chính',           emoji: '🍚', vi: 'Cơm/Bữa Chính',        en: 'Rice/Main',      pill: true },
-  { key: 'Lẩu / Nướng / Nhậu',        emoji: '🍲', vi: 'Lẩu/Nướng/Nhậu',       en: 'Hotpot/BBQ',     pill: true },
-  { key: 'Ăn Vặt / Đường Phố',        emoji: '🥟', vi: 'Ăn Vặt/Đường Phố',     en: 'Street Food',    pill: true },
-  { key: 'Cà Phê / Đồ Uống',          emoji: '☕', vi: 'Cà Phê/Đồ Uống',       en: 'Cafe/Drinks',    pill: true },
-  { key: 'Bếp Đêm / Ăn Khuya',        emoji: '🌙', vi: 'Bếp Đêm/Ăn Khuya',     en: 'Late Night',     pill: true },
-  { key: 'Chỉ Bán Mang Về',           emoji: '🛍️', vi: 'Chỉ Bán Mang Về',      en: 'Takeaway Only',  pill: true },
-  { key: 'Chỉ Bán Online',            emoji: '🛵', vi: 'Chỉ Bán Online',       en: 'Online Only',    pill: true },
-  { key: 'Khác / Đặc Sản Bổ Sung',    emoji: '🍽️', vi: 'Khác/Đặc Sản',        en: 'Other/Specialty',pill: true }
+  { key: 'all', emoji: '🟢', vi: 'Tất cả', en: 'All', pill: true, special: 'all' },
+
+
+
+
+  { key: 'Bún / Phở / Món Nước', emoji: '🍜', vi: 'Bún/Phở/Món Nước', en: 'Noodle Soup', pill: true },
+  { key: 'Cơm / Bữa Chính', emoji: '🍚', vi: 'Cơm/Bữa Chính', en: 'Rice/Main', pill: true },
+  { key: 'Lẩu / Nướng / Nhậu', emoji: '🍲', vi: 'Lẩu/Nướng/Nhậu', en: 'Hotpot/BBQ', pill: true },
+  { key: 'Ăn Vặt / Đường Phố', emoji: '🥟', vi: 'Ăn Vặt/Đường Phố', en: 'Street Food', pill: true },
+  { key: 'Cà Phê / Đồ Uống', emoji: '☕', vi: 'Cà Phê/Đồ Uống', en: 'Cafe/Drinks', pill: true },
+  { key: 'Bếp Đêm / Ăn Khuya', emoji: '🌙', vi: 'Bếp Đêm/Ăn Khuya', en: 'Late Night', pill: true },
+  { key: 'Chỉ Bán Mang Về', emoji: '🛍️', vi: 'Chỉ Bán Mang Về', en: 'Takeaway Only', pill: true },
+  { key: 'Chỉ Bán Online', emoji: '🛵', vi: 'Chỉ Bán Online', en: 'Online Only', pill: true },
+  { key: 'Khác / Đặc Sản Bổ Sung', emoji: '🍽️', vi: 'Khác/Đặc Sản', en: 'Other/Specialty', pill: true }
 ];
 
 // 8 nhóm danh mục chính thức cho Công Thức Nấu Ăn (Cook)
 var RECIPE_CATEGORIES = [
-  { key: 'Bữa Cơm Gia Đình',          emoji: '🍚', vi: 'Bữa Cơm Gia Đình' },
-  { key: 'Món Nước / Bún Phở',        emoji: '🍜', vi: 'Món Nước/Bún Phở' },
-  { key: 'Món Canh / Rau / Nộm',      emoji: '🥬', vi: 'Món Canh/Rau/Nộm' },
-  { key: 'Món Chiên / Nướng / Nhậu',  emoji: '🍢', vi: 'Món Chiên/Nướng/Nhậu' },
-  { key: 'Món Khuya / Bếp Đêm',       emoji: '🌙', vi: 'Món Khuya/Bếp Đêm' },
-  { key: 'Ăn Vặt / Chè / Bánh',       emoji: '🍮', vi: 'Ăn Vặt/Chè/Bánh' },
-  { key: 'Món Chay / Eat-Clean',      emoji: '🥗', vi: 'Món Chay/Eat-Clean' },
-  { key: 'Mẹo Bếp / Gia Vị & Sốt',    emoji: '🧂', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
+  { key: 'Bữa Cơm Gia Đình', emoji: '🍚', vi: 'Bữa Cơm Gia Đình' },
+  { key: 'Món Nước / Bún Phở', emoji: '🍜', vi: 'Món Nước/Bún Phở' },
+  { key: 'Món Canh / Rau / Nộm', emoji: '🥬', vi: 'Món Canh/Rau/Nộm' },
+  { key: 'Món Chiên / Nướng / Nhậu', emoji: '🍢', vi: 'Món Chiên/Nướng/Nhậu' },
+  { key: 'Món Khuya / Bếp Đêm', emoji: '🌙', vi: 'Món Khuya/Bếp Đêm' },
+  { key: 'Ăn Vặt / Chè / Bánh', emoji: '🍮', vi: 'Ăn Vặt/Chè/Bánh' },
+  { key: 'Món Chay / Eat-Clean', emoji: '🥗', vi: 'Món Chay/Eat-Clean' },
+  { key: 'Mẹo Bếp / Gia Vị & Sốt', emoji: '🧂', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
 ];
 
-function initCategories(){
+function initCategories() {
   // 1. Build filter pills
   var bar = document.getElementById('pill-bar');
   bar.innerHTML = '';
-  CATEGORIES.forEach(function(cat){
-    if(!cat.pill) return;
+  CATEGORIES.forEach(function (cat) {
+    if (!cat.pill) return;
     var btn = document.createElement('button');
-    btn.className = 'pill' + (cat.special==='all' ? ' active' : '') + (cat.pillClass ? ' ' + cat.pillClass : '');
+    btn.className = 'pill' + (cat.special === 'all' ? ' active' : '') + (cat.pillClass ? ' ' + cat.pillClass : '');
     btn.setAttribute('data-cat', cat.special || cat.key);
-    btn.onclick = function(){ filterMap(cat.special || cat.key, btn); };
-    
+    btn.onclick = function () { filterMap(cat.special || cat.key, btn); };
+
     if (cat.special && WEBP_ICONS[cat.special] && WEBP_ICONS[cat.special].length > 50) {
-      btn.innerHTML = '<img src="' + WEBP_ICONS[cat.special] + '" style="height:16px; margin-right:4px; vertical-align:-2px;" alt="badge"> ' + (lang==='vi' ? cat.vi : cat.en);
+      btn.innerHTML = '<img src="' + WEBP_ICONS[cat.special] + '" style="height:16px; margin-right:4px; vertical-align:-2px;" alt="badge"> ' + (lang === 'vi' ? cat.vi : cat.en);
     } else {
-      btn.innerHTML = (cat.emoji||'') + ' ' + (lang==='vi' ? cat.vi : cat.en);
+      btn.innerHTML = (cat.emoji || '') + ' ' + (lang === 'vi' ? cat.vi : cat.en);
     }
-    
+
     bar.appendChild(btn);
   });
 
   // 2. Populate category <select> dropdowns (admin add + edit forms, suggest) — chỉ dùng danh mục Map Spots
-  var selectable = CATEGORIES.filter(function(c){ return !c.special; });
-  ['s-cat'].forEach(function(id){
+  var selectable = CATEGORIES.filter(function (c) { return !c.special; });
+  ['s-cat'].forEach(function (id) {
     var sel = document.getElementById(id);
-    if(!sel) return;
+    if (!sel) return;
     sel.innerHTML = '<option value="" disabled selected>📂 Chọn danh mục...</option>';
-    selectable.forEach(function(cat){
+    selectable.forEach(function (cat) {
       var opt = document.createElement('option');
       opt.value = cat.key;
       opt.textContent = cat.emoji + ' ' + cat.vi;
@@ -277,12 +281,12 @@ function initCategories(){
 }
 
 // ── Danh mục Công Thức Nấu Ăn: dropdown Admin (ar-cat/er-cat) + filter pills trang Cook ──
-function initRecipeCategories(){
-  ['ar-cat','er-cat'].forEach(function(id){
+function initRecipeCategories() {
+  ['ar-cat', 'er-cat'].forEach(function (id) {
     var sel = document.getElementById(id);
-    if(!sel) return;
+    if (!sel) return;
     sel.innerHTML = '<option value="" disabled selected>📂 Chọn loại món...</option>';
-    RECIPE_CATEGORIES.forEach(function(cat){
+    RECIPE_CATEGORIES.forEach(function (cat) {
       var opt = document.createElement('option');
       opt.value = cat.key;
       opt.textContent = cat.emoji + ' ' + cat.vi;
@@ -292,44 +296,44 @@ function initRecipeCategories(){
 
   // Filter pills trên trang Cook (user view) — build động, thay cho HTML tĩnh cũ
   var bar = document.getElementById('cook-filter-bar');
-  if(bar){
+  if (bar) {
     bar.innerHTML = '<div class="cook-filter-chip active" data-f="all" onclick="filterRecipesByCategory(\'all\', this)">Tất cả</div>'
-      + RECIPE_CATEGORIES.map(function(cat){
-          return '<div class="cook-filter-chip" data-f="'+cat.key+'" onclick="filterRecipesByCategory(\''+cat.key+'\', this)">'+cat.emoji+' '+cat.vi+'</div>';
-        }).join('');
+      + RECIPE_CATEGORIES.map(function (cat) {
+        return '<div class="cook-filter-chip" data-f="' + cat.key + '" onclick="filterRecipesByCategory(\'' + cat.key + '\', this)">' + cat.emoji + ' ' + cat.vi + '</div>';
+      }).join('');
   }
 
   // Filter pills trong Admin > Công Thức Nấu Ăn — build động từ cùng danh sách RECIPE_CATEGORIES
   var abar = document.getElementById('admin-rcp-filter-pills');
-  if(abar){
+  if (abar) {
     abar.innerHTML = '<div class="admin-fpill active" data-f="all" onclick="setAdminRcpFilter(\'all\')">Tất cả</div>'
-      + RECIPE_CATEGORIES.map(function(cat){
-          return '<div class="admin-fpill" data-f="'+cat.key+'" onclick="setAdminRcpFilter(\''+cat.key+'\')">'+cat.emoji+' '+cat.vi+'</div>';
-        }).join('');
+      + RECIPE_CATEGORIES.map(function (cat) {
+        return '<div class="admin-fpill" data-f="' + cat.key + '" onclick="setAdminRcpFilter(\'' + cat.key + '\')">' + cat.emoji + ' ' + cat.vi + '</div>';
+      }).join('');
   }
 }
 
 var recipeFilterCategory = 'all';
-function filterRecipesByCategory(cat, btn){
+function filterRecipesByCategory(cat, btn) {
   recipeFilterCategory = cat;
-  if(btn){
-    document.querySelectorAll('.cook-filter-chip').forEach(function(c){c.classList.remove('active');});
+  if (btn) {
+    document.querySelectorAll('.cook-filter-chip').forEach(function (c) { c.classList.remove('active'); });
     btn.classList.add('active');
   }
   renderRecipes();
 }
 
-function t(k){return TR[lang][k]||k;}
+function t(k) { return TR[lang][k] || k; }
 
-function applyLang(){
-  var x=TR[lang];
-  
+function applyLang() {
+  var x = TR[lang];
+
   // Hàm an toàn: Kiểm tra thẻ tồn tại mới gán giá trị
   function setText(id, text) {
     var el = document.getElementById(id);
     if (el && text !== undefined) {
       // Dùng innerHTML thay cho textContent để hiển thị được icon SVG
-      el.innerHTML = text; 
+      el.innerHTML = text;
     }
   }
 
@@ -344,9 +348,9 @@ function applyLang(){
   setText('t-s2t', x.s2t);
   setText('t-s2d', x.s2d);
   setText('t-s1t', x.s1t);
-    setText('t-s1d', x.s1d);
-    setText('t-s0t', x.s0t);
-    setText('t-s0d', x.s0d);
+  setText('t-s1d', x.s1d);
+  setText('t-s0t', x.s0t);
+  setText('t-s0d', x.s0d);
   setText('t-mc-ok', x.mcok);
   setText('t-ms-h2', x.msH);
   setText('t-ms-p', x.msP);
@@ -370,57 +374,57 @@ function applyLang(){
     searchInput.placeholder = (lang === 'en') ? 'Search places, food...' : 'Tìm quán ngon gần đây';
   }
 }
-function toggleLang(){ lang=lang==='vi'?'en':'vi'; applyLang(); initCategories(); }
+function toggleLang() { lang = lang === 'vi' ? 'en' : 'vi'; applyLang(); initCategories(); }
 
 
 
 // ── AUTO EXTRACT LAT/LNG FROM GOOGLE MAPS LINK
-function extractLatLngFromMapUrl(url){
-  if(!url) return null;
+function extractLatLngFromMapUrl(url) {
+  if (!url) return null;
   var s = String(url).trim();
 
   // Pattern 1: Exact Place Pin Marker (!3d<lat>...!4d<lng>) -> HIGHEST ACCURACY
   var mPin = s.match(/!3d(-?\d+(?:\.\d+)?)(?:![^!]+)*?!4d(-?\d+(?:\.\d+)?)/);
-  if(mPin){
+  if (mPin) {
     var latP = parseFloat(mPin[1]), lngP = parseFloat(mPin[2]);
-    if(!isNaN(latP) && !isNaN(lngP) && Math.abs(latP) <= 90 && Math.abs(lngP) <= 180){
+    if (!isNaN(latP) && !isNaN(lngP) && Math.abs(latP) <= 90 && Math.abs(lngP) <= 180) {
       return { lat: latP, lng: lngP };
     }
   }
 
   // Pattern 2: StaticMap markers=lat,lng or center=lat,lng
   var mMarker = s.match(/staticmap\?[^"]*?markers=(-?\d+(?:\.\d+)?)(?:%2C|,|\+)+(-?\d+(?:\.\d+)?)/i);
-  if(mMarker){
+  if (mMarker) {
     var latM = parseFloat(mMarker[1]), lngM = parseFloat(mMarker[2]);
-    if(!isNaN(latM) && !isNaN(lngM) && Math.abs(latM) <= 90 && Math.abs(lngM) <= 180){
+    if (!isNaN(latM) && !isNaN(lngM) && Math.abs(latM) <= 90 && Math.abs(lngM) <= 180) {
       return { lat: latM, lng: lngM };
     }
   }
 
   // Pattern 3: Query parameters (q=lat,lng or ll=lat,lng or query=lat,lng or center=lat,lng)
   var mQ = s.match(/(?:[?&](?:q|ll|query|center)=|maps\?q=)(-?\d+(?:\.\d+)?)(?:,|%2C|\+)+(-?\d+(?:\.\d+)?)/i);
-  if(mQ){
+  if (mQ) {
     var latQ = parseFloat(mQ[1]), lngQ = parseFloat(mQ[2]);
-    if(!isNaN(latQ) && !isNaN(lngQ) && Math.abs(latQ) <= 90 && Math.abs(lngQ) <= 180){
+    if (!isNaN(latQ) && !isNaN(lngQ) && Math.abs(latQ) <= 90 && Math.abs(lngQ) <= 180) {
       return { lat: latQ, lng: lngQ };
     }
   }
 
   // Pattern 4: Path coordinates /search/lat,lng or /place/lat,lng or /dir/lat,lng
   var mPath = s.match(/\/(?:place|search|dir)\/[^\/]*?\/(-?\d+(?:\.\d+)?)(?:,|%2C|\+)+(-?\d+(?:\.\d+)?)/i) ||
-              s.match(/\/(?:search|place|dir)\/(-?\d+(?:\.\d+)?)(?:,|%2C|\+)+(-?\d+(?:\.\d+)?)/i);
-  if(mPath){
+    s.match(/\/(?:search|place|dir)\/(-?\d+(?:\.\d+)?)(?:,|%2C|\+)+(-?\d+(?:\.\d+)?)/i);
+  if (mPath) {
     var latPt = parseFloat(mPath[1]), lngPt = parseFloat(mPath[2]);
-    if(!isNaN(latPt) && !isNaN(lngPt) && Math.abs(latPt) <= 90 && Math.abs(lngPt) <= 180){
+    if (!isNaN(latPt) && !isNaN(lngPt) && Math.abs(latPt) <= 90 && Math.abs(lngPt) <= 180) {
       return { lat: latPt, lng: lngPt };
     }
   }
 
   // Pattern 5: Viewport Camera Center @lat,lng (Fallback)
   var mAt = s.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
-  if(mAt){
+  if (mAt) {
     var latAt = parseFloat(mAt[1]), lngAt = parseFloat(mAt[2]);
-    if(!isNaN(latAt) && !isNaN(lngAt) && Math.abs(latAt) <= 90 && Math.abs(lngAt) <= 180){
+    if (!isNaN(latAt) && !isNaN(lngAt) && Math.abs(latAt) <= 90 && Math.abs(lngAt) <= 180) {
       return { lat: latAt, lng: lngAt };
     }
   }
@@ -432,22 +436,22 @@ function extractLatLngFromMapUrl(url){
 var addImgBase64 = "";
 var editImgBase64 = "";
 
-function handleImageFileSelect(fileInput, targetInputId, previewDivId){
-  if(!fileInput.files || !fileInput.files[0]) return;
+function handleImageFileSelect(fileInput, targetInputId, previewDivId) {
+  if (!fileInput.files || !fileInput.files[0]) return;
   var file = fileInput.files[0];
   var targetInput = document.getElementById(targetInputId);
   var previewDiv = document.getElementById(previewDivId);
   var previewImg = document.getElementById(previewDivId + '-img');
 
   var reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = function (e) {
     var img = new Image();
-    img.onload = function(){
+    img.onload = function () {
       var canvas = document.createElement('canvas');
       var maxW = 900; // Crisp HD mobile resolution (2x Retina sharpness)
       var width = img.width, height = img.height;
 
-      if(width > maxW){
+      if (width > maxW) {
         height = Math.round(height * (maxW / width));
         width = maxW;
       }
@@ -484,21 +488,21 @@ function handleImageFileSelect(fileInput, targetInputId, previewDivId){
       }
 
       // Store in memory variable (NOT in textbox!)
-      if(targetInputId === 'a-img') addImgBase64 = compressedDataUrl;
-      if(targetInputId === 'edit-img') editImgBase64 = compressedDataUrl;
+      if (targetInputId === 'a-img') addImgBase64 = compressedDataUrl;
+      if (targetInputId === 'edit-img') editImgBase64 = compressedDataUrl;
 
       // Show immediate local preview
-      if(previewDiv && previewImg){
+      if (previewDiv && previewImg) {
         previewImg.src = compressedDataUrl;
         previewDiv.style.display = 'block';
       }
 
       // Set clean friendly indicator in textbox
-      if(targetInput){
+      if (targetInput) {
         targetInput.value = '[Đã chọn ảnh từ thiết bị]';
       }
     };
-    img.onerror = function() {
+    img.onerror = function () {
       alert('Lỗi: Định dạng ảnh không được hỗ trợ (có thể là HEIC từ iPhone). Vui lòng chuyển sang JPEG/PNG và thử lại!');
     };
     img.src = e.target.result;
@@ -506,24 +510,24 @@ function handleImageFileSelect(fileInput, targetInputId, previewDivId){
   reader.readAsDataURL(file);
 }
 
-function clearImageSelect(targetInputId, previewDivId, fileInputId){
+function clearImageSelect(targetInputId, previewDivId, fileInputId) {
   document.getElementById(targetInputId).value = '';
-  if(targetInputId === 'a-img') addImgBase64 = '';
-  if(targetInputId === 'edit-img') editImgBase64 = '';
+  if (targetInputId === 'a-img') addImgBase64 = '';
+  if (targetInputId === 'edit-img') editImgBase64 = '';
   var fileInput = document.getElementById(fileInputId);
-  if(fileInput) fileInput.value = '';
+  if (fileInput) fileInput.value = '';
   var previewDiv = document.getElementById(previewDivId);
-  if(previewDiv) previewDiv.style.display = 'none';
+  if (previewDiv) previewDiv.style.display = 'none';
 }
 
 // ── MODALS
-function openModal(id){
-  var m=document.getElementById(id);
-  if(m) m.classList.add('show');
+function openModal(id) {
+  var m = document.getElementById(id);
+  if (m) m.classList.add('show');
 }
-function closeModal(id){
-  var m=document.getElementById(id);
-  if(m) m.classList.remove('show');
+function closeModal(id) {
+  var m = document.getElementById(id);
+  if (m) m.classList.remove('show');
 }
 
 // ── RENDER RECIPES GRID - CHỒNG COOK VỢ LOOK
@@ -555,7 +559,7 @@ function parseIngredient(text) {
         return { qty: qty, unit: match[2] ? match[2].trim() : '', name: match[3], isScalable: true };
       }
     }
-  } catch(e) {}
+  } catch (e) { }
   return { qty: null, name: text, isScalable: false };
 }
 
@@ -573,7 +577,7 @@ function renderIngredientsList(animate = false) {
 
   displayEl.innerText = currentServings + " ng?i";
   const ratio = currentServings / baseServings;
-  
+
   while (listEl.firstChild) {
     listEl.removeChild(listEl.firstChild);
   }
@@ -581,28 +585,28 @@ function renderIngredientsList(animate = false) {
   parsedIngredients.forEach(ing => {
     let label = document.createElement('label');
     label.className = 'rcp-ingred-item';
-    
+
     let checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     label.appendChild(checkbox);
 
     let textSpan = document.createElement('span');
     textSpan.className = 'rcp-ingred-name';
-    
+
     if (ing.isScalable) {
       let newQty = ing.qty * ratio;
       newQty = Math.round(newQty * 100) / 100;
-      
+
       let qtySpan = document.createElement('span');
       qtySpan.className = animate ? "ing-qty changed" : "ing-qty";
       qtySpan.innerText = newQty + (ing.unit ? ing.unit + " " : " ");
-      
+
       textSpan.appendChild(qtySpan);
       textSpan.appendChild(document.createTextNode(ing.name));
     } else {
       textSpan.innerText = ing.name;
     }
-    
+
     label.appendChild(textSpan);
     listEl.appendChild(label);
   });
@@ -611,103 +615,110 @@ function renderIngredientsList(animate = false) {
 function loadRecipesData(force = false) {
   if (isRecipesLoaded && !force) {
     renderRecipes();
+    if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
     return;
   }
   const rcpContainer = document.getElementById('recipe-list');
-  if(rcpContainer) rcpContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sl);">Đang tải công thức...</div>';
+  if (rcpContainer) rcpContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sl);">Đang tải công thức...</div>';
 
   if (typeof google !== 'undefined' && google.script && google.script.run) {
-    google.script.run.withSuccessHandler(function(res) {
+    google.script.run.withSuccessHandler(function (res) {
       RECIPES_DATA = res || [];
       isRecipesLoaded = true;
       renderRecipes();
-      if (document.getElementById('m-admin').style.display === 'flex') renderAdminRcpList();
+      if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
+
+      var mAdmin = document.getElementById('m-admin');
+      if (mAdmin && mAdmin.style.display === 'flex') renderAdminRcpList();
     }).getRecipes();
   } else {
     // API Mock fallback or Vercel fetch
     fetch(API_URL + '?action=getRecipes').then(r => r.json()).then(res => {
-       RECIPES_DATA = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
-       isRecipesLoaded = true;
-       renderRecipes();
-       if (document.getElementById('m-admin').style.display === 'flex') renderAdminRcpList();
+      RECIPES_DATA = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
+      isRecipesLoaded = true;
+      renderRecipes();
+      if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
+
+      var mAdmin = document.getElementById('m-admin');
+      if (mAdmin && mAdmin.style.display === 'flex') renderAdminRcpList();
     }).catch(e => {
-       console.log('Load recipes error:', e);
+      console.log('Load recipes error:', e);
     });
   }
 }
 // ------------------------------------
 
-function renderRecipes(){
+function renderRecipes() {
   var grid = document.getElementById('recipe-list-grid');
-  if(!grid) return;
+  if (!grid) return;
   var list = RECIPES_DATA;
-  if(recipeFilterCategory && recipeFilterCategory !== 'all'){
-    list = RECIPES_DATA.filter(function(r){
-      return (r.category||'').indexOf(recipeFilterCategory) !== -1;
+  if (recipeFilterCategory && recipeFilterCategory !== 'all') {
+    list = RECIPES_DATA.filter(function (r) {
+      return (r.category || '').indexOf(recipeFilterCategory) !== -1;
     });
   }
-  if(list.length === 0){
+  if (list.length === 0) {
     grid.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;grid-column:1/-1;">Chưa có công thức nào thuộc danh mục này.</div>';
     return;
   }
-  grid.innerHTML = list.map(function(r){
+  grid.innerHTML = list.map(function (r) {
     var vidUrl = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
     var region = r.region || 'Đặc Sản';
     var serving = r.serving || '4 người';
-    return '<div class="recipe-card-glass" onclick="openRecipeDetail(\''+r.id+'\')">'
-      + '<div class="rcp-img-wrap"><img src="'+r.image+'" alt="'+r.name+'"/><span class="rcp-region-tag">'+region+'</span></div>'
+    return '<div class="recipe-card-glass" onclick="openRecipeDetail(\'' + r.id + '\')">'
+      + '<div class="rcp-img-wrap"><img src="' + r.image + '" alt="' + r.name + '"/><span class="rcp-region-tag">' + region + '</span></div>'
       + '<div class="rcp-body">'
-      + '<div class="rcp-title">'+r.name+'</div>'
+      + '<div class="rcp-title">' + r.name + '</div>'
       + '<div class="rcp-stats">'
-      + '<div class="rcp-stat-item">⏱️ '+r.time+'</div>'
-      + '<div class="rcp-stat-item">👨‍👩‍👧 '+serving+'</div>'
-      + '<div class="rcp-stat-item">🧑‍🍳 '+r.level+'</div>'
+      + '<div class="rcp-stat-item">⏱️ ' + r.time + '</div>'
+      + '<div class="rcp-stat-item">👨‍👩‍👧 ' + serving + '</div>'
+      + '<div class="rcp-stat-item">🧑‍🍳 ' + r.level + '</div>'
       + '</div>'
-      + '<button class="rcp-btn-play" onclick="event.stopPropagation(); window.open(\''+vidUrl+'\',\'_blank\')">🎬 Xem video nấu</button>'
+      + '<button class="rcp-btn-play" onclick="event.stopPropagation(); window.open(\'' + vidUrl + '\',\'_blank\')">🎬 Xem video nấu</button>'
       + '</div></div>';
   }).join('');
 }
 
-function openRecipeDetail(id){
-    var r = RECIPES_DATA.find(function(item){return item.id===id;});
-    if(!r) return;
-    currentSheetRecipeId = r.id;
-    
-    document.getElementById('rcp-cat').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 10H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1zm-1.5-2a1 1 0 0 0 .5-.86v-1a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 0 4 6.14v1a1 1 0 0 0 .5.86h15z"/></svg> ' + r.category;
-    document.getElementById('rcp-title').textContent = r.name;
-    
-    document.getElementById('rcp-meta').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ' + r.time + ' &bull; <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2z"></path><path d="M19.914 10H4.086A2 2 0 0 0 2 12v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2.086-2z"></path><path d="M15 10V7a3 3 0 0 0-6 0v3"></path></svg> ' + r.level;
+function openRecipeDetail(id) {
+  var r = RECIPES_DATA.find(function (item) { return item.id === id; });
+  if (!r) return;
+  currentSheetRecipeId = r.id;
 
-    baseServings = parseFloat(r.default_servings) || 4;
-    currentServings = baseServings;
-    parsedIngredients = (r.ingredients || []).map(parseIngredient);
-    renderIngredientsList();
+  document.getElementById('rcp-cat').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 10H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1zm-1.5-2a1 1 0 0 0 .5-.86v-1a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 0 4 6.14v1a1 1 0 0 0 .5.86h15z"/></svg> ' + r.category;
+  document.getElementById('rcp-title').textContent = r.name;
 
-    document.getElementById('rcp-steps-list').className = 'rcp-step-list';
-    document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function(st, idx){
-      var parts = st.split(':');
-      var stNum = idx + 1;
-      var stDesc = st;
-      if(parts.length > 1) {
-         stDesc = parts.slice(1).join(':').trim();
-      }
-      return '<div class="rcp-step-item">'
-           + '<div class="rcp-step-num">'+stNum+'</div>'
-           + '<div class="rcp-step-content">'
-           + '<div class="rcp-step-title">B\u01B0\u1EDBc '+stNum+'</div>'
-           + '<div class="rcp-step-desc">'+stDesc+'</div>'
-           + '</div></div>';
-    }).join('');
+  document.getElementById('rcp-meta').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ' + r.time + ' &bull; <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2z"></path><path d="M19.914 10H4.086A2 2 0 0 0 2 12v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2.086-2z"></path><path d="M15 10V7a3 3 0 0 0-6 0v3"></path></svg> ' + r.level;
 
-    var vidBtn = document.getElementById('btn-rcp-video');
-    if(vidBtn){
-      vidBtn.href = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
+  baseServings = parseFloat(r.default_servings) || 4;
+  currentServings = baseServings;
+  parsedIngredients = (r.ingredients || []).map(parseIngredient);
+  renderIngredientsList();
+
+  document.getElementById('rcp-steps-list').className = 'rcp-step-list';
+  document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function (st, idx) {
+    var parts = st.split(':');
+    var stNum = idx + 1;
+    var stDesc = st;
+    if (parts.length > 1) {
+      stDesc = parts.slice(1).join(':').trim();
     }
+    return '<div class="rcp-step-item">'
+      + '<div class="rcp-step-num">' + stNum + '</div>'
+      + '<div class="rcp-step-content">'
+      + '<div class="rcp-step-title">B\u01B0\u1EDBc ' + stNum + '</div>'
+      + '<div class="rcp-step-desc">' + stDesc + '</div>'
+      + '</div></div>';
+  }).join('');
 
-  document.getElementById('btn-rcp-findmap').onclick = function(){
+  var vidBtn = document.getElementById('btn-rcp-video');
+  if (vidBtn) {
+    vidBtn.href = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
+  }
+
+  document.getElementById('btn-rcp-findmap').onclick = function () {
     closeModal('m-recipe-detail');
     switchNav('map');
-    var matchBtn = document.querySelector('.pill[data-cat="'+r.searchCat+'"]');
+    var matchBtn = document.querySelector('.pill[data-cat="' + r.searchCat + '"]');
     filterMap(r.searchCat, matchBtn);
   };
 
@@ -721,84 +732,84 @@ var currentSheetLoc = null;      // địa điểm đang mở trong bottom-sheet
 var currentSheetRecipeId = null; // id công thức đang mở trong modal
 var deepLinkLocResolved = false; // đảm bảo deep-link địa điểm chỉ tự mở đúng 1 lần
 
-function buildShareUrl(type, id){
+function buildShareUrl(type, id) {
   var base = window.location.origin + window.location.pathname;
-  
+
   if (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL && SCRIPT_URL.indexOf('script.google.com') !== -1) {
     base = SCRIPT_URL;
   }
-  
+
   return base + '?id=' + encodeURIComponent(id) + (type === 'recipe' ? '&type=recipe' : '');
 }
 
 // Cập nhật SCRIPT_URL bất đồng bộ để chống lỗi cache
 try {
   if (typeof google !== 'undefined' && google.script && google.script.run) {
-    google.script.run.withSuccessHandler(function(url) {
+    google.script.run.withSuccessHandler(function (url) {
       if (url && url.indexOf('script.google.com') !== -1) {
         SCRIPT_URL = url;
       }
     }).getScriptUrlLive();
   }
-} catch(e) {
+} catch (e) {
   console.log("getScriptUrlLive not available on this deployment yet.");
 }
 
-function showToast(msg){
+function showToast(msg) {
   var t = document.getElementById('mini-toast-el');
-  if(!t){
+  if (!t) {
     t = document.createElement('div');
     t.id = 'mini-toast-el';
     t.style.cssText = 'position:fixed;bottom:calc(90px + var(--sb,0px));left:50%;transform:translateX(-50%) translateY(20px);background:rgba(15,23,42,.92);color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;z-index:5000;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap;max-width:86vw;text-align:center;';
     document.body.appendChild(t);
   }
   t.textContent = msg;
-  requestAnimationFrame(function(){ t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+  requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
   clearTimeout(t._hideTimer);
-  t._hideTimer = setTimeout(function(){ t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2200);
+  t._hideTimer = setTimeout(function () { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2200);
 }
 
-function fallbackCopyText(text){
+function fallbackCopyText(text) {
   var ta = document.createElement('textarea');
   ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.focus(); ta.select();
-  try{ document.execCommand('copy'); showToast('Đã copy link!'); }
-  catch(e){ showToast('Copy thất bại, vui lòng thử lại'); }
+  try { document.execCommand('copy'); showToast('Đã copy link!'); }
+  catch (e) { showToast('Copy thất bại, vui lòng thử lại'); }
   document.body.removeChild(ta);
 }
 
-function shareOrCopy(url, title, text){
-  if(navigator.share){
-    navigator.share({title: title || '', text: text || '', url: url}).catch(function(){});
-  } else if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){ showToast('Đã copy link!'); }).catch(function(){ fallbackCopyText(url); });
+function shareOrCopy(url, title, text) {
+  if (navigator.share) {
+    navigator.share({ title: title || '', text: text || '', url: url }).catch(function () { });
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function () { showToast('Đã copy link!'); }).catch(function () { fallbackCopyText(url); });
   } else {
     fallbackCopyText(url);
   }
 }
 
-function shareCurrentLocation(){
-  if(!currentSheetLoc) return;
+function shareCurrentLocation() {
+  if (!currentSheetLoc) return;
   var url = buildShareUrl('loc', currentSheetLoc.id);
   shareOrCopy(url, fixUtf8(currentSheetLoc.name), 'Xem quán này trên Thao Thức Guide');
 }
 
-function shareCurrentRecipe(){
-  if(!currentSheetRecipeId) return;
-  var r = RECIPES_DATA.find(function(item){ return item.id === currentSheetRecipeId; });
+function shareCurrentRecipe() {
+  if (!currentSheetRecipeId) return;
+  var r = RECIPES_DATA.find(function (item) { return item.id === currentSheetRecipeId; });
   var url = buildShareUrl('recipe', currentSheetRecipeId);
   shareOrCopy(url, r ? r.name : '', 'Xem công thức này trên Thao Thức Guide');
 }
 
 // ── BOTTOM NAV: gọn mặc định; bấm vào tab -> cả thanh phình hiện label; cuộn trang/kéo map -> thu gọn lại
-function expandNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.add('expanded'); }
-function collapseNav(){ var n=document.getElementById('main-bottom-nav'); if(n) n.classList.remove('expanded'); }
-function navTap(tab){ switchNav(tab); expandNav(); }
-['page-home','page-cook'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el) {
+function expandNav() { var n = document.getElementById('main-bottom-nav'); if (n) n.classList.add('expanded'); }
+function collapseNav() { var n = document.getElementById('main-bottom-nav'); if (n) n.classList.remove('expanded'); }
+function navTap(tab) { switchNav(tab); expandNav(); }
+['page-home', 'page-cook'].forEach(function (id) {
+  var el = document.getElementById(id);
+  if (el) {
     var lastScrollTop = 0;
-    el.addEventListener('scroll', function() {
+    el.addEventListener('scroll', function () {
       var st = el.scrollTop;
       if (st <= 0) {
         expandNav();
@@ -806,79 +817,79 @@ function navTap(tab){ switchNav(tab); expandNav(); }
         return;
       }
       if (Math.abs(lastScrollTop - st) <= 5) return; // Bỏ qua cuộn quá nhẹ
-      
+
       if (st > lastScrollTop) {
         collapseNav(); // Cuộn xuống (kéo lên) -> đọc nội dung -> thu nhỏ
       } else {
         expandNav();   // Cuộn lên (kéo xuống) -> về đầu trang -> phóng to
       }
       lastScrollTop = st;
-    }, {passive:true});
+    }, { passive: true });
   }
 });
 
 // ── BOTTOM NAV SWITCHING (HOME | MAP | COOK | ADMIN)
-function switchNav(tab, skipAutoFly){
-  if(tab !== 'map'){ var dd = document.getElementById('map-search-dropdown'); if(dd) dd.classList.remove('show'); }
-  ['home','map','cook'].forEach(function(k){
-    var btn=document.getElementById('bnav-'+k);
-    if(btn){
-      var isActive = (k===tab);
+function switchNav(tab, skipAutoFly) {
+  if (tab !== 'map') { var dd = document.getElementById('map-search-dropdown'); if (dd) dd.classList.remove('show'); }
+  ['home', 'map', 'cook'].forEach(function (k) {
+    var btn = document.getElementById('bnav-' + k);
+    if (btn) {
+      var isActive = (k === tab);
       btn.classList.toggle('active', isActive);
       var icon = btn.querySelector('i');
-      if(icon) icon.className = (isActive ? 'ph-fill ph-' : 'ph ph-') + btn.dataset.icon;
+      if (icon) icon.className = (isActive ? 'ph-fill ph-' : 'ph ph-') + btn.dataset.icon;
     }
-    var p=document.getElementById('page-'+k);
-    if(p) p.classList.toggle('show',k===tab);
+    var p = document.getElementById('page-' + k);
+    if (p) p.classList.toggle('show', k === tab);
   });
 
-  var isMap=(tab==='map');
+  var isMap = (tab === 'map');
   document.getElementById('map-header').style.display = isMap ? 'flex' : 'none';
   document.getElementById('pill-bar').style.display = isMap ? 'flex' : 'none';
   document.getElementById('locate-btn').style.display = isMap ? 'flex' : 'none';
   var mobileListBtn = document.getElementById('mobile-list-btn');
-  if(mobileListBtn) { mobileListBtn.style.display = isMap && window.innerWidth < 1024 ? 'flex' : 'none'; }
-  if(!isMap) closeSheet();
+  if (mobileListBtn) { mobileListBtn.style.display = isMap && window.innerWidth < 1024 ? 'flex' : 'none'; }
+  if (!isMap) closeSheet();
 
   // ── DESKTOP SPLIT-VIEW: chỉ bật khi đang ở trang map VÀ màn hình rộng ≥1024px ──
   // ── DESKTOP MODE: rail trái áp dụng mọi trang; split-view map chỉ áp dụng trang map ──
   document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
   document.body.classList.toggle('desktop-map-view', isMap && window.innerWidth >= 1024);
-  if(isMap && window.map){ setTimeout(function(){ map.invalidateSize(true); map.setView(map.getCenter(), map.getZoom()); }, 350); }
+  if (isMap && window.map) { setTimeout(function () { map.invalidateSize(true); map.setView(map.getCenter(), map.getZoom()); }, 350); }
 
-  if(tab==='cook') loadRecipesData();
-  
+  if (tab === 'cook') loadRecipesData();
+
   // ── CHATBOT OVERLAY FIX: ẩn nút AI khi ở tab Admin để không che nút Sửa/Xóa ──
   var aiFab = document.getElementById('ai-fab') || document.querySelector('.ai-fab');
-  if(aiFab){
-    aiFab.style.opacity=''; aiFab.style.pointerEvents=''; aiFab.style.zIndex='';
+  if (aiFab) {
+    aiFab.style.opacity = ''; aiFab.style.pointerEvents = ''; aiFab.style.zIndex = '';
   }
 
-  if(isMap && window.map){
-    setTimeout(function(){
+  if (isMap && window.map) {
+    setTimeout(function () {
       map.invalidateSize();
-      if(!skipAutoFly) {
-        if(userMarker){
+      if (!skipAutoFly) {
+        if (userMarker) {
           map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
-        } else if(markers.length){
-          try{ 
+        } else if (markers.length) {
+          try {
             var group = L.featureGroup(markers);
             map.fitBounds(group.getBounds(), { maxZoom: 14, padding: [50, 50] });
-          }catch(e){}
+          } catch (e) { }
         }
       }
-    },100);
+    }, 100);
   }
 }
 
 // ── DEDICATED ADMIN TAB CONTROLLER (THAO THỨC GUIDE ADMIN)
 var isAdmin = false;
 
-function checkAdminAuth(){
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+function checkAdminAuth() {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(res){
-        if(res && res.isAdmin){
+      .withSuccessHandler(function (res) {
+        if (res && res.isAdmin) {
           isAdmin = true;
           document.getElementById('main-bottom-nav').classList.add('admin-mode');
           document.getElementById('bnav-admin').style.display = 'flex';
@@ -897,20 +908,20 @@ function checkAdminAuth(){
   }
 }
 
-function switchAdminSec(sec){
-  ['locs','rcps','sugs'].forEach(function(k){
-    var btn = document.getElementById('atab-'+k);
-    if(btn) btn.classList.toggle('active', k===sec);
-    var div = document.getElementById('asec-'+k);
-    if(div) div.style.display = (k===sec) ? 'block' : 'none';
+function switchAdminSec(sec) {
+  ['locs', 'rcps', 'sugs'].forEach(function (k) {
+    var btn = document.getElementById('atab-' + k);
+    if (btn) btn.classList.toggle('active', k === sec);
+    var div = document.getElementById('asec-' + k);
+    if (div) div.style.display = (k === sec) ? 'block' : 'none';
   });
 
-  if(sec==='locs') renderAdminLocList();
-  if(sec==='rcps') renderAdminRcpList();
-  if(sec==='sugs') loadAdminSuggestions();
+  if (sec === 'locs') renderAdminLocList();
+  if (sec === 'rcps') renderAdminRcpList();
+  if (sec === 'sugs') loadAdminSuggestions();
 }
 
-function renderAdminTab(){
+function renderAdminTab() {
   switchAdminSec('locs');
 }
 
@@ -918,68 +929,68 @@ function renderAdminTab(){
 var adminRcpFilter = 'all';
 var adminRcpPage = 1;
 
-function setAdminRcpFilter(f){
+function setAdminRcpFilter(f) {
   adminRcpFilter = f;
   adminRcpPage = 1;
-  document.querySelectorAll('#admin-rcp-filter-pills .admin-fpill').forEach(function(p){
-    p.classList.toggle('active', p.getAttribute('data-f')===f);
+  document.querySelectorAll('#admin-rcp-filter-pills .admin-fpill').forEach(function (p) {
+    p.classList.toggle('active', p.getAttribute('data-f') === f);
   });
   renderAdminRcpList();
 }
 
-function changeAdminRcpPage(delta){
+function changeAdminRcpPage(delta) {
   adminRcpPage += delta;
   renderAdminRcpList();
 }
 
-function renderAdminRcpList(){
+function renderAdminRcpList() {
   var container = document.getElementById('admin-rcp-container');
-  if(!container) return;
+  if (!container) return;
   var inputEl = document.getElementById('admin-rcp-search');
-  var query = inputEl ? (inputEl.value||'').toLowerCase().trim() : '';
+  var query = inputEl ? (inputEl.value || '').toLowerCase().trim() : '';
 
-  var list = RECIPES_DATA.filter(function(r){
-    if(query){
+  var list = RECIPES_DATA.filter(function (r) {
+    if (query) {
       var ingText = Array.isArray(r.ingredients) ? r.ingredients.join(' ').toLowerCase() : '';
-      if((r.name||'').toLowerCase().indexOf(query)===-1 && (r.category||'').toLowerCase().indexOf(query)===-1 && ingText.indexOf(query)===-1) return false;
+      if ((r.name || '').toLowerCase().indexOf(query) === -1 && (r.category || '').toLowerCase().indexOf(query) === -1 && ingText.indexOf(query) === -1) return false;
     }
-    if(adminRcpFilter==='all') return true;
-    return (r.category||'').indexOf(adminRcpFilter) !== -1;
+    if (adminRcpFilter === 'all') return true;
+    return (r.category || '').indexOf(adminRcpFilter) !== -1;
   });
 
-  if(list.length === 0){
+  if (list.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;">Không tìm thấy công thức phù hợp.</div>';
     document.getElementById('admin-rcp-pagination').innerHTML = '';
     return;
   }
 
   var totalPages = Math.max(1, Math.ceil(list.length / ADMIN_PAGE_SIZE));
-  if(adminRcpPage > totalPages) adminRcpPage = totalPages;
-  if(adminRcpPage < 1) adminRcpPage = 1;
-  var pageList = list.slice((adminRcpPage-1)*ADMIN_PAGE_SIZE, adminRcpPage*ADMIN_PAGE_SIZE);
+  if (adminRcpPage > totalPages) adminRcpPage = totalPages;
+  if (adminRcpPage < 1) adminRcpPage = 1;
+  var pageList = list.slice((adminRcpPage - 1) * ADMIN_PAGE_SIZE, adminRcpPage * ADMIN_PAGE_SIZE);
 
-  container.innerHTML = pageList.map(function(r){
+  container.innerHTML = pageList.map(function (r) {
     return '<div class="admin-loc-item">'
       + '<div class="admin-loc-info">'
-      + '<div class="admin-loc-name">'+r.name+'</div>'
-      + '<div class="admin-loc-sub">'+r.category+' • ⏱️ '+r.time+'</div>'
+      + '<div class="admin-loc-name">' + r.name + '</div>'
+      + '<div class="admin-loc-sub">' + r.category + ' • ⏱️ ' + r.time + '</div>'
       + '</div>'
       + '<div class="admin-loc-btns">'
-      + '<button class="btn-sm-edit" onclick="openAdminEditRecipe(\''+r.id+'\')">✏️ Sửa</button>'
-      + '<button class="btn-sm-del" onclick="deleteRecipeItem(\''+r.id+'\')">🗑️ Xóa</button>'
+      + '<button class="btn-sm-edit" onclick="openAdminEditRecipe(\'' + r.id + '\')">✏️ Sửa</button>'
+      + '<button class="btn-sm-del" onclick="deleteRecipeItem(\'' + r.id + '\')">🗑️ Xóa</button>'
       + '</div>'
       + '</div>';
   }).join('');
 
   document.getElementById('admin-rcp-pagination').innerHTML =
-    '<button class="admin-page-btn" '+(adminRcpPage<=1?'disabled':'')+' onclick="changeAdminRcpPage(-1)">◀ Trang trước</button>'
-    + '<span class="admin-page-info">Page '+adminRcpPage+' / '+totalPages+'</span>'
-    + '<button class="admin-page-btn" '+(adminRcpPage>=totalPages?'disabled':'')+' onclick="changeAdminRcpPage(1)">Trang sau ▶</button>';
+    '<button class="admin-page-btn" ' + (adminRcpPage <= 1 ? 'disabled' : '') + ' onclick="changeAdminRcpPage(-1)">◀ Trang trước</button>'
+    + '<span class="admin-page-info">Page ' + adminRcpPage + ' / ' + totalPages + '</span>'
+    + '<button class="admin-page-btn" ' + (adminRcpPage >= totalPages ? 'disabled' : '') + ' onclick="changeAdminRcpPage(1)">Trang sau ▶</button>';
 }
 
-function openAdminEditRecipe(id){
-  var r = RECIPES_DATA.find(function(x){return x.id===id;});
-  if(!r) return;
+function openAdminEditRecipe(id) {
+  var r = RECIPES_DATA.find(function (x) { return x.id === id; });
+  if (!r) return;
   document.getElementById('er-id').value = r.id;
   document.getElementById('er-name').value = r.name || '';
   document.getElementById('er-cat').value = r.category || '';
@@ -987,33 +998,33 @@ function openAdminEditRecipe(id){
   document.getElementById('er-level').value = r.level || '';
   document.getElementById('er-img').value = r.image || '';
   document.getElementById('er-video').value = r.video_url || '';
-  document.getElementById('er-ing').value = (r.ingredients||[]).join('\n');
-  document.getElementById('er-steps').value = (r.steps||[]).join('\n');
+  document.getElementById('er-ing').value = (r.ingredients || []).join('\n');
+  document.getElementById('er-steps').value = (r.steps || []).join('\n');
   openModal('m-admin-edit-recipe');
 }
 
-function doAdminUpdateRecipe(){
+function doAdminUpdateRecipe() {
   var id = document.getElementById('er-id').value;
-  var r = RECIPES_DATA.find(function(x){return x.id===id;});
-  if(!r) return;
+  var r = RECIPES_DATA.find(function (x) { return x.id === id; });
+  if (!r) return;
   r.name = document.getElementById('er-name').value.trim() || r.name;
   r.category = document.getElementById('er-cat').value.trim() || r.category;
   r.time = document.getElementById('er-time').value.trim() || r.time;
   r.level = document.getElementById('er-level').value.trim() || r.level;
   r.image = document.getElementById('er-img').value.trim() || r.image;
   r.video_url = document.getElementById('er-video').value.trim() || r.video_url;
-  r.ingredients = document.getElementById('er-ing').value.split('\n').filter(function(s){return s.trim();});
-  r.steps = document.getElementById('er-steps').value.split('\n').filter(function(s){return s.trim();});
+  r.ingredients = document.getElementById('er-ing').value.split('\n').filter(function (s) { return s.trim(); });
+  r.steps = document.getElementById('er-steps').value.split('\n').filter(function (s) { return s.trim(); });
   alert('✅ Đã cập nhật công thức!');
   closeModal('m-admin-edit-recipe');
   renderRecipes();
   renderAdminRcpList();
 }
 
-function doAdminAddRecipe(){
+function doAdminAddRecipe() {
   var name = document.getElementById('ar-name').value.trim();
-  if(!name){alert('Vui lòng nhập tên công thức món ăn!');return;}
-  
+  if (!name) { alert('Vui lòng nhập tên công thức món ăn!'); return; }
+
   var newRcp = {
     id: 'rcp_' + Date.now(),
     name: name,
@@ -1022,8 +1033,8 @@ function doAdminAddRecipe(){
     level: document.getElementById('ar-level').value.trim() || 'Dễ làm',
     image: document.getElementById('ar-img').value.trim() || CAT_IMAGES['Default'],
     video_url: document.getElementById('ar-video').value.trim() || 'https://www.tiktok.com/@chongcookvolook',
-    ingredients: document.getElementById('ar-ing').value.split('\n').filter(function(s){return s.trim();}),
-    steps: document.getElementById('ar-steps').value.split('\n').filter(function(s){return s.trim();}),
+    ingredients: document.getElementById('ar-ing').value.split('\n').filter(function (s) { return s.trim(); }),
+    steps: document.getElementById('ar-steps').value.split('\n').filter(function (s) { return s.trim(); }),
     searchCat: 'Bún / Phở / Món Nước'
   };
 
@@ -1032,34 +1043,34 @@ function doAdminAddRecipe(){
   closeModal('m-admin-add-recipe');
   renderRecipes();
   renderAdminRcpList();
-  ['ar-name','ar-cat','ar-time','ar-level','ar-img','ar-video','ar-ing','ar-steps'].forEach(function(id){document.getElementById(id).value='';});
+  ['ar-name', 'ar-cat', 'ar-time', 'ar-level', 'ar-img', 'ar-video', 'ar-ing', 'ar-steps'].forEach(function (id) { document.getElementById(id).value = ''; });
 }
 
-function deleteRecipeItem(id){
-  if(!confirm('Bạn có muốn xóa công thức này?')) return;
-  RECIPES_DATA = RECIPES_DATA.filter(function(r){return r.id!==id;});
+function deleteRecipeItem(id) {
+  if (!confirm('Bạn có muốn xóa công thức này?')) return;
+  RECIPES_DATA = RECIPES_DATA.filter(function (r) { return r.id !== id; });
   renderRecipes();
   renderAdminRcpList();
 }
 
-function loadAdminSuggestions(){
+function loadAdminSuggestions() {
   var container = document.getElementById('admin-sug-container');
-  if(!container) return;
+  if (!container) return;
   container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--sl);">Đang tải hòm thư gợi ý...</div>';
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(list){
-        if(!Array.isArray(list) || list.length===0){
+      .withSuccessHandler(function (list) {
+        if (!Array.isArray(list) || list.length === 0) {
           container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--sl);font-weight:700;">Chưa có gợi ý nào từ khán giả.</div>';
           return;
         }
-        container.innerHTML = list.map(function(s){
+        container.innerHTML = list.map(function (s) {
           return '<div class="admin-loc-item">'
             + '<div class="admin-loc-info">'
-            + '<div class="admin-loc-name">'+UI_ICONS.pin+fixUtf8(s.place_name)+'</div>'
-            + '<div class="admin-loc-sub">'+(fixUtf8(s.category)||'Ẩm thực')+' • '+(s.address||'')+ ' • GPS: '+s.lat+','+s.lng+'</div>'
-            + '<div style="font-size:13px;color:var(--nv);margin-top:4px;font-style:italic;">"'+fixUtf8(s.must_try_notes)+'"</div>'
+            + '<div class="admin-loc-name">' + UI_ICONS.pin + fixUtf8(s.place_name) + '</div>'
+            + '<div class="admin-loc-sub">' + (fixUtf8(s.category) || 'Ẩm thực') + ' • ' + (s.address || '') + ' • GPS: ' + s.lat + ',' + s.lng + '</div>'
+            + '<div style="font-size:13px;color:var(--nv);margin-top:4px;font-style:italic;">"' + fixUtf8(s.must_try_notes) + '"</div>'
             + '</div>'
             + '</div>';
         }).join('');
@@ -1071,79 +1082,79 @@ function loadAdminSuggestions(){
 }
 
 // ── GEOLOCATION & GPS FOCUS
-var userMarker=null, locating=false;
+var userMarker = null, locating = false;
 
-function autoLocateOnLaunch(){
-  if(navigator.geolocation){
+function autoLocateOnLaunch() {
+  if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      function(pos){
-        var lat=pos.coords.latitude, lng=pos.coords.longitude;
-        if(userMarker) map.removeLayer(userMarker);
-        var html='<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
-        userMarker=L.marker([lat,lng],{icon:L.divIcon({html:html,iconSize:[36,36],iconAnchor:[18,18],className:'custom-map-pin'})}).addTo(map);
+      function (pos) {
+        var lat = pos.coords.latitude, lng = pos.coords.longitude;
+        if (userMarker) map.removeLayer(userMarker);
+        var html = '<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
+        userMarker = L.marker([lat, lng], { icon: L.divIcon({ html: html, iconSize: [36, 36], iconAnchor: [18, 18], className: 'custom-map-pin' }) }).addTo(map);
 
         // Fly straight to user location at zoom level 15
         map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
       },
-      function(err){
+      function (err) {
         // GPS permission pending/denied
       },
-      {enableHighAccuracy:true, timeout:8000}
+      { enableHighAccuracy: true, timeout: 8000 }
     );
   }
 }
 
-function locateMe(){
-  if(!navigator.geolocation){alert(t('locErr'));return;}
+function locateMe() {
+  if (!navigator.geolocation) { alert(t('locErr')); return; }
   switchNav('map'); // Auto-switch to map tab
-  var btn=document.getElementById('locate-btn');
-  if(locating)return;
-  locating=true; btn.classList.add('locating');
+  var btn = document.getElementById('locate-btn');
+  if (locating) return;
+  locating = true; btn.classList.add('locating');
   navigator.geolocation.getCurrentPosition(
-    function(pos){
-      locating=false; btn.classList.remove('locating');
-      var lat=pos.coords.latitude, lng=pos.coords.longitude;
-      if(userMarker) map.removeLayer(userMarker);
-      var html='<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
-      userMarker=L.marker([lat,lng],{icon:L.divIcon({html:html,iconSize:[36,36],iconAnchor:[18,18],className:'custom-map-pin'})}).addTo(map);
+    function (pos) {
+      locating = false; btn.classList.remove('locating');
+      var lat = pos.coords.latitude, lng = pos.coords.longitude;
+      if (userMarker) map.removeLayer(userMarker);
+      var html = '<div class="user-dot-outer"><div class="user-dot-inner"></div></div>';
+      userMarker = L.marker([lat, lng], { icon: L.divIcon({ html: html, iconSize: [36, 36], iconAnchor: [18, 18], className: 'custom-map-pin' }) }).addTo(map);
 
       // Smooth flyTo animation to user's exact GPS coordinates
       map.flyTo([lat, lng], 15, { animate: true, duration: 1.2 });
 
-      if (activeFilter === 'near') { var nBtn = document.getElementById('btn-near'); if(nBtn) nBtn.classList.add('active'); }
-        if (activeFilter === 'near') { var nBtn = document.getElementById('btn-near'); if(nBtn) nBtn.classList.add('active'); }
-        filterMap(activeFilter, null, true); // cập nhật khoảng cách cho cả desktop & mobile
+      if (activeFilter === 'near') { var nBtn = document.getElementById('btn-near'); if (nBtn) nBtn.classList.add('active'); }
+      if (activeFilter === 'near') { var nBtn = document.getElementById('btn-near'); if (nBtn) nBtn.classList.add('active'); }
+      filterMap(activeFilter, null, true); // cập nhật khoảng cách cho cả desktop & mobile
 
-      setTimeout(function(){ map.invalidateSize(); }, 300);
+      setTimeout(function () { map.invalidateSize(); }, 300);
     },
-    function(){
-      locating=false; btn.classList.remove('locating');
+    function () {
+      locating = false; btn.classList.remove('locating');
       alert(t('locErr'));
     },
-    {enableHighAccuracy:true,timeout:10000}
+    { enableHighAccuracy: true, timeout: 10000 }
   );
 }
 
-function gpsForSuggest(){
-  if(!navigator.geolocation){alert(t('locErr'));return;}
+function gpsForSuggest() {
+  if (!navigator.geolocation) { alert(t('locErr')); return; }
   navigator.geolocation.getCurrentPosition(
-    function(pos){
-      document.getElementById('s-lat').value=pos.coords.latitude.toFixed(6);
-      document.getElementById('s-lng').value=pos.coords.longitude.toFixed(6);
+    function (pos) {
+      document.getElementById('s-lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('s-lng').value = pos.coords.longitude.toFixed(6);
       var btn = document.getElementById('s-btn-gps');
       var badge = document.getElementById('s-gps-badge');
-      if(btn) btn.style.display = 'none';
-      if(badge) badge.style.display = 'block';
+      if (btn) btn.style.display = 'none';
+      if (badge) badge.style.display = 'block';
     },
-    function(){alert(t('locErr'));},
-    {enableHighAccuracy:true,timeout:10000}
+    function () { alert(t('locErr')); },
+    { enableHighAccuracy: true, timeout: 10000 }
   );
 }
 
-function doSuggest(){
-  var name=document.getElementById('s-name').value.trim();
-  if(!name){alert(t('nameReq'));return;}
-  
+function doSuggest() {
+  var name = document.getElementById('s-name').value.trim();
+  if (!name) { alert(t('nameReq')); return; }
+
   var data = {
     name: name,
     address: document.getElementById('s-addr').value.trim(),
@@ -1154,66 +1165,66 @@ function doSuggest(){
     image: document.getElementById('s-img').value.trim()
   };
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(){
+      .withSuccessHandler(function () {
         alert(t('sent'));
-        ['s-name','s-addr','s-lat','s-lng','s-cat','s-note','s-img'].forEach(function(id){
+        ['s-name', 's-addr', 's-lat', 's-lng', 's-cat', 's-note', 's-img'].forEach(function (id) {
           var el = document.getElementById(id);
-          if(el) el.value='';
+          if (el) el.value = '';
         });
         var pv = document.getElementById('s-img-preview');
         var pvi = document.getElementById('s-img-preview-img');
-        if(pv) pv.style.display = 'none';
-        if(pvi) pvi.src = '';
+        if (pv) pv.style.display = 'none';
+        if (pvi) pvi.src = '';
         var btn = document.getElementById('s-btn-gps');
         var badge = document.getElementById('s-gps-badge');
-        if(btn) btn.style.display = 'flex';
-        if(badge) badge.style.display = 'none';
+        if (btn) btn.style.display = 'flex';
+        if (badge) badge.style.display = 'none';
         closeModal('m-sug');
       })
-      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .withFailureHandler(function (e) { alert('Lỗi: ' + e.message); })
       .saveSuggestion(data);
-  }else{
+  } else {
     alert(t('sent'));
-    ['s-name','s-addr','s-lat','s-lng','s-cat','s-note'].forEach(function(id){document.getElementById(id).value='';});
+    ['s-name', 's-addr', 's-lat', 's-lng', 's-cat', 's-note'].forEach(function (id) { document.getElementById(id).value = ''; });
     closeModal('m-sug');
   }
 }
 
-function openAdminModal(mode){
+function openAdminModal(mode) {
   clearImageSelect('a-img', 'a-img-preview', 'a-img-file');
-  ['a-name','a-lat','a-lng','a-cat','a-must','a-price','a-video','a-map','a-hours','a-desc'].forEach(function(id){
+  ['a-name', 'a-lat', 'a-lng', 'a-cat', 'a-must', 'a-price', 'a-video', 'a-map', 'a-hours', 'a-desc'].forEach(function (id) {
     var el = document.getElementById(id);
-    if(el) el.value = '';
+    if (el) el.value = '';
   });
   var starsEl = document.getElementById('a-stars');
-  if(starsEl) starsEl.value = '3';
+  if (starsEl) starsEl.value = '3';
 
   var statusEl = document.getElementById('a-gps-status');
-  if(statusEl){ statusEl.style.display='none'; statusEl.textContent=''; }
+  if (statusEl) { statusEl.style.display = 'none'; statusEl.textContent = ''; }
 
   // ── Auto-GPS: luôn tự lấy vị trí hiện tại khi mở modal (không chỉ khi bấm nút GPS riêng) ──
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(function(pos){
-      document.getElementById('a-lat').value=pos.coords.latitude.toFixed(6);
-      document.getElementById('a-lng').value=pos.coords.longitude.toFixed(6);
-      if(statusEl){ statusEl.style.display='inline-flex'; statusEl.textContent='📍 Đã tự động lấy vị trí GPS hiện tại'; statusEl.style.color='#0EA5E9'; statusEl.style.background='rgba(14,165,233,.1)'; }
-    },function(){}, {enableHighAccuracy:true,timeout:8000});
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      document.getElementById('a-lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('a-lng').value = pos.coords.longitude.toFixed(6);
+      if (statusEl) { statusEl.style.display = 'inline-flex'; statusEl.textContent = '📍 Đã tự động lấy vị trí GPS hiện tại'; statusEl.style.color = '#0EA5E9'; statusEl.style.background = 'rgba(14,165,233,.1)'; }
+    }, function () { }, { enableHighAccuracy: true, timeout: 8000 });
   }
 
   // ── Live parser: dán link Google Maps vào ô a-map sẽ tự ghi đè lat/lng ──
   var mapInput = document.getElementById('a-map');
-  if(mapInput && !mapInput._parserBound){
+  if (mapInput && !mapInput._parserBound) {
     mapInput._parserBound = true;
-    ['input','paste'].forEach(function(evt){
-      mapInput.addEventListener(evt, function(){
-        setTimeout(function(){
+    ['input', 'paste'].forEach(function (evt) {
+      mapInput.addEventListener(evt, function () {
+        setTimeout(function () {
           var extracted = extractLatLngFromMapUrl(mapInput.value.trim());
-          if(extracted){
+          if (extracted) {
             document.getElementById('a-lat').value = extracted.lat;
             document.getElementById('a-lng').value = extracted.lng;
-            if(statusEl){ statusEl.style.display='inline-flex'; statusEl.textContent='🎯 Đã cập nhật tọa độ từ Link Google Maps!'; statusEl.style.color='#FF7043'; statusEl.style.background='rgba(255,112,67,.1)'; }
+            if (statusEl) { statusEl.style.display = 'inline-flex'; statusEl.textContent = '🎯 Đã cập nhật tọa độ từ Link Google Maps!'; statusEl.style.color = '#FF7043'; statusEl.style.background = 'rgba(255,112,67,.1)'; }
           }
         }, 50);
       });
@@ -1228,83 +1239,83 @@ var adminLocFilter = 'all';
 var adminLocPage = 1;
 var ADMIN_PAGE_SIZE = 12;
 
-function setAdminLocFilter(f){
+function setAdminLocFilter(f) {
   adminLocFilter = f;
   adminLocPage = 1;
-  document.querySelectorAll('#admin-loc-filter-pills .admin-fpill').forEach(function(p){
-    p.classList.toggle('active', p.getAttribute('data-f')===f);
+  document.querySelectorAll('#admin-loc-filter-pills .admin-fpill').forEach(function (p) {
+    p.classList.toggle('active', p.getAttribute('data-f') === f);
   });
   renderAdminLocList();
 }
 
-function changeAdminLocPage(delta){
+function changeAdminLocPage(delta) {
   adminLocPage += delta;
   renderAdminLocList();
 }
 
-function renderAdminLocList(){
+function renderAdminLocList() {
   var container = document.getElementById('admin-loc-container');
-  if(!container) return;
+  if (!container) return;
   var inputEl = document.getElementById('admin-search-input');
-  var query = inputEl ? (inputEl.value||'').toLowerCase().trim() : '';
+  var query = inputEl ? (inputEl.value || '').toLowerCase().trim() : '';
 
   // Cập nhật dashboard metric bar (tính trên toàn bộ allLocs, không phụ thuộc filter/search)
   var mTotal = allLocs.length;
-  var mPending = allLocs.filter(function(l){return l.badge_type==='pending';}).length;
-  var mApproved = allLocs.filter(function(l){return l.badge_type==='approved';}).length;
-  var mHeritage = allLocs.filter(function(l){return l.badge_type==='heritage';}).length;
-  var elT=document.getElementById('am-total'), elP=document.getElementById('am-pending'),
-      elA=document.getElementById('am-approved'), elH=document.getElementById('am-heritage');
-  if(elT) elT.textContent = mTotal;
-  if(elP) elP.textContent = mPending;
-  if(elA) elA.textContent = mApproved;
-  if(elH) elH.textContent = mHeritage;
+  var mPending = allLocs.filter(function (l) { return l.badge_type === 'pending'; }).length;
+  var mApproved = allLocs.filter(function (l) { return l.badge_type === 'approved'; }).length;
+  var mHeritage = allLocs.filter(function (l) { return l.badge_type === 'heritage'; }).length;
+  var elT = document.getElementById('am-total'), elP = document.getElementById('am-pending'),
+    elA = document.getElementById('am-approved'), elH = document.getElementById('am-heritage');
+  if (elT) elT.textContent = mTotal;
+  if (elP) elP.textContent = mPending;
+  if (elA) elA.textContent = mApproved;
+  if (elH) elH.textContent = mHeritage;
 
-  var list = allLocs.filter(function(l){
-    if(query){
-      var hay = ((l.name||'')+' '+(l.category||'')+' '+(l.address||'')+' '+(l.must_try||'')+' '+(l.description||'')).toLowerCase();
-      if(hay.indexOf(query) === -1) return false;
+  var list = allLocs.filter(function (l) {
+    if (query) {
+      var hay = ((l.name || '') + ' ' + (l.category || '') + ' ' + (l.address || '') + ' ' + (l.must_try || '') + ' ' + (l.description || '')).toLowerCase();
+      if (hay.indexOf(query) === -1) return false;
     }
-    if(adminLocFilter==='all') return true;
-    if(adminLocFilter==='Take-Away' || adminLocFilter==='Online-Only') return l.type===adminLocFilter;
-    return l.badge_type===adminLocFilter;
+    if (adminLocFilter === 'all') return true;
+    if (adminLocFilter === 'Take-Away' || adminLocFilter === 'Online-Only') return l.type === adminLocFilter;
+    return l.badge_type === adminLocFilter;
   });
 
-  if(list.length === 0){
+  if (list.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;">Không tìm thấy địa điểm phù hợp.<br/><span style="font-size:14px;color:var(--sl-light);margin-top:6px;display:block;">Hãy nhấn "➕ Thêm Địa Điểm Mới" ở trên để bắt đầu thêm địa điểm thật!</span></div>';
     document.getElementById('admin-loc-pagination').innerHTML = '';
     return;
   }
 
   var totalPages = Math.max(1, Math.ceil(list.length / ADMIN_PAGE_SIZE));
-  if(adminLocPage > totalPages) adminLocPage = totalPages;
-  if(adminLocPage < 1) adminLocPage = 1;
-  var pageList = list.slice((adminLocPage-1)*ADMIN_PAGE_SIZE, adminLocPage*ADMIN_PAGE_SIZE);
+  if (adminLocPage > totalPages) adminLocPage = totalPages;
+  if (adminLocPage < 1) adminLocPage = 1;
+  var pageList = list.slice((adminLocPage - 1) * ADMIN_PAGE_SIZE, adminLocPage * ADMIN_PAGE_SIZE);
 
-  container.innerHTML = pageList.map(function(loc){
+  container.innerHTML = pageList.map(function (loc) {
     var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeTag = '<span class="admin-badge-tag" style="color:'+badge.color+';background:'+badge.color+'1A;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
+    var badgeTag = '<span class="admin-badge-tag" style="color:' + badge.color + ';background:' + badge.color + '1A;">' + getBadgeIconHtml(loc.badge_type) + badge.text + '</span>';
     return '<div class="admin-loc-item">'
       + '<div class="admin-loc-info">'
-      + '<div class="admin-loc-name">'+fixUtf8(loc.name)+badgeTag+'</div>'
-      + '<div class="admin-loc-sub">'+(fixUtf8(loc.category)||'Ẩm thực')+' • '+(loc.price_range||'')+(loc.opening_hours?' • '+UI_ICONS.clock+loc.opening_hours:'')+'</div>'
+      + '<div class="admin-loc-name">' + fixUtf8(loc.name) + badgeTag + '</div>'
+      + '<div class="admin-loc-sub">' + (fixUtf8(loc.category) || 'Ẩm thực') + ' • ' + (loc.price_range || '') + (loc.opening_hours ? ' • ' + UI_ICONS.clock + loc.opening_hours : '') + '</div>'
       + '</div>'
       + '<div class="admin-loc-btns">'
-      + '<button class="btn-sm-edit" onclick="openAdminEdit(\''+loc.id+'\')">✏️ Sửa</button>'
-      + '<button class="btn-sm-del" onclick="deleteAdminLoc(\''+loc.id+'\')">🗑️ Xóa</button>'
+      + '<button class="btn-sm-edit" onclick="openAdminEdit(\'' + loc.id + '\')">✏️ Sửa</button>'
+      + '<button class="btn-sm-del" onclick="deleteAdminLoc(\'' + loc.id + '\')">🗑️ Xóa</button>'
       + '</div>'
       + '</div>';
   }).join('');
 
   document.getElementById('admin-loc-pagination').innerHTML =
-    '<button class="admin-page-btn" '+(adminLocPage<=1?'disabled':'')+' onclick="changeAdminLocPage(-1)">◀ Trang trước</button>'
-    + '<span class="admin-page-info">Page '+adminLocPage+' / '+totalPages+'</span>'
-    + '<button class="admin-page-btn" '+(adminLocPage>=totalPages?'disabled':'')+' onclick="changeAdminLocPage(1)">Trang sau ▶</button>';
+    '<button class="admin-page-btn" ' + (adminLocPage <= 1 ? 'disabled' : '') + ' onclick="changeAdminLocPage(-1)">◀ Trang trước</button>'
+    + '<span class="admin-page-info">Page ' + adminLocPage + ' / ' + totalPages + '</span>'
+    + '<button class="admin-page-btn" ' + (adminLocPage >= totalPages ? 'disabled' : '') + ' onclick="changeAdminLocPage(1)">Trang sau ▶</button>';
 }
 
-function openAdminEdit(id){
-  var loc = allLocs.find(function(l){return String(l.id)===String(id);});
-  if(!loc) return;
+function openAdminEdit(id) {
+  var loc = allLocs.find(function (l) { return String(l.id) === String(id); });
+  if (!loc) return;
   editImgBase64 = '';
   document.getElementById('edit-id').value = loc.id;
   document.getElementById('edit-name').value = loc.name || '';
@@ -1324,7 +1335,7 @@ function openAdminEdit(id){
   document.getElementById('edit-parking').value = loc.parking_info || '';
   document.getElementById('edit-payment').value = loc.payment_methods || '';
   document.getElementById('edit-dayoff').value = loc.day_off || '';
-  
+
   var imgVal = loc.image_url ? String(loc.image_url).trim() : '';
   if (imgVal.indexOf('data:image/') === 0) {
     editImgBase64 = imgVal;
@@ -1339,17 +1350,17 @@ function openAdminEdit(id){
     document.getElementById('edit-img').value = '';
     document.getElementById('edit-img-preview').style.display = 'none';
   }
-  
+
   document.getElementById('edit-video').value = loc.video_url || '';
   document.getElementById('edit-map').value = loc.map_url || '';
 
   openModal('m-admin-edit');
 }
 
-function saveAdminEdit(){
+function saveAdminEdit() {
   var id = document.getElementById('edit-id').value;
   var name = document.getElementById('edit-name').value.trim();
-  if(!name){alert('Vui lòng nhập tên địa điểm!');return;}
+  if (!name) { alert('Vui lòng nhập tên địa điểm!'); return; }
 
   var rawLat = document.getElementById('edit-lat').value.trim();
   var rawLng = document.getElementById('edit-lng').value.trim();
@@ -1358,9 +1369,9 @@ function saveAdminEdit(){
   var lat = parseFloat(rawLat);
   var lng = parseFloat(rawLng);
 
-  if(isNaN(lat) || isNaN(lng)){
+  if (isNaN(lat) || isNaN(lng)) {
     var extracted = extractLatLngFromMapUrl(mapUrl);
-    if(extracted){
+    if (extracted) {
       lat = extracted.lat;
       lng = extracted.lng;
     } else {
@@ -1375,7 +1386,7 @@ function saveAdminEdit(){
   } else {
     var typedImg = document.getElementById('edit-img').value.trim();
     if (typedImg.indexOf('[Đã') === 0) {
-      var loc = allLocs.find(function(l){return String(l.id)===String(id);});
+      var loc = allLocs.find(function (l) { return String(l.id) === String(id); });
       finalImg = (loc && loc.image_url) ? loc.image_url : '';
     } else if (typedImg.indexOf('http') === 0) {
       finalImg = typedImg;
@@ -1403,19 +1414,19 @@ function saveAdminEdit(){
     document.getElementById('edit-dayoff').value.trim()
   ];
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(){
+      .withSuccessHandler(function () {
         alert('✅ Đã lưu chỉnh sửa!');
         closeModal('m-admin-edit');
         loadData();
       })
-      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .withFailureHandler(function (e) { alert('Lỗi: ' + e.message); })
       .updateLocation(id, row);
-  }else{
-    var idx = allLocs.findIndex(function(l){return String(l.id)===String(id);});
-    if(idx!==-1){
-      allLocs[idx] = {id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12],type:row[13],phone:row[14],address:row[15],shopeefood_link:row[16],grab_link:row[17],parking_info:row[18],payment_methods:row[19],day_off:row[20]};
+  } else {
+    var idx = allLocs.findIndex(function (l) { return String(l.id) === String(id); });
+    if (idx !== -1) {
+      allLocs[idx] = { id: row[0], name: row[1], lat: lat || 16.0544, lng: lng || 108.2022, badge_type: row[4] || 'spot', category: row[5], must_try: row[6], price_range: row[7], video_url: row[8], map_url: row[9], image_url: row[10], opening_hours: row[11], description: row[12], type: row[13], phone: row[14], address: row[15], shopeefood_link: row[16], grab_link: row[17], parking_info: row[18], payment_methods: row[19], day_off: row[20] };
       loadMarkers(allLocs, true);
     }
     closeModal('m-admin-edit');
@@ -1423,28 +1434,28 @@ function saveAdminEdit(){
   }
 }
 
-function deleteAdminLoc(id){
-  if(!confirm('Bạn có chắc chắn muốn xóa địa điểm này khỏi Google Sheet và Bản đồ?')) return;
+function deleteAdminLoc(id) {
+  if (!confirm('Bạn có chắc chắn muốn xóa địa điểm này khỏi Google Sheet và Bản đồ?')) return;
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(){
+      .withSuccessHandler(function () {
         alert('🗑️ Đã xóa địa điểm!');
         loadData();
       })
-      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .withFailureHandler(function (e) { alert('Lỗi: ' + e.message); })
       .deleteLocation(id);
-  }else{
-    allLocs = allLocs.filter(function(l){return String(l.id)!==String(id);});
+  } else {
+    allLocs = allLocs.filter(function (l) { return String(l.id) !== String(id); });
     loadMarkers(allLocs, true);
     renderAdminLocList();
     alert('🗑️ Đã xóa (local test)');
   }
 }
 
-function doAdminAdd(){
-  var name=document.getElementById('a-name').value.trim();
-  if(!name){alert('Vui lòng nhập tên địa điểm!');return;}
+function doAdminAdd() {
+  var name = document.getElementById('a-name').value.trim();
+  if (!name) { alert('Vui lòng nhập tên địa điểm!'); return; }
 
   var rawLat = document.getElementById('a-lat').value.trim();
   var rawLng = document.getElementById('a-lng').value.trim();
@@ -1453,9 +1464,9 @@ function doAdminAdd(){
   var lat = parseFloat(rawLat);
   var lng = parseFloat(rawLng);
 
-  if(isNaN(lat) || isNaN(lng)){
+  if (isNaN(lat) || isNaN(lng)) {
     var extracted = extractLatLngFromMapUrl(mapUrl);
-    if(extracted){
+    if (extracted) {
       lat = extracted.lat;
       lng = extracted.lng;
     } else {
@@ -1474,37 +1485,37 @@ function doAdminAdd(){
     }
   }
 
-  var row=['loc_'+Date.now(),name,lat,lng,
-    document.getElementById('a-stars').value,
-    document.getElementById('a-cat').value,
-    document.getElementById('a-must').value,
-    document.getElementById('a-price').value,
-    document.getElementById('a-video').value,
+  var row = ['loc_' + Date.now(), name, lat, lng,
+  document.getElementById('a-stars').value,
+  document.getElementById('a-cat').value,
+  document.getElementById('a-must').value,
+  document.getElementById('a-price').value,
+  document.getElementById('a-video').value,
     mapUrl,
     finalAddImg,
-    document.getElementById('a-hours').value.trim(),
-    document.getElementById('a-desc').value.trim(),
-    document.getElementById('a-type').value,
-    document.getElementById('a-phone').value.trim(),
-    document.getElementById('a-address').value.trim(),
-    document.getElementById('a-shopeefood').value.trim(),
-    document.getElementById('a-grab').value.trim(),
-    document.getElementById('a-parking').value.trim(),
-    document.getElementById('a-payment').value.trim(),
-    document.getElementById('a-dayoff').value.trim()
+  document.getElementById('a-hours').value.trim(),
+  document.getElementById('a-desc').value.trim(),
+  document.getElementById('a-type').value,
+  document.getElementById('a-phone').value.trim(),
+  document.getElementById('a-address').value.trim(),
+  document.getElementById('a-shopeefood').value.trim(),
+  document.getElementById('a-grab').value.trim(),
+  document.getElementById('a-parking').value.trim(),
+  document.getElementById('a-payment').value.trim(),
+  document.getElementById('a-dayoff').value.trim()
   ];
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(res){
+      .withSuccessHandler(function (res) {
         alert('✅ Đã thêm địa điểm mới vào Google Sheet! (Tọa độ tự động định vị từ link Google Maps)');
         closeModal('m-admin');
         loadData();
       })
-      .withFailureHandler(function(e){alert('Lỗi: '+e.message);})
+      .withFailureHandler(function (e) { alert('Lỗi: ' + e.message); })
       .addLocation(row);
-  }else{
-    allLocs.push({id:row[0],name:row[1],lat:lat||16.0544,lng:lng||108.2022,badge_type:row[4]||'spot',category:row[5],must_try:row[6],price_range:row[7],video_url:row[8],map_url:row[9],image_url:row[10],opening_hours:row[11],description:row[12],type:row[13],phone:row[14],address:row[15],shopeefood_link:row[16],grab_link:row[17],parking_info:row[18],payment_methods:row[19],day_off:row[20]});
+  } else {
+    allLocs.push({ id: row[0], name: row[1], lat: lat || 16.0544, lng: lng || 108.2022, badge_type: row[4] || 'spot', category: row[5], must_try: row[6], price_range: row[7], video_url: row[8], map_url: row[9], image_url: row[10], opening_hours: row[11], description: row[12], type: row[13], phone: row[14], address: row[15], shopeefood_link: row[16], grab_link: row[17], parking_info: row[18], payment_methods: row[19], day_off: row[20] });
     loadMarkers(allLocs, true);
     closeModal('m-admin');
     alert('✅ Đã thêm (local test)');
@@ -1512,25 +1523,25 @@ function doAdminAdd(){
 }
 
 // Comprehensive UTF-8 & Coordinate Sanitizers
-function fixUtf8(str){
-  if(!str) return '';
+function fixUtf8(str) {
+  if (!str) return '';
   var s = String(str);
   s = s.replace(/C\s+Ph\s+Mu\?i\s+H\?i\s+K\s*/gi, 'Cà Phê Muối Hải Ký')
-       .replace(/B\s*n\s*B\s*Hu\? s*M\? s*R\?t/gi, 'Bún Bò Huế Mụ Rớt')
-       .replace(/B\s*nh\s*M\s*Phu\?ng/gi, 'Bánh Mì Phượng')
-       .replace(/M\s*Qu\?ng\s*B\s*Mua/gi, 'Mì Quảng Bà Mua')
-       .replace(/Ch\s*B\s*Tu\s*D\s*N\?ng/gi, 'Chè Bà Tư Đà Nẵng')
-       .replace(/C\s*ph\s*mu\?i/gi, 'Cà phê muối')
-       .replace(/C\s*ph\s*tr\?ng/gi, 'Cà phê trứng')
-       .replace(/B\s*n\s*b\s*d\?c\s*bi\?t/gi, 'Bún bò đặc biệt')
-       .replace(/B\s*nh\s*m\s*th\?t\s*ngu\?i/gi, 'Bánh mì thịt nguội')
-       .replace(/B\s*nh\s*m\s*tr\?ng/gi, 'Bánh mì trứng')
-       .replace(/M\s*qu\?ng\s*t\s*m\s*th\?t/gi, 'Mì quảng tôm thịt')
-       .replace(/M\s*qu\?ng\s*g\s*/gi, 'Mì quảng gà')
-       .replace(/Ch\s*d\?u\s*xanh/gi, 'Chè đậu xanh')
-       .replace(/Ch\s*tr\s*i\s*nu\?c/gi, 'Chè trôi nước')
-       .replace(/An\s*v\?t/gi, 'Ăn vặt')
-       .replace(/B\s*n\/Ph\?/gi, 'Bún/Phở');
+    .replace(/B\s*n\s*B\s*Hu\? s*M\? s*R\?t/gi, 'Bún Bò Huế Mụ Rớt')
+    .replace(/B\s*nh\s*M\s*Phu\?ng/gi, 'Bánh Mì Phượng')
+    .replace(/M\s*Qu\?ng\s*B\s*Mua/gi, 'Mì Quảng Bà Mua')
+    .replace(/Ch\s*B\s*Tu\s*D\s*N\?ng/gi, 'Chè Bà Tư Đà Nẵng')
+    .replace(/C\s*ph\s*mu\?i/gi, 'Cà phê muối')
+    .replace(/C\s*ph\s*tr\?ng/gi, 'Cà phê trứng')
+    .replace(/B\s*n\s*b\s*d\?c\s*bi\?t/gi, 'Bún bò đặc biệt')
+    .replace(/B\s*nh\s*m\s*th\?t\s*ngu\?i/gi, 'Bánh mì thịt nguội')
+    .replace(/B\s*nh\s*m\s*tr\?ng/gi, 'Bánh mì trứng')
+    .replace(/M\s*qu\?ng\s*t\s*m\s*th\?t/gi, 'Mì quảng tôm thịt')
+    .replace(/M\s*qu\?ng\s*g\s*/gi, 'Mì quảng gà')
+    .replace(/Ch\s*d\?u\s*xanh/gi, 'Chè đậu xanh')
+    .replace(/Ch\s*tr\s*i\s*nu\?c/gi, 'Chè trôi nước')
+    .replace(/An\s*v\?t/gi, 'Ăn vặt')
+    .replace(/B\s*n\/Ph\?/gi, 'Bún/Phở');
   return s;
 }
 
@@ -1556,44 +1567,44 @@ function parseCoord(rawLat, rawLng) {
 // ── LOCATION DETAIL BOTTOM SHEET WITH FOOD PHOTO, HOURS & DESCRIPTION
 
 function checkOpenStatus(openingHoursStr) {
-  if(!openingHoursStr) return '';
+  if (!openingHoursStr) return '';
   var normalizedStr = String(openingHoursStr).replace(/–|—/g, '-');
-  var shifts = normalizedStr.split(',').map(function(s) { return s.trim(); });
+  var shifts = normalizedStr.split(',').map(function (s) { return s.trim(); });
   var now = new Date();
   var currentMins = now.getHours() * 60 + now.getMinutes();
   var isOpen = false, isClosingSoon = false;
-  for(var i=0; i<shifts.length; i++) {
+  for (var i = 0; i < shifts.length; i++) {
     var parts = shifts[i].split('-');
-    if(parts.length !== 2) continue;
+    if (parts.length !== 2) continue;
     var startParts = parts[0].trim().split(':');
     var endParts = parts[1].trim().split(':');
-    if(startParts.length !== 2 || endParts.length !== 2) continue;
-    var startMins = parseInt(startParts[0],10)*60 + parseInt(startParts[1],10);
-    var endMins = parseInt(endParts[0],10)*60 + parseInt(endParts[1],10);
+    if (startParts.length !== 2 || endParts.length !== 2) continue;
+    var startMins = parseInt(startParts[0], 10) * 60 + parseInt(startParts[1], 10);
+    var endMins = parseInt(endParts[0], 10) * 60 + parseInt(endParts[1], 10);
     var active = false, minsLeft = 0;
-    if(endMins < startMins) {
-      if(currentMins >= startMins || currentMins <= endMins) {
+    if (endMins < startMins) {
+      if (currentMins >= startMins || currentMins <= endMins) {
         active = true;
         minsLeft = currentMins <= endMins ? (endMins - currentMins) : (endMins + 1440 - currentMins);
       }
     } else {
-      if(currentMins >= startMins && currentMins <= endMins) {
+      if (currentMins >= startMins && currentMins <= endMins) {
         active = true;
         minsLeft = endMins - currentMins;
       }
     }
-    if(active) {
+    if (active) {
       isOpen = true;
-      if(minsLeft <= 30) isClosingSoon = true;
+      if (minsLeft <= 30) isClosingSoon = true;
       break;
     }
   }
-  if(isOpen && isClosingSoon) return '<span class="status-pill amber">Sắp đóng cửa</span>';
+  if (isOpen && isClosingSoon) return '<span class="status-pill amber">Sắp đóng cửa</span>';
   else if (isOpen) return '<span class="status-pill green">Đang mở cửa</span>';
   else return '<span class="status-pill red">Đã đóng cửa</span>';
 }
 
-function openSheet(loc){
+function openSheet(loc) {
   currentSheetLoc = loc;
   var name = fixUtf8(loc.name);
   var must_try = fixUtf8(loc.must_try);
@@ -1604,37 +1615,37 @@ function openSheet(loc){
   var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
   document.getElementById('sh-cover-img').src = imgUrl;
 
-  var badgeName = (loc.badge_type==='heritage'?'Heritage':loc.badge_type==='approved'?'Approved':loc.badge_type==='pending'?'Chờ Duyệt':'Spot');
+  var badgeName = (loc.badge_type === 'heritage' ? 'Heritage' : loc.badge_type === 'approved' ? 'Approved' : loc.badge_type === 'pending' ? 'Chờ Duyệt' : 'Spot');
   var badgeUrl = WEBP_ICONS[loc.badge_type] || WEBP_ICONS['spot'];
   var badgeIcon = '';
   if (badgeUrl && badgeUrl.length > 50) {
     badgeIcon = '<img src="' + badgeUrl + '" style="height:18px; margin-right:4px; vertical-align:-3px;" alt="badge"> ';
   } else {
-    if(loc.badge_type==='heritage') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-    else if(loc.badge_type==='approved') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+    if (loc.badge_type === 'heritage') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    else if (loc.badge_type === 'approved') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
     else badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
   }
-  
+
   document.getElementById('sh-badge-overlay').innerHTML = badgeIcon + badgeName;
   var inlineBadgeEl = document.getElementById('sh-badge-inline');
-  if(inlineBadgeEl) inlineBadgeEl.innerHTML = badgeIcon + badgeName;
+  if (inlineBadgeEl) inlineBadgeEl.innerHTML = badgeIcon + badgeName;
 
   // 2. Title & Meta
-  
+
   var favBtn = document.getElementById('sh-fav-btn');
   if (favBtn) {
     if (isFav(loc.id)) favBtn.classList.add('liked');
     else favBtn.classList.remove('liked');
   }
-document.getElementById('sh-title').textContent = name;
+  document.getElementById('sh-title').textContent = name;
   document.getElementById('sh-cat').textContent = category || 'Ẩm thực';
   document.getElementById('sh-price').textContent = loc.price_range || 'Đang cập nhật';
-  
+
   document.getElementById('sh-type-tag').style.display = 'none';
 
   // 3. Opening Hours
   var hoursWrap = document.getElementById('sh-hours-wrap');
-  if(loc.opening_hours){
+  if (loc.opening_hours) {
     document.getElementById('sh-hours-text').textContent = loc.opening_hours;
     document.getElementById('sh-status').innerHTML = checkOpenStatus(loc.opening_hours);
     hoursWrap.style.display = 'flex';
@@ -1644,7 +1655,7 @@ document.getElementById('sh-title').textContent = name;
 
   // 4. Description
   var descEl = document.getElementById('sh-desc');
-  if(desc){
+  if (desc) {
     descEl.textContent = desc;
     descEl.style.display = 'block';
   } else {
@@ -1653,46 +1664,46 @@ document.getElementById('sh-title').textContent = name;
 
   // 5. Utility Grid
   var hasUtil = false;
-  if(loc.phone) { document.getElementById('sh-phone-link').href = 'tel:'+String(loc.phone).replace(/[^0-9]/g,''); document.getElementById('sh-phone-link').textContent = loc.phone; document.getElementById('util-phone').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-phone').style.display = 'none'; }
-  
+  if (loc.phone) { document.getElementById('sh-phone-link').href = 'tel:' + String(loc.phone).replace(/[^0-9]/g, ''); document.getElementById('sh-phone-link').textContent = loc.phone; document.getElementById('util-phone').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-phone').style.display = 'none'; }
+
   var typeStr = 'Tự do';
-  if(loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
-  else if(loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
-  else if(loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
-  else if(loc.type === 'Both') typeStr = 'Tại chỗ & Mang đi';
+  if (loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
+  else if (loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
+  else if (loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
+  else if (loc.type === 'Both') typeStr = 'Tại chỗ & Mang đi';
   document.getElementById('sh-type').textContent = typeStr;
   document.getElementById('util-type').style.display = 'flex';
   hasUtil = true;
-  
-  if(loc.payment_methods) { document.getElementById('sh-payment').textContent = fixUtf8(loc.payment_methods); document.getElementById('util-payment').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-payment').style.display = 'none'; }
-  if(loc.parking_info) { document.getElementById('sh-parking').textContent = fixUtf8(loc.parking_info); document.getElementById('util-parking').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-parking').style.display = 'none'; }
+
+  if (loc.payment_methods) { document.getElementById('sh-payment').textContent = fixUtf8(loc.payment_methods); document.getElementById('util-payment').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-payment').style.display = 'none'; }
+  if (loc.parking_info) { document.getElementById('sh-parking').textContent = fixUtf8(loc.parking_info); document.getElementById('util-parking').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-parking').style.display = 'none'; }
   document.getElementById('sh-utility-card').style.display = hasUtil ? 'grid' : 'none';
 
   // 6. Must Try
   var mustWrap = document.getElementById('sh-must-wrap');
   var tagsBox = document.getElementById('sh-tags');
-  var musts = (must_try||'').split(',').filter(function(s){return s.trim();});
-  if(musts.length){
-    mustWrap.style.display='block';
-    tagsBox.innerHTML = musts.map(function(m){return '<span class="must-tag-pill">'+fixUtf8(m)+'</span>';}).join('');
-  }else{
-    mustWrap.style.display='none';
+  var musts = (must_try || '').split(',').filter(function (s) { return s.trim(); });
+  if (musts.length) {
+    mustWrap.style.display = 'block';
+    tagsBox.innerHTML = musts.map(function (m) { return '<span class="must-tag-pill">' + fixUtf8(m) + '</span>'; }).join('');
+  } else {
+    mustWrap.style.display = 'none';
   }
 
   // 7. Actions Grid
   var row1 = document.getElementById('sh-row-1');
   var row2 = document.getElementById('sh-row-2');
-  
-  var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination='+loc.lat+','+loc.lng);
-  var btn1Html = '<a href="'+mapLnk+'" target="_blank" class="sh-btn primary"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg> Chỉ đường</a>';
-  if(loc.video_url) btn1Html += '<a href="'+loc.video_url+'" target="_blank" class="sh-btn secondary"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Review</a>';
+
+  var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng);
+  var btn1Html = '<a href="' + mapLnk + '" target="_blank" class="sh-btn primary"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg> Chỉ đường</a>';
+  if (loc.video_url) btn1Html += '<a href="' + loc.video_url + '" target="_blank" class="sh-btn secondary"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Review</a>';
   row1.innerHTML = btn1Html;
   row1.style.gridTemplateColumns = loc.video_url ? '1fr 1fr' : '1fr';
 
   var btn2Html = '';
-  if(loc.shopeefood_link) btn2Html += '<a href="'+loc.shopeefood_link+'" target="_blank" class="sh-btn shopee">🧡 ShopeeFood</a>';
-  if(loc.grab_link) btn2Html += '<a href="'+loc.grab_link+'" target="_blank" class="sh-btn grab">💚 GrabFood</a>';
-  if(btn2Html) {
+  if (loc.shopeefood_link) btn2Html += '<a href="' + loc.shopeefood_link + '" target="_blank" class="sh-btn shopee">🧡 ShopeeFood</a>';
+  if (loc.grab_link) btn2Html += '<a href="' + loc.grab_link + '" target="_blank" class="sh-btn grab">💚 GrabFood</a>';
+  if (btn2Html) {
     row2.innerHTML = btn2Html;
     row2.style.display = 'grid';
     row2.style.gridTemplateColumns = (loc.shopeefood_link && loc.grab_link) ? '1fr 1fr' : '1fr';
@@ -1703,37 +1714,37 @@ document.getElementById('sh-title').textContent = name;
   document.getElementById('loc-sheet').classList.add('open');
   // Ẩn danh sách quán bên phải khi đang xem chi tiết 1 quán (tránh chồng lấn trên desktop)
   var sb = document.getElementById('desktop-sidebar');
-  if(sb) sb.style.display = 'none';
+  if (sb) sb.style.display = 'none';
 }
 
-function closeSheet(){
+function closeSheet() {
   document.getElementById('loc-sheet').classList.remove('open');
   // Hiện lại danh sách quán bên phải khi đóng chi tiết (chỉ khi đang ở desktop split-view)
   var sb = document.getElementById('desktop-sidebar');
-  if(sb && document.body.classList.contains('desktop-map-view')) sb.style.display = '';
+  if (sb && document.body.classList.contains('desktop-map-view')) sb.style.display = '';
 }
 
 // ── MAP ENGINE & OFFICIAL GOOGLE MAPS TILE LAYER WITH CARTO & OSM FALLBACKS
-var map, allLocs=[], markers=[];
+var map, allLocs = [], markers = [];
 
-function initMap(){
-  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:18}).setView([16.0544,108.2022],13);
+function initMap() {
+  map = L.map('map', { zoomControl: false, attributionControl: false, maxZoom: 18 }).setView([16.0544, 108.2022], 13);
 
   var googleMapsUrl = 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
   var cartoVoyagerUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
   var osmFallbackUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   var tileLayer = L.tileLayer(googleMapsUrl, {
-    maxZoom:18,
-    subdomains:['0','1','2','3'],
-    attribution:'&copy; Google Maps'
+    maxZoom: 18,
+    subdomains: ['0', '1', '2', '3'],
+    attribution: '&copy; Google Maps'
   });
 
-  tileLayer.on('tileerror', function(error, tile) {
-    if(tile && tile.src){
-      if(tile.src.indexOf('google.com') !== -1){
+  tileLayer.on('tileerror', function (error, tile) {
+    if (tile && tile.src) {
+      if (tile.src.indexOf('google.com') !== -1) {
         tile.src = cartoVoyagerUrl.replace('{s}', 'a').replace('{z}', error.coords.z).replace('{x}', error.coords.x).replace('{y}', error.coords.y);
-      } else if(tile.src.indexOf('cartocdn.com') !== -1){
+      } else if (tile.src.indexOf('cartocdn.com') !== -1) {
         tile.src = osmFallbackUrl.replace('{s}', 'a').replace('{z}', error.coords.z).replace('{x}', error.coords.x).replace('{y}', error.coords.y);
       }
     }
@@ -1741,95 +1752,95 @@ function initMap(){
 
   tileLayer.addTo(map);
 
-  map.on('click',function(){ closeSheet(); });
-  map.on('dragstart',function(){ collapseNav(); });
-  map.on('zoomstart',function(){ collapseNav(); });
+  map.on('click', function () { closeSheet(); });
+  map.on('dragstart', function () { collapseNav(); });
+  map.on('zoomstart', function () { collapseNav(); });
 
   loadData();
-    document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
+  document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
   document.body.classList.toggle('desktop-map-view', window.innerWidth >= 1024);
-  setTimeout(function(){ map.invalidateSize(true); }, 400);
+  setTimeout(function () { map.invalidateSize(true); }, 400);
   autoLocateOnLaunch();
 }
 
 // DEMO DATA CLEARED - REAL LIVE MODE FOR GOOGLE SHEETS
 var DEMO_DATA = [];
 
-function loadData(){
+function loadData() {
   document.getElementById('map-loader').classList.remove('hidden');
 
-  if(typeof google!=='undefined'&&google.script&&google.script.run){
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(d){
+      .withSuccessHandler(function (d) {
         onData(d);
       })
-      .withFailureHandler(function(){
+      .withFailureHandler(function () {
         document.getElementById('map-loader').classList.add('hidden');
         onData([]);
       })
       .getFoodLocations();
-  }else{
+  } else {
     // ── DATA MẪU để test local (chỉ dùng khi không có Apps Script backend) ──
     onData([
       {
-        id:'demo1', name:'Bún Bò Huế Ngô Thúy', lat:16.0680, lng:108.2100,
-        badge_type:'heritage', category:'Bún / Phở / Món Nước', must_try:'Bún bò giò heo đặc biệt',
-        price_range:'35.000đ - 55.000đ', rating_stars:4.8,
-        opening_hours:'6:00 - 21:00', description:'Quán bún bò Huế lâu năm, nước dùng đậm đà chuẩn vị cố đô, được nhiều food blogger giới thiệu.',
-        image_url:'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400',
-        address:'123 Trần Phú, Hải Châu, Đà Nẵng', phone:'0905123456',
-        shopeefood_link:'', grab_link:'', map_url:'', video_url:'',
-        parking_info:'Có bãi đỗ xe máy', payment_methods:'Tiền mặt, Momo', day_off:'Không nghỉ', type:'restaurant'
+        id: 'demo1', name: 'Bún Bò Huế Ngô Thúy', lat: 16.0680, lng: 108.2100,
+        badge_type: 'heritage', category: 'Bún / Phở / Món Nước', must_try: 'Bún bò giò heo đặc biệt',
+        price_range: '35.000đ - 55.000đ', rating_stars: 4.8,
+        opening_hours: '6:00 - 21:00', description: 'Quán bún bò Huế lâu năm, nước dùng đậm đà chuẩn vị cố đô, được nhiều food blogger giới thiệu.',
+        image_url: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400',
+        address: '123 Trần Phú, Hải Châu, Đà Nẵng', phone: '0905123456',
+        shopeefood_link: '', grab_link: '', map_url: '', video_url: '',
+        parking_info: 'Có bãi đỗ xe máy', payment_methods: 'Tiền mặt, Momo', day_off: 'Không nghỉ', type: 'restaurant'
       },
       {
-        id:'demo2', name:'Cà Phê Muối Lâm Viên', lat:16.0620, lng:108.2250,
-        badge_type:'approved', category:'Cà Phê / Đồ Uống', must_try:'Cà phê muối signature',
-        price_range:'25.000đ - 45.000đ', rating_stars:4.5,
-        opening_hours:'7:00 - 23:00', description:'Quán cà phê view sông Hàn, không gian yên tĩnh, món cà phê muối đặc trưng Đà Nẵng.',
-        image_url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
-        address:'45 Bạch Đằng, Hải Châu, Đà Nẵng', phone:'0905654321',
-        shopeefood_link:'', grab_link:'', map_url:'', video_url:'',
-        parking_info:'Bãi đỗ xe rộng', payment_methods:'Tiền mặt, chuyển khoản', day_off:'Không nghỉ', type:'cafe'
+        id: 'demo2', name: 'Cà Phê Muối Lâm Viên', lat: 16.0620, lng: 108.2250,
+        badge_type: 'approved', category: 'Cà Phê / Đồ Uống', must_try: 'Cà phê muối signature',
+        price_range: '25.000đ - 45.000đ', rating_stars: 4.5,
+        opening_hours: '7:00 - 23:00', description: 'Quán cà phê view sông Hàn, không gian yên tĩnh, món cà phê muối đặc trưng Đà Nẵng.',
+        image_url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
+        address: '45 Bạch Đằng, Hải Châu, Đà Nẵng', phone: '0905654321',
+        shopeefood_link: '', grab_link: '', map_url: '', video_url: '',
+        parking_info: 'Bãi đỗ xe rộng', payment_methods: 'Tiền mặt, chuyển khoản', day_off: 'Không nghỉ', type: 'cafe'
       },
       {
-        id:'demo3', name:'Lẩu Lòng Bò Hạ Bằng', lat:16.0490, lng:108.1980,
-        badge_type:'spot', category:'Lẩu / Nướng / Nhậu', must_try:'Lẩu lòng bò thập cẩm',
-        price_range:'150.000đ - 300.000đ', rating_stars:4.3,
-        opening_hours:'16:00 - 23:00', description:'Quán lẩu lòng bò nổi tiếng buổi tối, không gian bình dân, đông khách địa phương.',
-        image_url:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400',
-        address:'78 Nguyễn Tất Thành, Thanh Khê, Đà Nẵng', phone:'0905789012',
-        shopeefood_link:'', grab_link:'', map_url:'', video_url:'',
-        parking_info:'Vỉa hè', payment_methods:'Tiền mặt', day_off:'Nghỉ Chủ Nhật', type:'restaurant'
+        id: 'demo3', name: 'Lẩu Lòng Bò Hạ Bằng', lat: 16.0490, lng: 108.1980,
+        badge_type: 'spot', category: 'Lẩu / Nướng / Nhậu', must_try: 'Lẩu lòng bò thập cẩm',
+        price_range: '150.000đ - 300.000đ', rating_stars: 4.3,
+        opening_hours: '16:00 - 23:00', description: 'Quán lẩu lòng bò nổi tiếng buổi tối, không gian bình dân, đông khách địa phương.',
+        image_url: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400',
+        address: '78 Nguyễn Tất Thành, Thanh Khê, Đà Nẵng', phone: '0905789012',
+        shopeefood_link: '', grab_link: '', map_url: '', video_url: '',
+        parking_info: 'Vỉa hè', payment_methods: 'Tiền mặt', day_off: 'Nghỉ Chủ Nhật', type: 'restaurant'
       },
       {
-        id:'demo4', name:'Cơm Gà A Hải', lat:16.0555, lng:108.2150,
-        badge_type:'approved', category:'Cơm / Bữa Chính', must_try:'Cơm gà xé + gà quay',
-        price_range:'30.000đ - 50.000đ', rating_stars:4.6,
-        opening_hours:'10:00 - 20:00', description:'Cơm gà chuẩn vị Hội An giữa lòng Đà Nẵng, gà mềm, cơm dẻo thơm.',
-        image_url:'https://images.unsplash.com/photo-1598515213692-5f252f5c6ba3?w=400',
-        address:'12 Lê Duẩn, Hải Châu, Đà Nẵng', phone:'0905345678',
-        shopeefood_link:'', grab_link:'', map_url:'', video_url:'',
-        parking_info:'Có chỗ để xe', payment_methods:'Tiền mặt, Momo, ZaloPay', day_off:'Không nghỉ', type:'restaurant'
+        id: 'demo4', name: 'Cơm Gà A Hải', lat: 16.0555, lng: 108.2150,
+        badge_type: 'approved', category: 'Cơm / Bữa Chính', must_try: 'Cơm gà xé + gà quay',
+        price_range: '30.000đ - 50.000đ', rating_stars: 4.6,
+        opening_hours: '10:00 - 20:00', description: 'Cơm gà chuẩn vị Hội An giữa lòng Đà Nẵng, gà mềm, cơm dẻo thơm.',
+        image_url: 'https://images.unsplash.com/photo-1598515213692-5f252f5c6ba3?w=400',
+        address: '12 Lê Duẩn, Hải Châu, Đà Nẵng', phone: '0905345678',
+        shopeefood_link: '', grab_link: '', map_url: '', video_url: '',
+        parking_info: 'Có chỗ để xe', payment_methods: 'Tiền mặt, Momo, ZaloPay', day_off: 'Không nghỉ', type: 'restaurant'
       },
       {
-        id:'demo5', name:'Trà Sữa Đô Đô', lat:16.0700, lng:108.2000,
-        badge_type:'spot', category:'Cà Phê / Đồ Uống', must_try:'Trà sữa trân châu đường đen',
-        price_range:'20.000đ - 40.000đ', rating_stars:4.2,
-        opening_hours:'8:00 - 22:00', description:'Chuỗi trà sữa quen thuộc, giá bình dân, phù hợp học sinh sinh viên.',
-        image_url:'https://images.unsplash.com/photo-1558857563-b371033873b8?w=400',
-        address:'200 Điện Biên Phủ, Thanh Khê, Đà Nẵng', phone:'0905901234',
-        shopeefood_link:'', grab_link:'', map_url:'', video_url:'',
-        parking_info:'Bãi xe máy nhỏ', payment_methods:'Tiền mặt, chuyển khoản', day_off:'Không nghỉ', type:'cafe'
+        id: 'demo5', name: 'Trà Sữa Đô Đô', lat: 16.0700, lng: 108.2000,
+        badge_type: 'spot', category: 'Cà Phê / Đồ Uống', must_try: 'Trà sữa trân châu đường đen',
+        price_range: '20.000đ - 40.000đ', rating_stars: 4.2,
+        opening_hours: '8:00 - 22:00', description: 'Chuỗi trà sữa quen thuộc, giá bình dân, phù hợp học sinh sinh viên.',
+        image_url: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=400',
+        address: '200 Điện Biên Phủ, Thanh Khê, Đà Nẵng', phone: '0905901234',
+        shopeefood_link: '', grab_link: '', map_url: '', video_url: '',
+        parking_info: 'Bãi xe máy nhỏ', payment_methods: 'Tiền mặt, chuyển khoản', day_off: 'Không nghỉ', type: 'cafe'
       }
     ]);
   }
 }
 
-function onData(d){
+function onData(d) {
   document.getElementById('map-loader').classList.add('hidden');
   hideAppSplash();
-  if(!Array.isArray(d)) d = [];
-  d.forEach(function(loc){
+  if (!Array.isArray(d)) d = [];
+  d.forEach(function (loc) {
     loc.name = fixUtf8(loc.name);
     loc.must_try = fixUtf8(loc.must_try);
     loc.category = fixUtf8(loc.category);
@@ -1838,23 +1849,23 @@ function onData(d){
     loc.lat = c.lat;
     loc.lng = c.lng;
   });
-  allLocs=d;
-  
+  allLocs = d;
+
   // If userMarker exists, keep focus on user location at zoom level 15
   loadMarkers(d, !!userMarker);
-  
-  if(userMarker){
+
+  if (userMarker) {
     map.flyTo(userMarker.getLatLng(), 15, { animate: true, duration: 0.8 });
   }
 
-  
+
   renderHomeLatestCards();
   renderDesktopSidebar(d);
   renderMobileList(d);
-  
+
   // Deep-link địa điểm (?id=...): chỉ tự mở 1 LẦN ngay sau lần load data đầu tiên,
   // tránh việc mọi lần onData() refresh sau đó (admin sửa/xóa...) lại mở lại sheet
-  if(DEEP_LINK_ID && DEEP_LINK_TYPE !== 'recipe' && !deepLinkLocResolved){
+  if (DEEP_LINK_ID && DEEP_LINK_TYPE !== 'recipe' && !deepLinkLocResolved) {
     deepLinkLocResolved = true;
     openHomeCardLoc(DEEP_LINK_ID);
   }
@@ -1862,44 +1873,44 @@ function onData(d){
 
 // ── DESKTOP SIDEBAR: render danh sách quán bên phải (chỉ có ý nghĩa khi màn hình rộng, mobile không bị ảnh hưởng vì CSS ẩn sẵn) ──
 // Tính khoảng cách thực tế (km) — dùng để hiện cạnh tên quán trong danh sách
-function haversineDistanceKm(lat1, lng1, lat2, lng2){
+function haversineDistanceKm(lat1, lng1, lat2, lng2) {
   var R = 6371;
-  var dLat = (lat2-lat1) * Math.PI/180;
-  var dLng = (lng2-lng1) * Math.PI/180;
-  var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLng = (lng2 - lng1) * Math.PI / 180;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 var BADGE_LABELS = {
-  heritage: {text:'Heritage', color:'#D97706'},
-  approved: {text:'Approved', color:'#FF7043'},
-  pending:  {text:'Chờ duyệt', color:'#8B5CF6'},
-  spot:     {text:'Spot', color:'#0EA5E9'}
+  heritage: { text: 'Heritage', color: '#D97706' },
+  approved: { text: 'Approved', color: '#FF7043' },
+  pending: { text: 'Chờ duyệt', color: '#8B5CF6' },
+  spot: { text: 'Spot', color: '#0EA5E9' }
 };
 
-function getBadgeIconHtml(badgeType){
+function getBadgeIconHtml(badgeType) {
   var url = WEBP_ICONS[badgeType] || WEBP_ICONS['spot'];
-  if(url && url.length > 50){
-    return '<img src="'+url+'" style="height:16px;width:16px;object-fit:contain;vertical-align:-3px;margin-right:3px;" alt="badge">';
+  if (url && url.length > 50) {
+    return '<img src="' + url + '" style="height:16px;width:16px;object-fit:contain;vertical-align:-3px;margin-right:3px;" alt="badge">';
   }
   // fallback giống hệt logic mkPin() dùng cho pin trên bản đồ khi không có ảnh WebP
-  var fallbackIcon = badgeType==='heritage' ? '🏆' : badgeType==='approved' ? '✔️' : badgeType==='pending' ? '⏳' : UI_ICONS.pin;
+  var fallbackIcon = badgeType === 'heritage' ? '🏆' : badgeType === 'approved' ? '✔️' : badgeType === 'pending' ? '⏳' : UI_ICONS.pin;
   return fallbackIcon + ' ';
 }
 
-function renderDesktopSidebar(locs){
+function renderDesktopSidebar(locs) {
   var list = document.getElementById('desktop-sidebar-list');
-  if(!list) return;
+  if (!list) return;
 
   var meta = document.getElementById('desktop-sidebar-meta');
-  if(meta) meta.textContent = (locs ? locs.length : 0) + ' quán';
+  if (meta) meta.textContent = (locs ? locs.length : 0) + ' quán';
 
   var title = document.getElementById('desktop-sidebar-title');
-  if(title){
+  if (title) {
     title.textContent = (activeFilter && activeFilter !== 'all') ? '🔍 ' + activeFilter : '🍜 Danh sách quán';
   }
 
-  if(!Array.isArray(locs) || !locs.length){
+  if (!Array.isArray(locs) || !locs.length) {
     list.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
     return;
   }
@@ -1909,13 +1920,13 @@ function renderDesktopSidebar(locs){
   var hasGPS = !!(uLat && uLng);
 
   var gpsStatus = document.getElementById('desktop-sidebar-gps-status');
-  if(gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
+  if (gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
 
-  var sortedLocs = locs.map(function(loc){
+  var sortedLocs = locs.map(function (loc) {
     var dist = null;
-    if(hasGPS){
+    if (hasGPS) {
       var c = parseCoord(loc.lat, loc.lng);
-      if(c.lat && c.lng){
+      if (c.lat && c.lng) {
         dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
       }
     }
@@ -1926,47 +1937,47 @@ function renderDesktopSidebar(locs){
     };
   });
 
-  if(hasGPS){
-    sortedLocs.sort(function(a, b){
+  if (hasGPS) {
+    sortedLocs.sort(function (a, b) {
       var da = a.dist !== null ? a.dist : 99999;
       var db = b.dist !== null ? b.dist : 99999;
       return da - db;
     });
   }
 
-  var rankColors = ['#f59e0b','#94a3b8','#b45309'];
+  var rankColors = ['#f59e0b', '#94a3b8', '#b45309'];
 
-  list.innerHTML = sortedLocs.map(function(item, i){
+  list.innerHTML = sortedLocs.map(function (item, i) {
     var loc = item.loc;
     var idx = item.originalIdx;
-    
+
     var img = loc.image_url || '';
-    var thumb = img ? '<img src="'+img+'" loading="lazy" onerror="this.style.display=\'none\'"/>' : '<div style="width:52px;height:52px;border-radius:10px;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">' + (loc.emoji || '🍜') + '</div>';
+    var thumb = img ? '<img src="' + img + '" loading="lazy" onerror="this.style.display=\'none\'"/>' : '<div style="width:52px;height:52px;border-radius:10px;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">' + (loc.emoji || '🍜') + '</div>';
 
     var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:'+badge.color+';background:'+badge.color+'20;padding:2px 7px;border-radius:10px;margin-right:6px;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
+    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:' + badge.color + ';background:' + badge.color + '20;padding:2px 7px;border-radius:10px;margin-right:6px;">' + getBadgeIconHtml(loc.badge_type) + badge.text + '</span>';
 
     var isNear = false;
     var distHtml = '';
-    if(hasGPS && item.dist !== null){
+    if (hasGPS && item.dist !== null) {
       isNear = item.dist < 1;
       distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
-               + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
-               + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
+        + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
+        + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
     }
 
     var rankHtml = '';
-    if(hasGPS && i < 3){
-      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:'+rankColors[i]+';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;">'+(i+1)+'</div>';
+    if (hasGPS && i < 3) {
+      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:' + rankColors[i] + ';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;">' + (i + 1) + '</div>';
     }
 
-    var bgStyle = (isNear && i===0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
+    var bgStyle = (isNear && i === 0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
 
-    return '<div class="desktop-loc-card" style="position:relative;'+bgStyle+'" onclick="desktopSidebarGoTo('+idx+')">'
+    return '<div class="desktop-loc-card" style="position:relative;' + bgStyle + '" onclick="desktopSidebarGoTo(' + idx + ')">'
       + rankHtml
       + thumb
-      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(loc.name||'')+'</span>'+distHtml+'</div>'
-      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+badgeHtml+'<span>'+(loc.category||'')+(loc.must_try ? ' · '+loc.must_try : '')+'</span></div></div>'
+      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (loc.name || '') + '</span>' + distHtml + '</div>'
+      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">' + badgeHtml + '<span>' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</span></div></div>'
       + '</div>';
   }).join('');
 }
@@ -1975,11 +1986,11 @@ function openMobileList() { document.getElementById('mobile-list-sheet').classLi
 function closeMobileList() { document.getElementById('mobile-list-sheet').classList.remove('open'); }
 function mobileListGoTo(idx) {
   closeMobileList();
-  setTimeout(function(){
+  setTimeout(function () {
     var loc = allLocs[idx];
-    if(!loc) return;
+    if (!loc) return;
     var c = parseCoord(loc.lat, loc.lng);
-    if(c.lat && c.lng) map.flyTo([c.lat, c.lng], 16, {animate: true, duration: 0.8});
+    if (c.lat && c.lng) map.flyTo([c.lat, c.lng], 16, { animate: true, duration: 0.8 });
     openSheet(loc);
   }, 350);
 }
@@ -1988,147 +1999,147 @@ function renderMobileList(locs) {
   var countEl = document.getElementById('mobile-list-count');
   var countSheetEl = document.getElementById('mobile-sheet-count');
   var btn = document.getElementById('mobile-list-btn');
-  if(btn) btn.style.display = 'flex';
+  if (btn) btn.style.display = 'flex';
   var num = locs ? locs.length : 0;
-  var displayNum = num > 999 ? (num/1000).toFixed(1).replace('.0', '') + 'k' : num;
-  if(countEl) countEl.textContent = displayNum;
-  if(countSheetEl) countSheetEl.textContent = num;
+  var displayNum = num > 999 ? (num / 1000).toFixed(1).replace('.0', '') + 'k' : num;
+  if (countEl) countEl.textContent = displayNum;
+  if (countSheetEl) countSheetEl.textContent = num;
 
   var content = document.getElementById('mobile-list-content');
-  if(!content) return;
-  if(!Array.isArray(locs) || !locs.length){
+  if (!content) return;
+  if (!Array.isArray(locs) || !locs.length) {
     content.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
     return;
   }
-  
+
   var uLat = userMarker ? userMarker.getLatLng().lat : null;
   var uLng = userMarker ? userMarker.getLatLng().lng : null;
   var hasGPS = !!(uLat && uLng);
 
   var gpsStatus = document.getElementById('mobile-list-gps-status');
-  if(gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
+  if (gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
 
-  var sortedLocs = locs.map(function(loc){
+  var sortedLocs = locs.map(function (loc) {
     var dist = null;
-    if(hasGPS){
+    if (hasGPS) {
       var c = parseCoord(loc.lat, loc.lng);
-      if(c.lat && c.lng){
+      if (c.lat && c.lng) {
         dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
       }
     }
     return { loc: loc, originalIdx: allLocs.indexOf(loc), dist: dist };
   });
 
-  if(hasGPS){
-    sortedLocs.sort(function(a, b){
+  if (hasGPS) {
+    sortedLocs.sort(function (a, b) {
       var da = a.dist !== null ? a.dist : 99999;
       var db = b.dist !== null ? b.dist : 99999;
       return da - db;
     });
   }
 
-  var rankColors = ['#f59e0b','#94a3b8','#b45309'];
-  content.innerHTML = sortedLocs.map(function(item, i){
+  var rankColors = ['#f59e0b', '#94a3b8', '#b45309'];
+  content.innerHTML = sortedLocs.map(function (item, i) {
     var loc = item.loc;
     var idx = item.originalIdx;
     var img = loc.image_url || '';
-    var thumb = img ? '<img src="'+img+'" loading="lazy" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>' : '<div style="width:60px;height:60px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">' + (loc.emoji || '🍜') + '</div>';
+    var thumb = img ? '<img src="' + img + '" loading="lazy" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>' : '<div style="width:60px;height:60px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">' + (loc.emoji || '🍜') + '</div>';
 
     var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:'+badge.color+';background:'+badge.color+'20;padding:2px 7px;border-radius:10px;margin-right:6px;">'+getBadgeIconHtml(loc.badge_type)+badge.text+'</span>';
+    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:' + badge.color + ';background:' + badge.color + '20;padding:2px 7px;border-radius:10px;margin-right:6px;">' + getBadgeIconHtml(loc.badge_type) + badge.text + '</span>';
 
     var isNear = false;
     var distHtml = '';
-    if(hasGPS && item.dist !== null){
+    if (hasGPS && item.dist !== null) {
       isNear = item.dist < 1;
       distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
-               + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
-               + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
+        + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
+        + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
     }
 
     var rankHtml = '';
-    if(hasGPS && i < 3){
-      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:'+rankColors[i]+';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:10;">'+(i+1)+'</div>';
+    if (hasGPS && i < 3) {
+      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:' + rankColors[i] + ';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:10;">' + (i + 1) + '</div>';
     }
 
-    var bgStyle = (isNear && i===0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
+    var bgStyle = (isNear && i === 0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
 
-    return '<div class="desktop-loc-card" style="position:relative;'+bgStyle+'" onclick="mobileListGoTo('+idx+')">'
+    return '<div class="desktop-loc-card" style="position:relative;' + bgStyle + '" onclick="mobileListGoTo(' + idx + ')">'
       + rankHtml
       + thumb
-      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(loc.name||'')+'</span>'+distHtml+'</div>'
-      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+badgeHtml+'<span>'+(loc.category||'')+(loc.must_try ? ' · '+loc.must_try : '')+'</span></div></div>'
+      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (loc.name || '') + '</span>' + distHtml + '</div>'
+      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">' + badgeHtml + '<span>' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</span></div></div>'
       + '</div>';
   }).join('');
 }
 
-function desktopSidebarGoTo(idx){
+function desktopSidebarGoTo(idx) {
   var loc = allLocs[idx];
-  if(!loc) return;
+  if (!loc) return;
   var c = parseCoord(loc.lat, loc.lng);
-  if(c.lat && c.lng) map.panTo([c.lat, c.lng]);
+  if (c.lat && c.lng) map.panTo([c.lat, c.lng]);
   openSheet(loc);
 }
 
 // ── Cập nhật lại split-view khi người dùng kéo giãn/co nhỏ cửa sổ trình duyệt ──
-window.addEventListener('resize', function(){
+window.addEventListener('resize', function () {
   var isMapNow = document.getElementById('page-map') ? document.getElementById('page-map').classList.contains('show') : false;
   // Nếu không dùng page-map riêng (mà map là base layer), coi map đang hiện khi không có overlay page nào 'show'
-  var anyOverlayShown = ['home','cook','admin'].some(function(k){
-    var p = document.getElementById('page-'+k);
+  var anyOverlayShown = ['home', 'cook', 'admin'].some(function (k) {
+    var p = document.getElementById('page-' + k);
     return p && p.classList.contains('show');
   });
   var onMapPage = !anyOverlayShown;
   document.body.classList.toggle('desktop-mode', window.innerWidth >= 1024);
   document.body.classList.toggle('desktop-map-view', onMapPage && window.innerWidth >= 1024);
-  if(window.map) setTimeout(function(){ map.invalidateSize(true); }, 200);
+  if (window.map) setTimeout(function () { map.invalidateSize(true); }, 200);
 });
 
 // WebP 3D Map Pins (Floating with Arrow)
-function mkPin(badge){
+function mkPin(badge) {
   var url = WEBP_ICONS[badge] || WEBP_ICONS['spot'];
   var colorClass = 'blue';
   var iconText = UI_ICONS.pin;
-  
+
   var imgSize = 38;
-  if(badge==='heritage'){ colorClass='gold'; iconText='🏆'; imgSize = 42; }
-  else if(badge==='approved'){ colorClass='orange'; iconText='✔️'; imgSize = 40; }
-  else if(badge==='pending'){ colorClass='purple'; iconText='⏳'; imgSize = 38; }
+  if (badge === 'heritage') { colorClass = 'gold'; iconText = '🏆'; imgSize = 42; }
+  else if (badge === 'approved') { colorClass = 'orange'; iconText = '✔️'; imgSize = 40; }
+  else if (badge === 'pending') { colorClass = 'purple'; iconText = '⏳'; imgSize = 38; }
 
   // Nếu có link WebP, hiển thị ảnh 3D nổi và chèn mũi tên bên dưới
   if (url && url.length > 50) {
     var html = '<div style="display:flex; flex-direction:column; align-items:center;">'
-      + '<img src="' + url + '" style="width:'+imgSize+'px; height:'+imgSize+'px; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));" alt="badge" />'
-      + '<div class="map-pin-arrow '+colorClass+'" style="margin-top:-2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>'
+      + '<img src="' + url + '" style="width:' + imgSize + 'px; height:' + imgSize + 'px; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));" alt="badge" />'
+      + '<div class="map-pin-arrow ' + colorClass + '" style="margin-top:-2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));"></div>'
       + '</div>';
-    
+
     var totalHeight = imgSize + 10 - 2; // img height + arrow height (10) - margin (-2)
     return L.divIcon({
       html: html,
       iconSize: [imgSize, totalHeight],
-      iconAnchor: [imgSize/2, totalHeight],
+      iconAnchor: [imgSize / 2, totalHeight],
       className: 'custom-map-pin'
     });
   }
-  
+
   // Fallback (HTML thuần)
   var htmlFb = '<div class="map-pin-box">'
-    + '<div class="map-pin-head '+colorClass+'">'+iconText+'</div>'
-    + '<div class="map-pin-arrow '+colorClass+'"></div>'
+    + '<div class="map-pin-head ' + colorClass + '">' + iconText + '</div>'
+    + '<div class="map-pin-arrow ' + colorClass + '"></div>'
     + '</div>';
-    
-  return L.divIcon({html:htmlFb,iconSize:[80,44],iconAnchor:[40,44],className:'custom-map-pin'});
+
+  return L.divIcon({ html: htmlFb, iconSize: [80, 44], iconAnchor: [40, 44], className: 'custom-map-pin' });
 }
 
-function loadMarkers(locs, skipFitBounds){
-  if(!Array.isArray(locs)) locs = [];
-  markers.forEach(function(m){map.removeLayer(m);}); markers=[];
+function loadMarkers(locs, skipFitBounds) {
+  if (!Array.isArray(locs)) locs = [];
+  markers.forEach(function (m) { map.removeLayer(m); }); markers = [];
   var validBounds = [];
-  locs.forEach(function(loc){
+  locs.forEach(function (loc) {
     var c = parseCoord(loc.lat, loc.lng);
-    if(!c.lat || !c.lng) return;
-    var m = L.marker([c.lat, c.lng], {icon: mkPin(loc.badge_type)});
-    m.on('click', function(e){
+    if (!c.lat || !c.lng) return;
+    var m = L.marker([c.lat, c.lng], { icon: mkPin(loc.badge_type) });
+    m.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
       openSheet(loc);
       map.panTo([c.lat, c.lng]);
@@ -2137,41 +2148,41 @@ function loadMarkers(locs, skipFitBounds){
     validBounds.push([c.lat, c.lng]);
   });
 
-  if(map){
+  if (map) {
     map.invalidateSize();
   }
 
   // CRITICAL FIX: If userMarker exists, NEVER override map position back to default!
-  if(!skipFitBounds && !userMarker){
-    if(validBounds.length > 0){
-      try{
+  if (!skipFitBounds && !userMarker) {
+    if (validBounds.length > 0) {
+      try {
         map.fitBounds(L.latLngBounds(validBounds), { maxZoom: 14, padding: [50, 50] });
-      }catch(e){}
+      } catch (e) { }
     }
   }
 }
 
-function filterMap(f, btn, skipFitBounds){
+function filterMap(f, btn, skipFitBounds) {
   activeFilter = f;
-  if(btn){
-    document.querySelectorAll('.pill, .s-filter-btn').forEach(function(b){b.classList.remove('active');});
+  if (btn) {
+    document.querySelectorAll('.pill, .s-filter-btn').forEach(function (b) { b.classList.remove('active'); });
     btn.classList.add('active');
   }
-  
+
   closeSheet();
 
   var filtered = [];
-  if(!Array.isArray(allLocs)) allLocs = [];
+  if (!Array.isArray(allLocs)) allLocs = [];
 
-  if(f==='fav') {
-    filtered = allLocs.filter(function(l) { return isFav(l.id); });
-  }else if(f==='near'){
+  if (f === 'fav') {
+    filtered = allLocs.filter(function (l) { return isFav(l.id); });
+  } else if (f === 'near') {
     if (typeof userMarker !== 'undefined' && userMarker) {
       var uLat = userMarker.getLatLng().lat;
       var uLng = userMarker.getLatLng().lng;
-      filtered = allLocs.filter(function(l) {
+      filtered = allLocs.filter(function (l) {
         var c = parseCoord(l.lat, l.lng);
-        if(c.lat && c.lng) {
+        if (c.lat && c.lng) {
           var dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
           return dist <= 5.0;
         }
@@ -2180,60 +2191,60 @@ function filterMap(f, btn, skipFitBounds){
     } else {
       filtered = allLocs;
     }
-  }else if(f==='all'){
+  } else if (f === 'all') {
     filtered = allLocs;
-  }else if(['heritage','approved','spot','pending'].indexOf(f) !== -1){
-    filtered = allLocs.filter(function(l){ return l.badge_type === f; });
-  }else{
+  } else if (['heritage', 'approved', 'spot', 'pending'].indexOf(f) !== -1) {
+    filtered = allLocs.filter(function (l) { return l.badge_type === f; });
+  } else {
     var searchCat = f.toLowerCase().trim();
-    filtered = allLocs.filter(function(l){
-      var c = (l.category||'').toLowerCase().trim();
+    filtered = allLocs.filter(function (l) {
+      var c = (l.category || '').toLowerCase().trim();
       return c === searchCat || c.indexOf(searchCat) !== -1 || searchCat.indexOf(c) !== -1;
     });
   }
 
   loadMarkers(filtered, skipFitBounds || !!userMarker);
 
-  if(document.body.classList.contains('desktop-map-view')) {
+  if (document.body.classList.contains('desktop-map-view')) {
     renderDesktopSidebar(filtered);
   }
   renderMobileList(filtered);
 
-  if(map){
-    setTimeout(function(){ map.invalidateSize(); }, 50);
-    setTimeout(function(){ map.invalidateSize(); }, 250);
+  if (map) {
+    setTimeout(function () { map.invalidateSize(); }, 50);
+    setTimeout(function () { map.invalidateSize(); }, 250);
   }
 }
 
 // Simple pulse animation for GPS dot since we can't inject @keyframes easily here without touching global CSS
-setInterval(function(){
+setInterval(function () {
   var dot = document.getElementById('gps-pulse-dot');
   var mdot = document.getElementById('mobile-gps-pulse-dot');
-  if(dot) dot.style.opacity = dot.style.opacity === '0.4' ? '1' : '0.4';
-  if(mdot) mdot.style.opacity = mdot.style.opacity === '0.4' ? '1' : '0.4';
+  if (dot) dot.style.opacity = dot.style.opacity === '0.4' ? '1' : '0.4';
+  if (mdot) mdot.style.opacity = mdot.style.opacity === '0.4' ? '1' : '0.4';
 }, 750);
 
 // ── PWA PROMPT
-var deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',function(e){
-  e.preventDefault(); deferredPrompt=e;
-  setTimeout(function(){
-    if(!localStorage.getItem('pwa-ok')) document.getElementById('pwa-banner').classList.add('show');
-  },4000);
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault(); deferredPrompt = e;
+  setTimeout(function () {
+    if (!localStorage.getItem('pwa-ok')) document.getElementById('pwa-banner').classList.add('show');
+  }, 4000);
 });
-function installPWA(){
-  if(!deferredPrompt){alert(t('ios'));return;}
+function installPWA() {
+  if (!deferredPrompt) { alert(t('ios')); return; }
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(r){
-    if(r.outcome==='accepted'){document.getElementById('pwa-banner').classList.remove('show');localStorage.setItem('pwa-ok','1');}
-    deferredPrompt=null;
+  deferredPrompt.userChoice.then(function (r) {
+    if (r.outcome === 'accepted') { document.getElementById('pwa-banner').classList.remove('show'); localStorage.setItem('pwa-ok', '1'); }
+    deferredPrompt = null;
   });
 }
-function dismissPWA(){document.getElementById('pwa-banner').classList.remove('show');localStorage.setItem('pwa-ok','1');}
+function dismissPWA() { document.getElementById('pwa-banner').classList.remove('show'); localStorage.setItem('pwa-ok', '1'); }
 
 // ── OFFLINE
-function chkOnline(){document.getElementById('offline-bar').style.display=navigator.onLine?'none':'block';}
-window.addEventListener('online',chkOnline); window.addEventListener('offline',chkOnline); chkOnline();
+function chkOnline() { document.getElementById('offline-bar').style.display = navigator.onLine ? 'none' : 'block'; }
+window.addEventListener('online', chkOnline); window.addEventListener('offline', chkOnline); chkOnline();
 
 var globalCarouselTimer = null;
 var carouselInstances = [];
@@ -2242,35 +2253,35 @@ var carouselInstances = [];
 
 // --- FAVORITES LOGIC ---
 function getFavs() {
-  try { return JSON.parse(localStorage.getItem('tt_favs')) || []; } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('tt_favs')) || []; } catch (e) { return []; }
 }
 function isFav(id) {
   return getFavs().includes(String(id));
 }
 function toggleFav(e, id) {
-  if(e) e.stopPropagation();
+  if (e) e.stopPropagation();
   var favs = getFavs();
   id = String(id);
-  if(favs.includes(id)) {
-    favs = favs.filter(function(x) { return x !== id; });
+  if (favs.includes(id)) {
+    favs = favs.filter(function (x) { return x !== id; });
   } else {
     favs.push(id);
   }
   localStorage.setItem('tt_favs', JSON.stringify(favs));
-  
-  var btns = document.querySelectorAll('.sheet-fav-btn[data-id="'+id+'"]');
-  btns.forEach(function(btn) {
-    if(favs.includes(id)) {
+
+  var btns = document.querySelectorAll('.sheet-fav-btn[data-id="' + id + '"]');
+  btns.forEach(function (btn) {
+    if (favs.includes(id)) {
       btn.classList.add('liked');
       var card = btn.closest('.desktop-loc-card') || btn.closest('.home-featured-card');
-      if(card) card.classList.add('is-liked');
+      if (card) card.classList.add('is-liked');
     } else {
       btn.classList.remove('liked');
       var card = btn.closest('.desktop-loc-card') || btn.closest('.home-featured-card');
-      if(card) {
+      if (card) {
         card.classList.remove('is-liked');
         var favFilter = document.getElementById('btn-fav');
-        if(favFilter && favFilter.classList.contains('active') && card.classList.contains('desktop-loc-card')) {
+        if (favFilter && favFilter.classList.contains('active') && card.classList.contains('desktop-loc-card')) {
           card.style.display = 'none';
         }
       }
@@ -2279,141 +2290,141 @@ function toggleFav(e, id) {
 }
 
 function toggleFilterMap(type, btn) {
-    if(type === 'fav') {
-        var isActive = btn.classList.contains('active');
-        if (isActive) {
-            btn.classList.remove('active');
-            filterMap('all'); 
-            var allPill = document.querySelector('.pill-scroll .pill:first-child');
-            if (allPill) allPill.classList.add('active');
-        } else {
-            filterMap('fav', btn);
-        }
-    } else if(type === 'near') {
-        var isActive = btn.classList.contains('active');
-        if (isActive) {
-            btn.classList.remove('active');
-            filterMap('all'); 
-            var allPill = document.querySelector('.pill-scroll .pill:first-child');
-            if (allPill) allPill.classList.add('active');
-        } else {
-            // Provide immediate feedback
-            document.querySelectorAll('.pill, .s-filter-btn').forEach(function(b){b.classList.remove('active');});
-            btn.classList.add('active');
-            
-            if (typeof userMarker !== 'undefined' && userMarker) {
-                filterMap('near', btn);
-            } else {
-                activeFilter = 'near';
-                if(typeof locateMe === 'function') locateMe();
-            }
-        }
-    } else if(type === 'price') {
-      btn.classList.toggle('active');
+  if (type === 'fav') {
+    var isActive = btn.classList.contains('active');
+    if (isActive) {
+      btn.classList.remove('active');
+      filterMap('all');
+      var allPill = document.querySelector('.pill-scroll .pill:first-child');
+      if (allPill) allPill.classList.add('active');
+    } else {
+      filterMap('fav', btn);
     }
-  }
-  // -----------------------
+  } else if (type === 'near') {
+    var isActive = btn.classList.contains('active');
+    if (isActive) {
+      btn.classList.remove('active');
+      filterMap('all');
+      var allPill = document.querySelector('.pill-scroll .pill:first-child');
+      if (allPill) allPill.classList.add('active');
+    } else {
+      // Provide immediate feedback
+      document.querySelectorAll('.pill, .s-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
 
-function renderHomeLatestCards(){
+      if (typeof userMarker !== 'undefined' && userMarker) {
+        filterMap('near', btn);
+      } else {
+        activeFilter = 'near';
+        if (typeof locateMe === 'function') locateMe();
+      }
+    }
+  } else if (type === 'price') {
+    btn.classList.toggle('active');
+  }
+}
+// -----------------------
+
+function renderHomeLatestCards() {
   var locContainer = document.getElementById('home-loc-cards');
   var recipeContainer = document.getElementById('home-recipe-cards');
-  
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
+
+  if (globalCarouselTimer) clearInterval(globalCarouselTimer);
   carouselInstances = [];
 
   const svgShield = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>';
   const svgTag = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>';
   const svgSpark = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
-  
+
   const svgClock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
   const svgUser = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
   const svgFlame = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
   const svgBook = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>';
 
-  if(locContainer && typeof allLocs!=='undefined' && allLocs.length > 0){
-      var validLocs = allLocs.filter(function(loc){ return loc.badge_type !== 'pending'; });
-      var html = '';
-      var count = Math.min(4, validLocs.length);
-      for(var i=0; i<count; i++){
-        var latestLoc = validLocs[validLocs.length - 1 - i];
-        
-        var badgeText = (latestLoc.badge_type === 'heritage') ? 'Thao Thức Heritage' : (latestLoc.badge_type === 'approved') ? 'Thao Thức Approved' : 'Thao Thức Spot';
-        var iconHtml = svgShield;
-        if(typeof WEBP_ICONS!=='undefined' && WEBP_ICONS[latestLoc.badge_type] && WEBP_ICONS[latestLoc.badge_type].length > 50){
-           iconHtml = '<img src="' + WEBP_ICONS[latestLoc.badge_type] + '" alt="badge">';
-        }
+  if (locContainer && typeof allLocs !== 'undefined' && allLocs.length > 0) {
+    var validLocs = allLocs.filter(function (loc) { return loc.badge_type !== 'pending'; });
+    var html = '';
+    var count = Math.min(4, validLocs.length);
+    for (var i = 0; i < count; i++) {
+      var latestLoc = validLocs[validLocs.length - 1 - i];
 
-        var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
-        
-        html += '<div class="home-featured-card" onclick="openHomeCardLoc(\''+latestLoc.id+'\')">'
-          + '<div class="hf-img-wrap">'
-          + '<img src="'+imgUrl+'" alt="Loc"/>'
-          + (i===0 ? '<span class="hf-badge">MỚI REVIEW</span>' : '')
-          + (latestLoc.price_range ? '<span class="hf-price-float">'+latestLoc.price_range+'</span>' : '')
-          + '</div>'
-          + '<div class="hf-body">'
-          + '<div class="hf-title-row"><div class="hf-title">'+latestLoc.name+'</div></div>'
-          + '<div class="hf-meta-row">'
-          + '<span class="hf-rating">' + iconHtml + ' ' + badgeText + '</span>'
-          + '<span class="hf-cat">' + svgTag + ' ' + (latestLoc.category||'Khác') + '</span>'
-          + '</div>'
-          + (latestLoc.must_try ? '<div class="hf-must-try">' + svgSpark + '<div><span>Món tủ:</span> ' + latestLoc.must_try + '</div></div>' : '<div style="flex:1"></div>')
-          + '<button class="hf-btn">Khám phá ngay &rarr;</button>'
-          + '</div></div>';
+      var badgeText = (latestLoc.badge_type === 'heritage') ? 'Thao Thức Heritage' : (latestLoc.badge_type === 'approved') ? 'Thao Thức Approved' : 'Thao Thức Spot';
+      var iconHtml = svgShield;
+      if (typeof WEBP_ICONS !== 'undefined' && WEBP_ICONS[latestLoc.badge_type] && WEBP_ICONS[latestLoc.badge_type].length > 50) {
+        iconHtml = '<img src="' + WEBP_ICONS[latestLoc.badge_type] + '" alt="badge">';
       }
-      locContainer.innerHTML = html;
-      if(typeof initCarouselDots === 'function') initCarouselDots('home-loc-cards', 'home-loc-dots', count);
+
+      var imgUrl = latestLoc.image_url || latestLoc.photo_url || CAT_IMAGES[latestLoc.category] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+
+      html += '<div class="home-featured-card" onclick="openHomeCardLoc(\'' + latestLoc.id + '\')">'
+        + '<div class="hf-img-wrap">'
+        + '<img src="' + imgUrl + '" alt="Loc"/>'
+        + (i === 0 ? '<span class="hf-badge">MỚI REVIEW</span>' : '')
+        + (latestLoc.price_range ? '<span class="hf-price-float">' + latestLoc.price_range + '</span>' : '')
+        + '</div>'
+        + '<div class="hf-body">'
+        + '<div class="hf-title-row"><div class="hf-title">' + latestLoc.name + '</div></div>'
+        + '<div class="hf-meta-row">'
+        + '<span class="hf-rating">' + iconHtml + ' ' + badgeText + '</span>'
+        + '<span class="hf-cat">' + svgTag + ' ' + (latestLoc.category || 'Khác') + '</span>'
+        + '</div>'
+        + (latestLoc.must_try ? '<div class="hf-must-try">' + svgSpark + '<div><span>Món tủ:</span> ' + latestLoc.must_try + '</div></div>' : '<div style="flex:1"></div>')
+        + '<button class="hf-btn">Khám phá ngay &rarr;</button>'
+        + '</div></div>';
+    }
+    locContainer.innerHTML = html;
+    if (typeof initCarouselDots === 'function') initCarouselDots('home-loc-cards', 'home-loc-dots', count);
   }
 
-  if(recipeContainer && typeof RECIPES_DATA!=='undefined' && RECIPES_DATA.length > 0){
+  if (recipeContainer && typeof RECIPES_DATA !== 'undefined' && RECIPES_DATA.length > 0) {
     var rhtml = '';
     var rcount = Math.min(4, RECIPES_DATA.length);
     var chibiImg = document.querySelector('.cook-hero-avatar img');
     var chibiSrc = chibiImg ? chibiImg.src : '';
-    
-    for(var j=0; j<rcount; j++){
+
+    for (var j = 0; j < rcount; j++) {
       var latestRcp = RECIPES_DATA[RECIPES_DATA.length - 1 - j];
       var serving = latestRcp.servings || '2-3';
-      
-      rhtml += '<div class="home-featured-card" onclick="openRecipeDetail(\''+latestRcp.id+'\')">'
-        + '<div class="hf-img-wrap"><img src="'+latestRcp.image+'" alt="Recipe"/>'
-        + (j===0 ? '<span class="hf-badge" style="color:#059669;">CÔNG THỨC CHUẨN VỊ</span>' : '')
-        + (chibiSrc ? '<div class="hf-avatar"><img src="'+chibiSrc+'" alt="Logo"/></div>' : '')
+
+      rhtml += '<div class="home-featured-card" onclick="openRecipeDetail(\'' + latestRcp.id + '\')">'
+        + '<div class="hf-img-wrap"><img src="' + latestRcp.image + '" alt="Recipe"/>'
+        + (j === 0 ? '<span class="hf-badge" style="color:#059669;">CÔNG THỨC CHUẨN VỊ</span>' : '')
+        + (chibiSrc ? '<div class="hf-avatar"><img src="' + chibiSrc + '" alt="Logo"/></div>' : '')
         + '</div>'
         + '<div class="hf-body">'
-        + '<div class="hf-title-row"><div class="hf-title">'+latestRcp.name+'</div></div>'
+        + '<div class="hf-title-row"><div class="hf-title">' + latestRcp.name + '</div></div>'
         + '<div class="hf-rm-row">'
         + '<div class="hf-rm-item">' + svgClock + ' ' + latestRcp.time + '</div>'
         + '<div class="hf-rm-item">' + svgUser + ' ' + serving + ' ng</div>'
         + '<div class="hf-rm-item">' + svgFlame + ' ' + latestRcp.level + '</div>'
         + '</div>'
-        + '<div class="hf-must-try">' + svgBook + ' <div>' + (latestRcp.category||'Cẩm nang nấu ăn chuẩn vị gia đình') + '</div></div>'
+        + '<div class="hf-must-try">' + svgBook + ' <div>' + (latestRcp.category || 'Cẩm nang nấu ăn chuẩn vị gia đình') + '</div></div>'
         + '<button class="hf-btn">Xem công thức &rarr;</button>'
         + '</div></div>';
     }
     recipeContainer.innerHTML = rhtml;
-    if(typeof initCarouselDots === 'function') initCarouselDots('home-recipe-cards', 'home-recipe-dots', rcount);
+    if (typeof initCarouselDots === 'function') initCarouselDots('home-recipe-cards', 'home-recipe-dots', rcount);
   }
-  
+
   startGlobalCarouselTimer();
 }
 
 function initCarouselDots(containerId, dotsId, count) {
   var container = document.getElementById(containerId);
   var dotsContainer = document.getElementById(dotsId);
-  if(!container || !dotsContainer || count <= 1) {
-    if(dotsContainer) dotsContainer.innerHTML = '';
+  if (!container || !dotsContainer || count <= 1) {
+    if (dotsContainer) dotsContainer.innerHTML = '';
     return;
   }
-  
+
   var dotsHtml = '';
-  for(var i=0; i<count; i++){
-    dotsHtml += '<div class="h-dot '+(i===0?'active':'')+'" data-index="'+i+'"></div>';
+  for (var i = 0; i < count; i++) {
+    dotsHtml += '<div class="h-dot ' + (i === 0 ? 'active' : '') + '" data-index="' + i + '"></div>';
   }
   dotsContainer.innerHTML = dotsHtml;
-  
+
   var dots = dotsContainer.querySelectorAll('.h-dot');
-  
+
   var instance = {
     container: container,
     count: count,
@@ -2421,24 +2432,24 @@ function initCarouselDots(containerId, dotsId, count) {
     direction: 1
   };
   carouselInstances.push(instance);
-  
-  container.addEventListener('scroll', function(){
+
+  container.addEventListener('scroll', function () {
     var scrollLeft = container.scrollLeft;
     var cardWidth = container.offsetWidth;
     var index = Math.round(scrollLeft / cardWidth);
-    if(index < 0) index = 0;
-    if(index >= count) index = count - 1;
-    
+    if (index < 0) index = 0;
+    if (index >= count) index = count - 1;
+
     instance.currentIndex = index;
-    
-    dots.forEach(function(d, i){
-      if(i === index) d.classList.add('active');
+
+    dots.forEach(function (d, i) {
+      if (i === index) d.classList.add('active');
       else d.classList.remove('active');
     });
   });
-  
-  dots.forEach(function(dot, i){
-    dot.addEventListener('click', function(){
+
+  dots.forEach(function (dot, i) {
+    dot.addEventListener('click', function () {
       var cardWidth = container.offsetWidth;
       container.scrollTo({
         left: cardWidth * i,
@@ -2446,34 +2457,34 @@ function initCarouselDots(containerId, dotsId, count) {
       });
     });
   });
-  
-  container.addEventListener('touchstart', stopGlobalCarouselTimer, {passive: true});
-  container.addEventListener('touchend', startGlobalCarouselTimer, {passive: true});
+
+  container.addEventListener('touchstart', stopGlobalCarouselTimer, { passive: true });
+  container.addEventListener('touchend', startGlobalCarouselTimer, { passive: true });
   container.addEventListener('mouseenter', stopGlobalCarouselTimer);
   container.addEventListener('mouseleave', startGlobalCarouselTimer);
 }
 
 function startGlobalCarouselTimer() {
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
-  globalCarouselTimer = setInterval(function(){
-    carouselInstances.forEach(function(instance) {
-      if(instance.direction === 1) {
+  if (globalCarouselTimer) clearInterval(globalCarouselTimer);
+  globalCarouselTimer = setInterval(function () {
+    carouselInstances.forEach(function (instance) {
+      if (instance.direction === 1) {
         instance.currentIndex++;
-        if(instance.currentIndex >= instance.count) {
+        if (instance.currentIndex >= instance.count) {
           instance.currentIndex = instance.count - 2;
           instance.direction = -1;
         }
       } else {
         instance.currentIndex--;
-        if(instance.currentIndex < 0) {
+        if (instance.currentIndex < 0) {
           instance.currentIndex = 1;
           instance.direction = 1;
         }
       }
-      
-      if(instance.currentIndex < 0) instance.currentIndex = 0;
-      if(instance.currentIndex >= instance.count) instance.currentIndex = instance.count - 1;
-      
+
+      if (instance.currentIndex < 0) instance.currentIndex = 0;
+      if (instance.currentIndex >= instance.count) instance.currentIndex = instance.count - 1;
+
       var cardWidth = instance.container.offsetWidth;
       instance.container.scrollTo({
         left: cardWidth * instance.currentIndex,
@@ -2484,15 +2495,15 @@ function startGlobalCarouselTimer() {
 }
 
 function stopGlobalCarouselTimer() {
-  if(globalCarouselTimer) clearInterval(globalCarouselTimer);
+  if (globalCarouselTimer) clearInterval(globalCarouselTimer);
   globalCarouselTimer = null;
 }
 
 function renderCriteriaIcons() {
   var map = { 'heritage': '🏆', 'approved': '✔️', 'spot': '📍', 'pending': '⏳' };
-  Object.keys(map).forEach(function(k) {
+  Object.keys(map).forEach(function (k) {
     var el = document.getElementById('crit-icon-' + k);
-    if(el) {
+    if (el) {
       if (WEBP_ICONS[k] && WEBP_ICONS[k].length > 50) {
         el.innerHTML = '<img src="' + WEBP_ICONS[k] + '" style="width:48px;height:48px;vertical-align:middle; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" alt="badge">';
       } else {
@@ -2505,14 +2516,14 @@ function renderCriteriaIcons() {
 // ── INIT
 // ── APP SPLASH SCREEN: ẩn khi data sẵn sàng, hoặc timeout an toàn tránh treo mãi ──
 var splashHidden = false;
-function hideAppSplash(){
-  if(splashHidden) return;
+function hideAppSplash() {
+  if (splashHidden) return;
   splashHidden = true;
   var el = document.getElementById('app-splash');
-  if(el) el.classList.add('hide');
+  if (el) el.classList.add('hide');
 }
 
-window.addEventListener('load',function(){
+window.addEventListener('load', function () {
   // desktop-mode/desktop-map-view trước đây chỉ được set trong switchNav() khi bấm tab —
   // nên lần load đầu tiên (chưa bấm gì) trên màn hình rộng vẫn hiện dạng khung điện thoại.
   // Áp dụng ngay từ đầu, khớp với tab mặc định là 'map'.
@@ -2527,38 +2538,38 @@ window.addEventListener('load',function(){
   setTimeout(hideAppSplash, 6000); // an toàn: nếu vì lý do gì data không về, vẫn tự ẩn splash sau 6s
 
   // Deep-link công thức (?id=...&type=recipe): RECIPES_DATA có sẵn ngay, không cần chờ onData()
-  if(DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe'){
+  if (DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe') {
     switchNav('cook');
-    setTimeout(function(){ openRecipeDetail(DEEP_LINK_ID); }, 300);
+    setTimeout(function () { openRecipeDetail(DEEP_LINK_ID); }, 300);
   }
 });
 
 // ── MAP SEARCH CAPSULE LOGIC ──
 
 function getSearchHistory() {
-  try { return JSON.parse(localStorage.getItem('tt_search_history')) || []; } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('tt_search_history')) || []; } catch (e) { return []; }
 }
 function addSearchHistory(term) {
-  if(!term) return;
+  if (!term) return;
   var h = getSearchHistory();
-  h = h.filter(function(x) { return x !== term; });
+  h = h.filter(function (x) { return x !== term; });
   h.unshift(term);
-  if(h.length > 5) h = h.slice(0,5);
+  if (h.length > 5) h = h.slice(0, 5);
   localStorage.setItem('tt_search_history', JSON.stringify(h));
 }
 
 function handleMapSearchFocus() {
   var cap = document.getElementById('map-header');
-  if(cap) cap.classList.add('focused');
+  if (cap) cap.classList.add('focused');
   handleMapSearch();
 }
 
 function handleMapSearchBlur() {
   var cap = document.getElementById('map-header');
-  if(cap) cap.classList.remove('focused');
-  setTimeout(function() {
+  if (cap) cap.classList.remove('focused');
+  setTimeout(function () {
     var dd = document.getElementById('map-search-dropdown');
-    if(dd) dd.classList.remove('show');
+    if (dd) dd.classList.remove('show');
   }, 500); // delay
 }
 
@@ -2566,9 +2577,9 @@ function handleMapSearch() {
   var input = document.getElementById('map-search-input');
   var dd = document.getElementById('map-search-dropdown');
   var resDiv = document.getElementById('map-search-results');
-  if(!input || !dd || !resDiv) return;
+  if (!input || !dd || !resDiv) return;
   var clearBtn = document.getElementById('sc-clear-btn');
-  if(clearBtn) clearBtn.style.display = input.value ? 'flex' : 'none';
+  if (clearBtn) clearBtn.style.display = input.value ? 'flex' : 'none';
 
   var q = input.value.trim().toLowerCase();
   dd.classList.add('show');
@@ -2577,16 +2588,16 @@ function handleMapSearch() {
   const svgHistory = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
   const svgSuggest = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
 
-  if(!q) {
+  if (!q) {
     var hist = getSearchHistory();
-    if(hist.length === 0) {
+    if (hist.length === 0) {
       resDiv.innerHTML = '<div class="sc-empty" style="padding: 16px; color: var(--sl); font-size: 13px; text-align: center;">Nhập tên quán hoặc món ăn...</div>';
     } else {
-      hist.forEach(function(term) {
+      hist.forEach(function (term) {
         var item = document.createElement('div');
         item.className = 'sd-item';
         item.innerHTML = '<div class="sd-icon history">' + svgHistory + '</div><div class="sd-text">' + term + '<div class="sd-sub">Lịch sử tìm kiếm</div></div>';
-        item.onclick = function() {
+        item.onclick = function () {
           input.value = term;
           handleMapSearch();
         };
@@ -2596,7 +2607,7 @@ function handleMapSearch() {
     return;
   }
 
-  var results = allLocs.filter(function(loc) {
+  var results = allLocs.filter(function (loc) {
     var nameMatch = (loc.name || '').toLowerCase().indexOf(q) !== -1;
     var catMatch = (loc.category || '').toLowerCase().indexOf(q) !== -1;
     var mustMatch = (loc.must_try || '').toLowerCase().indexOf(q) !== -1;
@@ -2604,18 +2615,18 @@ function handleMapSearch() {
     return nameMatch || catMatch || mustMatch || descMatch;
   });
 
-  if(results.length === 0) {
+  if (results.length === 0) {
     resDiv.innerHTML = '<div class="sc-empty" style="padding: 16px; color: var(--sl); font-size: 13px; text-align: center;">Không tìm thấy quán nào phù hợp.</div>';
   } else {
-    results.forEach(function(loc) {
+    results.forEach(function (loc) {
       var item = document.createElement('div');
       item.className = 'sd-item';
-      item.innerHTML = '<div class="sd-icon">' + svgSuggest + '</div><div class="sd-text">' + (loc.name||'') + '<div class="sd-sub">Gợi ý từ khoá</div></div>';
-      item.onclick = function() {
+      item.innerHTML = '<div class="sd-icon">' + svgSuggest + '</div><div class="sd-text">' + (loc.name || '') + '<div class="sd-sub">Gợi ý từ khoá</div></div>';
+      item.onclick = function () {
         addSearchHistory(loc.name);
-        if(map && loc.lat && loc.lng) {
-          map.flyTo([loc.lat, loc.lng], 16, {animate: true, duration: 1.5});
-          setTimeout(function(){ openSheet(loc); }, 1500);
+        if (map && loc.lat && loc.lng) {
+          map.flyTo([loc.lat, loc.lng], 16, { animate: true, duration: 1.5 });
+          setTimeout(function () { openSheet(loc); }, 1500);
         }
         dd.classList.remove('show');
       };
@@ -2625,27 +2636,27 @@ function handleMapSearch() {
 }
 
 
-function clearMapSearch(){
+function clearMapSearch() {
   var input = document.getElementById('map-search-input');
   var dd = document.getElementById('map-search-dropdown');
   var clearBtn = document.getElementById('sc-clear-btn');
-  if(input) { input.value = ''; input.focus(); }
-  if(dd) dd.classList.remove('show');
-  if(clearBtn) clearBtn.style.display = 'none';
+  if (input) { input.value = ''; input.focus(); }
+  if (dd) dd.classList.remove('show');
+  if (clearBtn) clearBtn.style.display = 'none';
   // Also trigger handleMapSearch to reset map view
   handleMapSearch();
 }
 
 function openHomeCardLoc(locId) {
-  switchNav('map'); 
+  switchNav('map');
   var cap = document.getElementById('map-header');
-  if(cap) cap.classList.remove('focused');
-  
-  setTimeout(function() {
-    var loc = allLocs.find(function(l){ return String(l.id) === String(locId); });
-    if(loc && map && loc.lat && loc.lng) {
-      map.flyTo([loc.lat, loc.lng], 16); 
-      setTimeout(function() {
+  if (cap) cap.classList.remove('focused');
+
+  setTimeout(function () {
+    var loc = allLocs.find(function (l) { return String(l.id) === String(locId); });
+    if (loc && map && loc.lat && loc.lng) {
+      map.flyTo([loc.lat, loc.lng], 16);
+      setTimeout(function () {
         openSheet(loc);
       }, 500);
     }
@@ -2656,90 +2667,90 @@ function openHomeCardLoc(locId) {
 // ── AI CHATBOT LOGIC ──
 function toggleAiDrawer() {
   var drawer = document.getElementById('ai-drawer');
-  if(drawer) drawer.classList.toggle('open');
+  if (drawer) drawer.classList.toggle('open');
 }
 
 function findLocsInText(text) {
   if (!text || typeof allLocs === 'undefined' || !allLocs || !allLocs.length) return [];
   var found = [];
   var seenIds = {};
- 
+
   // Pass 1: tên quán được AI bôi đậm bằng **Tên**
   var names = [];
   var re = /\*\*(.+?)\*\*/g;
   var m;
   while ((m = re.exec(text)) !== null) { names.push(m[1].trim()); }
-  names.forEach(function(n) {
-	var nLower = n.toLowerCase();
-	var loc = allLocs.find(function(l) { return l.name && l.name.toLowerCase() === nLower; });
-	if (!loc) {
-  	loc = allLocs.find(function(l) {
-    	return l.name && (l.name.toLowerCase().indexOf(nLower) !== -1 || nLower.indexOf(l.name.toLowerCase()) !== -1);
-  	});
-	}
-	if (loc && !seenIds[loc.id]) { seenIds[loc.id] = true; found.push(loc); }
+  names.forEach(function (n) {
+    var nLower = n.toLowerCase();
+    var loc = allLocs.find(function (l) { return l.name && l.name.toLowerCase() === nLower; });
+    if (!loc) {
+      loc = allLocs.find(function (l) {
+        return l.name && (l.name.toLowerCase().indexOf(nLower) !== -1 || nLower.indexOf(l.name.toLowerCase()) !== -1);
+      });
+    }
+    if (loc && !seenIds[loc.id]) { seenIds[loc.id] = true; found.push(loc); }
   });
- 
+
   // Pass 2: dự phòng khi AI không bôi đậm - quét tên quán xuất hiện trực tiếp trong câu trả lời
   if (!found.length) {
-	var textLower = text.toLowerCase();
-	allLocs.forEach(function(l) {
-  	if (l.name && l.name.length > 3 && textLower.indexOf(l.name.toLowerCase()) !== -1 && !seenIds[l.id]) {
-    	seenIds[l.id] = true; found.push(l);
-  	}
-	});
+    var textLower = text.toLowerCase();
+    allLocs.forEach(function (l) {
+      if (l.name && l.name.length > 3 && textLower.indexOf(l.name.toLowerCase()) !== -1 && !seenIds[l.id]) {
+        seenIds[l.id] = true; found.push(l);
+      }
+    });
   }
- 
+
   return found;
 }
- 
+
 function appendAiMsg(text, isUser, matchedLocs, legacyLatLng) {
   var body = document.getElementById('ai-body');
-  if(!body) return;
+  if (!body) return;
   var div = document.createElement('div');
   div.className = isUser ? 'user-msg' : 'ai-msg';
   if (isUser) { div.style.background = '#FF7043'; div.style.color = 'white'; }
- 
+
   var cleanText = text.replace(/\(Lat:\s*-?\d+\.\d+,\s*Lng:\s*-?\d+\.\d+\)/gi, '').replace(/\*\*/g, '').trim();
   div.textContent = cleanText;
- 
+
   if (!isUser) {
-	var locs = (matchedLocs && matchedLocs.length) ? matchedLocs : (legacyLatLng ? [{ name: '', lat: legacyLatLng.lat, lng: legacyLatLng.lng, video_url: '' }] : []);
-	locs.forEach(function(loc) {
-  	var actionsDiv = document.createElement('div');
-  	actionsDiv.className = 'ai-actions';
- 
-  	if (locs.length > 1 && loc.name) {
-    	var label = document.createElement('span');
-    	label.textContent = loc.name;
-    	label.style.cssText = 'flex-basis:100%;font-size:11px;font-weight:800;color:var(--sl);';
-    	actionsDiv.appendChild(label);
-  	}
- 
-  	var btnMap = document.createElement('button');
-  	btnMap.className = 'ai-act-btn';
-  	btnMap.textContent = '📍 Xem bản đồ';
-  	btnMap.onclick = function(){ aiActionFlyTo(loc.lat, loc.lng); };
-  	actionsDiv.appendChild(btnMap);
- 
-  	var btnNav = document.createElement('button');
-  	btnNav.className = 'ai-act-btn';
-  	btnNav.textContent = '🗺️ Chỉ đường';
-  	btnNav.onclick = function(){ aiActionNav(loc.lat, loc.lng); };
-  	actionsDiv.appendChild(btnNav);
- 
-  	if (loc.video_url) {
-    	var btnReview = document.createElement('button');
-    	btnReview.className = 'ai-act-btn';
-    	btnReview.textContent = '🎬 Review';
-    	btnReview.onclick = function(){ window.open(loc.video_url, '_blank'); };
-    	actionsDiv.appendChild(btnReview);
-  	}
- 
-  	div.appendChild(actionsDiv);
-	});
+    var locs = (matchedLocs && matchedLocs.length) ? matchedLocs : (legacyLatLng ? [{ name: '', lat: legacyLatLng.lat, lng: legacyLatLng.lng, video_url: '' }] : []);
+    locs.forEach(function (loc) {
+      var actionsDiv = document.createElement('div');
+      actionsDiv.className = 'ai-actions';
+
+      if (locs.length > 1 && loc.name) {
+        var label = document.createElement('span');
+        label.textContent = loc.name;
+        label.style.cssText = 'flex-basis:100%;font-size:11px;font-weight:800;color:var(--sl);';
+        actionsDiv.appendChild(label);
+      }
+
+      var btnMap = document.createElement('button');
+      btnMap.className = 'ai-act-btn';
+      btnMap.textContent = '📍 Xem bản đồ';
+      btnMap.onclick = function () { aiActionFlyTo(loc.lat, loc.lng); };
+      actionsDiv.appendChild(btnMap);
+
+      var btnNav = document.createElement('button');
+      btnNav.className = 'ai-act-btn';
+      btnNav.textContent = '🗺️ Chỉ đường';
+      btnNav.onclick = function () { aiActionNav(loc.lat, loc.lng); };
+      actionsDiv.appendChild(btnNav);
+
+      if (loc.video_url) {
+        var btnReview = document.createElement('button');
+        btnReview.className = 'ai-act-btn';
+        btnReview.textContent = '🎬 Review';
+        btnReview.onclick = function () { window.open(loc.video_url, '_blank'); };
+        actionsDiv.appendChild(btnReview);
+      }
+
+      div.appendChild(actionsDiv);
+    });
   }
- 
+
   body.appendChild(div);
   body.scrollTop = body.scrollHeight;
 }
@@ -2748,8 +2759,8 @@ function aiActionFlyTo(lat, lng) {
   toggleAiDrawer();
   if (typeof map !== 'undefined' && map) {
     map.flyTo([lat, lng], 17);
-    if(typeof markers !== 'undefined') {
-      markers.forEach(function(m) {
+    if (typeof markers !== 'undefined') {
+      markers.forEach(function (m) {
         var pos = m.getLatLng();
         if (Math.abs(pos.lat - lat) < 0.0001 && Math.abs(pos.lng - lng) < 0.0001) {
           m.openPopup();
@@ -2767,10 +2778,10 @@ function sendAiMsg(overrideText) {
   var input = document.getElementById('ai-input');
   var text = overrideText || (input ? input.value.trim() : '');
   if (!text) return;
-  
-  if(input) input.value = '';
+
+  if (input) input.value = '';
   appendAiMsg(text, true);
-  
+
   var body = document.getElementById('ai-body');
   var typingDiv = document.createElement('div');
   typingDiv.className = 'ai-msg typing-indicator';
@@ -2784,25 +2795,25 @@ function sendAiMsg(overrideText) {
 
   if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run
-      .withSuccessHandler(function(res) {
+      .withSuccessHandler(function (res) {
         var t = document.getElementById('ai-typing');
         if (t) t.remove();
-        
-      var reply = res.reply || "";
-    	var matchedLocs = findLocsInText(reply);
-    	var legacyMatch = reply.match(/Lat:\s*(-?\d+\.\d+),\s*Lng:\s*(-?\d+\.\d+)/i);
-    	var legacyLatLng = legacyMatch ? { lat: legacyMatch[1], lng: legacyMatch[2] } : null;
-    	appendAiMsg(reply, false, matchedLocs, legacyLatLng);
+
+        var reply = res.reply || "";
+        var matchedLocs = findLocsInText(reply);
+        var legacyMatch = reply.match(/Lat:\s*(-?\d+\.\d+),\s*Lng:\s*(-?\d+\.\d+)/i);
+        var legacyLatLng = legacyMatch ? { lat: legacyMatch[1], lng: legacyMatch[2] } : null;
+        appendAiMsg(reply, false, matchedLocs, legacyLatLng);
 
       })
-      .withFailureHandler(function(err) {
+      .withFailureHandler(function (err) {
         var t = document.getElementById('ai-typing');
         if (t) t.remove();
         appendAiMsg("Hic, đường truyền của tớ đang hơi yếu. Bạn thử lại sau chút xíu nha!", false);
       })
       .askGeminiAI(text, uLat, uLng, '');
   } else {
-    setTimeout(function(){
+    setTimeout(function () {
       var t = document.getElementById('ai-typing');
       if (t) t.remove();
       appendAiMsg("Tớ đang chạy ở chế độ Local! Thử một quán ngon này", false, [], { lat: 16.0544, lng: 108.2022 });
@@ -2830,7 +2841,7 @@ window.openHomeCardLoc = openHomeCardLoc;
 window.openMobileList = openMobileList;
 window.openModal = openModal;
 window.openRecipeDetail = openRecipeDetail;
-  window.changeServings = changeServings;
+window.changeServings = changeServings;
 window.sendAiMsg = sendAiMsg;
 window.shareCurrentLocation = shareCurrentLocation;
 window.shareCurrentRecipe = shareCurrentRecipe;
@@ -2840,7 +2851,7 @@ window.toggleLang = toggleLang;
 // --------------------------------------------------------------------
 
 // Global click listener to close map search dropdown
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
   var dd = document.getElementById('map-search-dropdown');
   var cap = document.getElementById('map-header');
   if (dd && dd.classList.contains('show')) {
@@ -2851,7 +2862,7 @@ document.addEventListener('click', function(e) {
 });
 
 window.toggleFilterMap = toggleFilterMap;
-window.toggleFavLocSheet = function() {
+window.toggleFavLocSheet = function () {
   if (!currentSheetLoc) return;
   toggleFav(null, currentSheetLoc.id);
   var favBtn = document.getElementById('sh-fav-btn');
