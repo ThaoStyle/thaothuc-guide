@@ -2830,6 +2830,7 @@ window.openHomeCardLoc = openHomeCardLoc;
 window.openMobileList = openMobileList;
 window.openModal = openModal;
 window.openRecipeDetail = openRecipeDetail;
+  window.changeServings = changeServings;
 window.sendAiMsg = sendAiMsg;
 window.shareCurrentLocation = shareCurrentLocation;
 window.shareCurrentRecipe = shareCurrentRecipe;
