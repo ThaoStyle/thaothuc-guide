@@ -2,7 +2,7 @@
   "name": "thaothuc-guide-root",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/dist dist",
     "install": "echo 'Root install not needed'"
   }
 }
