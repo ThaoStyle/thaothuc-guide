@@ -39,7 +39,7 @@ function doGet(e) {
 
   if (email && ownerEmail && email.toLowerCase() === ownerEmail.toLowerCase()) {
     var tpl = HtmlService.createTemplateFromFile('Admin');
-    tpl.currentEmail = email;
+    tpl.currentEmail = email; tpl.deepLinkId = ''; tpl.deepLinkType = ''; tpl.scriptUrl = '';
     return tpl.evaluate()
       .setTitle('Thao Thá»©c Guide â€” Admin')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -236,36 +236,7 @@ function getRecipes() {
         level: r[4] || '', serving: r[5] || '', image: r[6] || '',
         ingredients: r[7] || '', steps: r[8] || '', video_url: r[9] || '',
         tips: r[10] || ''
-      }
-function addRecipe(row) {
-  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
-  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
-  sheet.appendRow(row);
-  return { success: true };
-}
-
-function updateRecipe(id, row) {
-  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
-  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
-  var data = sheet.getDataRange().getValues();
-  for (var i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(id)) {
-      sheet.getRange(i + 1, 1, 1, row.length).setValues([row]);
-      return { success: true };
-    }
-  }
-  return { success: false, error: 'ID not found' };
-}
-
-function deleteRecipe(id) {
-  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
-  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
-  var data = sheet.getDataRange().getValues();
-  for (var i = 1; i < data.length; i++) {
-    if (String(data[i][0]) === String(id)) { sheet.deleteRow(i + 1); return { success: true }; }
-  }
-  return { success: false, error: 'ID not found' };
-});
+      });
     }
     return recipes;
   } catch(e) { return []; }
@@ -368,5 +339,35 @@ function askGeminiAI(userQuery, userLat, userLng, activeTab) {
     var spot = findNearestLocation(fb, userLat, userLng) || fb[0] || { name: "QuÃ¡n ngon", must_try: "mÃ³n Ä‘áº·c sáº£n" };
     return { success: true, reply: "Tá»› Ä‘ang báº­n xÃ­u ðŸ¤–! Báº¡n ghÃ© " + spot.name + " - " + spot.must_try + " thá»­ nhÃ©!", isFallback: true };
   }
+}
+
+function addRecipe(row) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  sheet.appendRow(row);
+  return { success: true };
+}
+
+function updateRecipe(id, row) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) {
+      sheet.getRange(i + 1, 1, 1, row.length).setValues([row]);
+      return { success: true };
+    }
+  }
+  return { success: false, error: 'ID not found' };
+}
+
+function deleteRecipe(id) {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Recipes');
+  if (!sheet) return { success: false, error: 'Sheet Recipes not found' };
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) { sheet.deleteRow(i + 1); return { success: true }; }
+  }
+  return { success: false, error: 'ID not found' };
 }
 
