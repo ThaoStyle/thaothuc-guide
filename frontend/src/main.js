@@ -614,7 +614,7 @@ function loadRecipesData(force = false) {
     return;
   }
   const rcpContainer = document.getElementById('recipe-list');
-  if(rcpContainer) rcpContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sl);">?ang ti cA'ng thcc...</div>';
+  if(rcpContainer) rcpContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sl);">Đang tải công thức...</div>';
 
   if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run.withSuccessHandler(function(res) {

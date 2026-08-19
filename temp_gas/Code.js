@@ -672,3 +672,9 @@ function deleteRecipe(id) {
   }
   return { success: false, error: 'Recipe ID not found' };
 }
+
+
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
