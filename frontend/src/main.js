@@ -575,7 +575,7 @@ function renderIngredientsList(animate = false) {
   const listEl = document.getElementById('rcp-ing-list');
   if (!displayEl || !listEl) return;
 
-  displayEl.innerText = currentServings + " ng?i";
+  displayEl.innerText = currentServings + " người";
   const ratio = currentServings / baseServings;
 
   while (listEl.firstChild) {
@@ -615,7 +615,7 @@ function renderIngredientsList(animate = false) {
 function loadRecipesData(force = false) {
   if (isRecipesLoaded && !force) {
     renderRecipes();
-    if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
+    renderHomeLatestCards();
     return;
   }
   const rcpContainer = document.getElementById('recipe-list');
@@ -626,7 +626,7 @@ function loadRecipesData(force = false) {
       RECIPES_DATA = res || [];
       isRecipesLoaded = true;
       renderRecipes();
-      if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
+      renderHomeLatestCards();
 
       var mAdmin = document.getElementById('m-admin');
       if (mAdmin && mAdmin.style.display === 'flex') renderAdminRcpList();
@@ -637,7 +637,7 @@ function loadRecipesData(force = false) {
       RECIPES_DATA = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
       isRecipesLoaded = true;
       renderRecipes();
-      if (typeof generateHomeFeaturedRecipes === 'function') generateHomeFeaturedRecipes();
+      renderHomeLatestCards();
 
       var mAdmin = document.getElementById('m-admin');
       if (mAdmin && mAdmin.style.display === 'flex') renderAdminRcpList();
@@ -691,11 +691,21 @@ function openRecipeDetail(id) {
 
   baseServings = parseFloat(r.default_servings) || 4;
   currentServings = baseServings;
-  parsedIngredients = (r.ingredients || []).map(parseIngredient);
+  // parsedIngredients = (r.ingredients || []).map(parseIngredient);
+  // Tự động phân tách chuỗi thành mảng nếu dữ liệu là String (cách nhau bởi dấu phẩy hoặc xuống dòng)
+  var ingArray = Array.isArray(r.ingredients)
+    ? r.ingredients
+    : (r.ingredients ? String(r.ingredients).split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : []);
+  parsedIngredients = ingArray.map(parseIngredient);
   renderIngredientsList();
 
   document.getElementById('rcp-steps-list').className = 'rcp-step-list';
-  document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function (st, idx) {
+  // document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function (st, idx) {
+  // Tự động phân tách chuỗi thành mảng bằng dấu xuống dòng (\n)
+  var stepsArray = Array.isArray(r.steps)
+    ? r.steps
+    : (r.steps ? String(r.steps).split('\n').map(s => s.trim()).filter(Boolean) : []);
+  document.getElementById('rcp-steps-list').innerHTML = stepsArray.map(function (st, idx) {
     var parts = st.split(':');
     var stNum = idx + 1;
     var stDesc = st;
@@ -2534,6 +2544,8 @@ window.addEventListener('load', function () {
   initCategories();
   initRecipeCategories();
   initMap();
+  // TẢI DỮ LIỆU CÔNG THỨC NGAY TỪ ĐẦU ĐỂ HIỆN Ở TRANG HOME
+  loadRecipesData();
   renderHomeLatestCards();
   setTimeout(hideAppSplash, 6000); // an toàn: nếu vì lý do gì data không về, vẫn tự ẩn splash sau 6s
 
