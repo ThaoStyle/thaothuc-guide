@@ -925,6 +925,29 @@ body.desktop-mode .sheet-share-btn{ position:absolute; top:14px; right:56px; z-i
 .heart-btn.liked { color: #ef4444; }
 .heart-btn.liked svg { fill: currentColor; }
 
+
+/* --- RECIPE DYNAMIC SCALING CSS --- */
+.rcp-stepper {
+  display: flex; align-items: center; background: #fff;
+  border: 1.5px solid rgba(15,23,42,0.1); border-radius: 999px;
+  padding: 3px; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.rcp-stepper button {
+  width: 26px; height: 26px; border-radius: 50%; border: none;
+  background: var(--or-light); color: var(--or); font-size: 16px; font-weight: 900;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.1s, background 0.1s;
+}
+.rcp-stepper button:active { transform: scale(0.9); background: var(--or); color: #fff; }
+.rcp-stepper span { font-size: 13px; font-weight: 800; color: var(--nv); min-width: 58px; text-align: center; }
+.rcp-ingred-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--nv); font-weight: 600; margin-bottom: 12px; cursor: pointer;}
+.rcp-ingred-item input { margin-top: 2px; accent-color: var(--or); width: 16px; height: 16px; flex-shrink: 0; }
+.rcp-ingred-name { flex: 1; line-height: 1.4; }
+.ing-qty { font-weight: 800; color: var(--or); transition: color 0.3s ease; }
+.changed { animation: flashOrange 0.6s ease-out; }
+@keyframes flashOrange { 0% { color: var(--nv); transform: scale(1.1); } 100% { color: var(--or); transform: scale(1); } }
+/* ---------------------------------- */
+
 </style>
 </head>
 <body>
@@ -1383,7 +1406,9 @@ body.desktop-mode .sheet-share-btn{ position:absolute; top:14px; right:56px; z-i
   <div class="modal-card">
     <div class="modal-bar"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <span style="background:var(--or-light);color:var(--or);font-size:13px;font-weight:900;padding:4px 12px;border-radius:14px;" id="rcp-cat">🍳 Bếp Nhà</span>
+      <span style="background:var(--or-light);color:var(--or);font-size:13px;font-weight:900;padding:4px 12px;border-radius:14px;display:flex;align-items:center;gap:4px;" id="rcp-cat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 10H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1zm-1.5-2a1 1 0 0 0 .5-.86v-1a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 0 4 6.14v1a1 1 0 0 0 .5.86h15z"/></svg> Bếp Nhà
+        </span>
       <div style="display:flex;align-items:center;gap:8px;">
         <button class="rcp-share-btn" onclick="shareCurrentRecipe()" title="Chia sẻ">
           <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L7.05 9.81C6.5 9.31 5.79 9 5 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.05-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
@@ -1395,16 +1420,27 @@ body.desktop-mode .sheet-share-btn{ position:absolute; top:14px; right:56px; z-i
     <div class="modal-p" id="rcp-meta">⏱️ 45 phút • 👨‍🍳 Dễ nấu</div>
 
     <div style="background:var(--bg);border:2px solid var(--bd-soft);border-radius:20px;padding:18px;margin-bottom:20px;">
-      <div style="font-size:15px;font-weight:900;color:var(--nv);margin-bottom:10px;">🥦 Nguyên Liệu Cần Có:</div>
-      <div id="rcp-ing-list" style="display:flex;flex-direction:column;gap:8px;font-size:15px;color:var(--sl);font-weight:700;"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div style="font-size:15px;font-weight:900;color:var(--nv);display:flex;align-items:center;gap:6px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--or)" stroke-width="2" style="margin-top:-2px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg> Nguyên Liệu:
+          </div>
+          <div class="rcp-stepper">
+              <button onclick="changeServings(-1)">-</button>
+              <span id="servings-display">4 người</span>
+              <button onclick="changeServings(1)">+</button>
+          </div>
+      </div>
+      <div id="rcp-ing-list" style="display:flex;flex-direction:column;"></div>
     </div>
 
-    <div style="font-size:15px;font-weight:900;color:var(--nv);margin-bottom:10px;">🍳 Các Bước Thực Hiện:</div>
+    <div style="font-size:15px;font-weight:900;color:var(--nv);margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--or)" stroke-width="2" style="margin-top:-2px;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Các Bước Thực Hiện:
+      </div>
     <div id="rcp-steps-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;"></div>
 
     <div style="display:flex;flex-direction:column;gap:10px;">
       <a href="#" target="_blank" id="btn-rcp-video" class="btn-submit" style="background:var(--or);display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;margin-top:0;">
-        🎬 Xem Video Nấu (Chồng Cook Vợ Look)
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Xem Video Nấu Ăn
       </a>
       <button class="btn-submit" id="btn-rcp-findmap" style="background:var(--nv);margin-top:0;">
         🗺️ Tìm Quán Nấu Chuẩn Vị Này Trên Bản Đồ
@@ -1677,76 +1713,8 @@ var CAT_IMAGES={
   'Default': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80'
 };
 
-var RECIPES_DATA = [
-  {
-    id: 'rcp_001',
-    name: 'Bún Bò Huế Chuẩn Vị Cố Đô',
-    category: 'Món Nước / Bún Phở',
-    time: '45 phút',
-    level: 'Dễ làm',
-    image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80',
-    video_url: 'https://www.tiktok.com/@chongcookvolook',
-    ingredients: ['500g bắp bò / giò heo', '1kg bún tươi sợi to', '3 củ sả đập dập', '2 muỗng canh mắm ruốc Huế', 'Hành tây, rau thơm, bắp chuối'],
-    steps: [
-      'Bước 1: Hầm bắp bò và giò heo với sả đập dập trong 30 phút.',
-      'Bước 2: Hòa tan mắm ruốc Huế với nước lạnh, lọc lấy nước trong cho vào nồi nước dùng.',
-      'Bước 3: Phi thơm ớt sa tế, nêm nếm gia vị vừa ăn.',
-      'Bước 4: Trụng bún, xếp thịt bắp bò, giò heo, chan nước dùng nóng hổi và thưởng thức!'
-    ],
-    searchCat: 'Bún / Phở / Món Nước'
-  },
-  {
-    id: 'rcp_002',
-    name: 'Canh Chua Cá Hồi Nam Bộ',
-    category: 'Món Canh / Rau / Nộm',
-    time: '30 phút',
-    level: 'Rất dễ',
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80',
-    video_url: 'https://www.tiktok.com/@chongcookvolook',
-    ingredients: ['300g đầu/lườn cá hồi', '1/2 quả dứa (thơm)', '2 quả cà chua', 'Đậu bắp, giá đỗ, bạc hà (dọc mùng)', 'Vắt me chua, rau ngổ, ngò gai'],
-    steps: [
-      'Bước 1: Ướp cá hồi với chút muối và hành phi.',
-      'Bước 2: Nấu nước me chua, cho dứa và cà chua vào đun sôi.',
-      'Bước 3: Cho cá hồi vào nấu chín tới (khoảng 7-10 phút).',
-      'Bước 4: Cho đậu bắp, giá đỗ, bạc hà vào đun sôi lại, rắc rau ngổ ngò gai lên trên.'
-    ],
-    searchCat: 'Cơm / Bữa Chính'
-  },
-  {
-    id: 'rcp_003',
-    name: 'Cơm Tấm Sườn Nướng Mật Ong',
-    category: 'Bữa Cơm Gia Đình',
-    time: '40 phút',
-    level: 'Trung bình',
-    image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
-    video_url: 'https://www.tiktok.com/@chongcookvolook',
-    ingredients: ['500g sườn cốt lết', '2 muỗng mật honey, sả băm, tỏi băm', 'Gạo tấm ngon', 'Nước mắm kẹo, mỡ hành, đồ chua'],
-    steps: [
-      'Bước 1: Cốt lết đập mềm, ướp với mật ong, nước mắm, sả tỏi qua đêm.',
-      'Bước 2: Nấu cơm tấm chín tới.',
-      'Bước 3: Nướng sườn trên bếp than hoặc lò nướng ở 200°C cho chín vàng thơm.',
-      'Bước 4: Xới cơm ra đĩa, đặt sườn nướng, rưới mỡ hành và chan nước mắm kẹo.'
-    ],
-    searchCat: 'Cơm / Bữa Chính'
-  },
-  {
-    id: 'rcp_004',
-    name: 'Bánh Xèo Miền Tây Giòn Rụm',
-    category: 'Món Chiên / Nướng / Nhậu',
-    time: '35 phút',
-    level: 'Khéo tay',
-    image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
-    video_url: 'https://www.tiktok.com/@chongcookvolook',
-    ingredients: ['Bột bánh xèo + nước cốt dừa', 'Tôm tươi, thịt ba chỉ', 'Giá đỗ, hành lá', 'Rau cải xanh, xà lách, rau rừng', 'Nước mắm chua ngọt'],
-    steps: [
-      'Bước 1: Pha bột bánh xèo với nước cốt dừa, bột nghệ và hành lá cắt nhỏ.',
-      'Bước 2: Xào sơ tôm thịt.',
-      'Bước 3: Tráng bột mỏng vào chảo nóng, thêm tôm thịt giá đỗ, đậy nắp 2 phút cho giòn rụm.',
-      'Bước 4: Gấp đôi bánh xèo, dọn ra ăn kèm rau sống và nước mắm chua ngọt.'
-    ],
-    searchCat: 'Ăn Vặt / Đường Phố'
-  }
-];
+var RECIPES_DATA = [];
+var isRecipesLoaded = false;
 
 var lang='vi';
 var activeFilter='all';
@@ -2057,6 +2025,114 @@ function closeModal(id){
 }
 
 // ── RENDER RECIPES GRID - CHỒNG COOK VỢ LOOK
+// --- RECIPE DYNAMIC SCALING LOGIC ---
+let currentServings = 4;
+let baseServings = 4;
+let parsedIngredients = [];
+
+function safeParseFloat(str) {
+  if (!str) return 0;
+  str = str.replace(',', '.');
+  if (str.includes('/')) {
+    const parts = str.split('/');
+    if (parts.length === 2 && parseFloat(parts[1]) !== 0) {
+      return parseFloat(parts[0]) / parseFloat(parts[1]);
+    }
+  }
+  return parseFloat(str);
+}
+
+function parseIngredient(text) {
+  try {
+    const regex = /^([\d.,]+(?:\/\d+)?)\s*(g|kg|ml|l|lAt|mu-ng\s?canh|mu-ng|c|trAi|qu|con|nhAnh)?\s+(.*)$/i;
+    const match = text.trim().match(regex);
+    if (match) {
+      let qty = safeParseFloat(match[1]);
+      if (!isNaN(qty) && qty > 0) {
+        return { qty: qty, unit: match[2] ? match[2].trim() : '', name: match[3], isScalable: true };
+      }
+    }
+  } catch(e) {}
+  return { qty: null, name: text, isScalable: false };
+}
+
+function changeServings(delta) {
+  let newVal = currentServings + delta;
+  if (newVal < 1 || newVal > 20) return;
+  currentServings = newVal;
+  renderIngredientsList(true);
+}
+
+function renderIngredientsList(animate = false) {
+  const displayEl = document.getElementById('servings-display');
+  const listEl = document.getElementById('rcp-ing-list');
+  if (!displayEl || !listEl) return;
+
+  displayEl.innerText = currentServings + " ng?i";
+  const ratio = currentServings / baseServings;
+  
+  while (listEl.firstChild) {
+    listEl.removeChild(listEl.firstChild);
+  }
+
+  parsedIngredients.forEach(ing => {
+    let label = document.createElement('label');
+    label.className = 'rcp-ingred-item';
+    
+    let checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    label.appendChild(checkbox);
+
+    let textSpan = document.createElement('span');
+    textSpan.className = 'rcp-ingred-name';
+    
+    if (ing.isScalable) {
+      let newQty = ing.qty * ratio;
+      newQty = Math.round(newQty * 100) / 100;
+      
+      let qtySpan = document.createElement('span');
+      qtySpan.className = animate ? "ing-qty changed" : "ing-qty";
+      qtySpan.innerText = newQty + (ing.unit ? ing.unit + " " : " ");
+      
+      textSpan.appendChild(qtySpan);
+      textSpan.appendChild(document.createTextNode(ing.name));
+    } else {
+      textSpan.innerText = ing.name;
+    }
+    
+    label.appendChild(textSpan);
+    listEl.appendChild(label);
+  });
+}
+
+function loadRecipesData(force = false) {
+  if (isRecipesLoaded && !force) {
+    renderRecipes();
+    return;
+  }
+  const rcpContainer = document.getElementById('recipe-list');
+  if(rcpContainer) rcpContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--sl);">?ang ti cA'ng thcc...</div>';
+
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(function(res) {
+      RECIPES_DATA = res || [];
+      isRecipesLoaded = true;
+      renderRecipes();
+      if (document.getElementById('m-admin').style.display === 'flex') renderAdminRcpList();
+    }).getRecipes();
+  } else {
+    // API Mock fallback or Vercel fetch
+    fetchApi('getRecipes').then(res => {
+       RECIPES_DATA = res && Array.isArray(res.data) ? res.data : [];
+       isRecipesLoaded = true;
+       renderRecipes();
+       if (document.getElementById('m-admin').style.display === 'flex') renderAdminRcpList();
+    }).catch(e => {
+       console.log('Load recipes error:', e);
+    });
+  }
+}
+// ------------------------------------
 function renderRecipes(){
   var grid = document.getElementById('recipe-list-grid');
   if(!grid) return;
@@ -2089,39 +2165,40 @@ function renderRecipes(){
 }
 
 function openRecipeDetail(id){
-  var r = RECIPES_DATA.find(function(item){return item.id===id;});
-  if(!r) return;
-  currentSheetRecipeId = r.id;
-  document.getElementById('rcp-cat').textContent = '🍳 ' + r.category;
-  document.getElementById('rcp-title').textContent = r.name;
-  
-  var serving = r.serving || '4 người';
-  document.getElementById('rcp-meta').textContent = '⏱️ ' + r.time + ' • 👨‍👩‍👧 ' + serving + ' • 🧑‍🍳 ' + r.level;
-  
-  document.getElementById('rcp-ing-list').innerHTML = '<div class="rcp-ingred-grid">' + r.ingredients.map(function(ing){
-    return '<label class="rcp-ingred-item"><input type="checkbox"/> <span class="rcp-ingred-name">'+ing+'</span></label>';
-  }).join('') + '</div>';
+    var r = RECIPES_DATA.find(function(item){return item.id===id;});
+    if(!r) return;
+    currentSheetRecipeId = r.id;
+    
+    document.getElementById('rcp-cat').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 10H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1zm-1.5-2a1 1 0 0 0 .5-.86v-1a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 0 4 6.14v1a1 1 0 0 0 .5.86h15z"/></svg> ' + r.category;
+    document.getElementById('rcp-title').textContent = r.name;
+    
+    document.getElementById('rcp-meta').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ' + r.time + ' &bull; <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2z"></path><path d="M19.914 10H4.086A2 2 0 0 0 2 12v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2.086-2z"></path><path d="M15 10V7a3 3 0 0 0-6 0v3"></path></svg> ' + r.level;
 
-  document.getElementById('rcp-steps-list').className = 'rcp-step-list';
-  document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function(st, idx){
-    var parts = st.split(':');
-    var stNum = idx + 1;
-    var stDesc = st;
-    if(parts.length > 1) {
-       stDesc = parts.slice(1).join(':').trim();
+    baseServings = parseFloat(r.default_servings) || 4;
+    currentServings = baseServings;
+    parsedIngredients = (r.ingredients || []).map(parseIngredient);
+    renderIngredientsList();
+
+    document.getElementById('rcp-steps-list').className = 'rcp-step-list';
+    document.getElementById('rcp-steps-list').innerHTML = r.steps.map(function(st, idx){
+      var parts = st.split(':');
+      var stNum = idx + 1;
+      var stDesc = st;
+      if(parts.length > 1) {
+         stDesc = parts.slice(1).join(':').trim();
+      }
+      return '<div class="rcp-step-item">'
+           + '<div class="rcp-step-num">'+stNum+'</div>'
+           + '<div class="rcp-step-content">'
+           + '<div class="rcp-step-title">B\u01B0\u1EDBc '+stNum+'</div>'
+           + '<div class="rcp-step-desc">'+stDesc+'</div>'
+           + '</div></div>';
+    }).join('');
+
+    var vidBtn = document.getElementById('btn-rcp-video');
+    if(vidBtn){
+      vidBtn.href = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
     }
-    return '<div class="rcp-step-item">'
-         + '<div class="rcp-step-num">'+stNum+'</div>'
-         + '<div class="rcp-step-content">'
-         + '<div class="rcp-step-title">Bước '+stNum+'</div>'
-         + '<div class="rcp-step-desc">'+stDesc+'</div>'
-         + '</div></div>';
-  }).join('');
-
-  var vidBtn = document.getElementById('btn-rcp-video');
-  if(vidBtn){
-    vidBtn.href = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
-  }
 
   document.getElementById('btn-rcp-findmap').onclick = function(){
     closeModal('m-recipe-detail');
@@ -2264,7 +2341,7 @@ function switchNav(tab, skipAutoFly){
   document.body.classList.toggle('desktop-map-view', isMap && window.innerWidth >= 1024);
   if(isMap && window.map){ setTimeout(function(){ map.invalidateSize(true); map.setView(map.getCenter(), map.getZoom()); }, 350); }
 
-  if(tab==='cook') renderRecipes();
+  if(tab==='cook') loadRecipesData();
   if(tab==='admin') renderAdminTab();
 
   // ── CHATBOT OVERLAY FIX: ẩn nút AI khi ở tab Admin để không che nút Sửa/Xóa ──
