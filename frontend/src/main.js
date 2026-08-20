@@ -233,18 +233,28 @@ var CATEGORIES = [
   { key: 'Khác / Đặc Sản Bổ Sung', emoji: '🍽️', vi: 'Khác/Đặc Sản', en: 'Other/Specialty', pill: true }
 ];
 
+// // 8 nhóm danh mục chính thức cho Công Thức Nấu Ăn (Cook)
+// var RECIPE_CATEGORIES = [
+//   { key: 'Bữa Cơm Gia Đình', emoji: '🍚', vi: 'Bữa Cơm Gia Đình' },
+//   { key: 'Món Nước / Bún Phở', emoji: '🍜', vi: 'Món Nước/Bún Phở' },
+//   { key: 'Món Canh / Rau / Nộm', emoji: '🥬', vi: 'Món Canh/Rau/Nộm' },
+//   { key: 'Món Chiên / Nướng / Nhậu', emoji: '🍢', vi: 'Món Chiên/Nướng/Nhậu' },
+//   { key: 'Món Khuya / Bếp Đêm', emoji: '🌙', vi: 'Món Khuya/Bếp Đêm' },
+//   { key: 'Ăn Vặt / Chè / Bánh', emoji: '🍮', vi: 'Ăn Vặt/Chè/Bánh' },
+//   { key: 'Món Chay / Eat-Clean', emoji: '🥗', vi: 'Món Chay/Eat-Clean' },
+//   { key: 'Mẹo Bếp / Gia Vị & Sốt', emoji: '🧂', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
+// ];
 // 8 nhóm danh mục chính thức cho Công Thức Nấu Ăn (Cook)
 var RECIPE_CATEGORIES = [
-  { key: 'Bữa Cơm Gia Đình', emoji: '🍚', vi: 'Bữa Cơm Gia Đình' },
-  { key: 'Món Nước / Bún Phở', emoji: '🍜', vi: 'Món Nước/Bún Phở' },
-  { key: 'Món Canh / Rau / Nộm', emoji: '🥬', vi: 'Món Canh/Rau/Nộm' },
-  { key: 'Món Chiên / Nướng / Nhậu', emoji: '🍢', vi: 'Món Chiên/Nướng/Nhậu' },
-  { key: 'Món Khuya / Bếp Đêm', emoji: '🌙', vi: 'Món Khuya/Bếp Đêm' },
-  { key: 'Ăn Vặt / Chè / Bánh', emoji: '🍮', vi: 'Ăn Vặt/Chè/Bánh' },
-  { key: 'Món Chay / Eat-Clean', emoji: '🥗', vi: 'Món Chay/Eat-Clean' },
-  { key: 'Mẹo Bếp / Gia Vị & Sốt', emoji: '🧂', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
+  { key: 'Bữa Cơm Gia Đình', emoji: '<i class="ri-restaurant-line"></i>', vi: 'Bữa Cơm Gia Đình' },
+  { key: 'Món Nước / Bún Phở', emoji: '<svg viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:text-bottom;"><path d="M2 12h20"></path><path d="M4 12v1a8 8 0 0 0 16 0v-1"></path><path d="M8 12V7"></path><path d="M12 12V6"></path><path d="M16 12V7"></path></svg>', vi: 'Món Nước/Bún Phở' },
+  { key: 'Món Canh / Rau / Nộm', emoji: '<i class="ri-leaf-line"></i>', vi: 'Món Canh/Rau/Nộm' },
+  { key: 'Món Chiên / Nướng / Nhậu', emoji: '<i class="ri-fire-line"></i>', vi: 'Món Chiên/Nướng/Nhậu' },
+  { key: 'Món Khuya / Bếp Đêm', emoji: '<i class="ri-moon-line"></i>', vi: 'Món Khuya/Bếp Đêm' },
+  { key: 'Ăn Vặt / Chè / Bánh', emoji: '<i class="ri-cake-3-line"></i>', vi: 'Ăn Vặt/Chè/Bánh' },
+  { key: 'Món Chay / Eat-Clean', emoji: '<i class="ri-plant-line"></i>', vi: 'Món Chay/Eat-Clean' },
+  { key: 'Mẹo Bếp / Gia Vị & Sốt', emoji: '<i class="ri-flask-line"></i>', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
 ];
-
 function initCategories() {
   // 1. Build filter pills
   var bar = document.getElementById('pill-bar');
@@ -657,37 +667,74 @@ function loadRecipesData(force = false) {
 }
 // ------------------------------------
 
+// function renderRecipes() {
+//   var grid = document.getElementById('recipe-list-grid');
+//   if (!grid) return;
+//   var list = RECIPES_DATA;
+//   if (recipeFilterCategory && recipeFilterCategory !== 'all') {
+//     list = RECIPES_DATA.filter(function (r) {
+//       return (r.category || '').indexOf(recipeFilterCategory) !== -1;
+//     });
+//   }
+//   if (list.length === 0) {
+//     grid.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;grid-column:1/-1;">Chưa có công thức nào thuộc danh mục này.</div>';
+//     return;
+//   }
+//   grid.innerHTML = list.map(function (r) {
+//     var vidUrl = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
+//     var region = r.region || 'Đặc Sản';
+//     var serving = r.default_servings || '4 người';
+//     return '<div class="recipe-card-glass" onclick="openRecipeDetail(\'' + r.id + '\')">'
+//       + '<div class="rcp-img-wrap"><img src="' + r.image + '" alt="' + r.name + '"/><span class="rcp-region-tag">' + region + '</span></div>'
+//       + '<div class="rcp-body">'
+//       + '<div class="rcp-title">' + r.name + '</div>'
+//       + '<div class="rcp-stats">'
+//       + '<div class="rcp-stat-item">⏱️ ' + r.time + '</div>'
+//       + '<div class="rcp-stat-item">👨‍👩‍👧 ' + serving + '</div>'
+//       + '<div class="rcp-stat-item">🧑‍🍳 ' + r.level + '</div>'
+//       + '</div>'
+//       + '<button class="rcp-btn-play" onclick="event.stopPropagation(); window.open(\'' + vidUrl + '\',\'_blank\')">🎬 Xem video nấu</button>'
+//       + '</div></div>';
+//   }).join('');
+// }
 function renderRecipes() {
   var grid = document.getElementById('recipe-list-grid');
   if (!grid) return;
+
   var list = RECIPES_DATA;
   if (recipeFilterCategory && recipeFilterCategory !== 'all') {
     list = RECIPES_DATA.filter(function (r) {
       return (r.category || '').indexOf(recipeFilterCategory) !== -1;
     });
   }
+
   if (list.length === 0) {
     grid.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;grid-column:1/-1;">Chưa có công thức nào thuộc danh mục này.</div>';
     return;
   }
+
   grid.innerHTML = list.map(function (r) {
     var vidUrl = r.video_url || 'https://www.tiktok.com/@chongcookvolook';
     var region = r.region || 'Đặc Sản';
-    var serving = r.serving || '4 người';
+
+    // FIX SỐ NGƯỜI ĂN: Tự động ghép thêm chữ "người" vào sau con số
+    var serving = r.default_servings ? r.default_servings + ' người' : '4 người';
+
     return '<div class="recipe-card-glass" onclick="openRecipeDetail(\'' + r.id + '\')">'
       + '<div class="rcp-img-wrap"><img src="' + r.image + '" alt="' + r.name + '"/><span class="rcp-region-tag">' + region + '</span></div>'
       + '<div class="rcp-body">'
       + '<div class="rcp-title">' + r.name + '</div>'
+
+      // THAY THẾ TOÀN BỘ EMOJI BẰNG REMIX ICON Ở ĐÂY
       + '<div class="rcp-stats">'
-      + '<div class="rcp-stat-item">⏱️ ' + r.time + '</div>'
-      + '<div class="rcp-stat-item">👨‍👩‍👧 ' + serving + '</div>'
-      + '<div class="rcp-stat-item">🧑‍🍳 ' + r.level + '</div>'
+      + '<div class="rcp-stat-item"><i class="ri-time-line"></i> ' + r.time + '</div>'
+      + '<div class="rcp-stat-item"><i class="ri-group-line"></i> ' + serving + '</div>'
+      + '<div class="rcp-stat-item"><i class="ri-restaurant-line"></i> ' + r.level + '</div>'
       + '</div>'
-      + '<button class="rcp-btn-play" onclick="event.stopPropagation(); window.open(\'' + vidUrl + '\',\'_blank\')">🎬 Xem video nấu</button>'
+      + '<button class="rcp-btn-play" onclick="event.stopPropagation(); window.open(\'' + vidUrl + '\',\'_blank\')"><i class="ri-play-circle-line"></i> Xem video nấu</button>'
       + '</div></div>';
   }).join('');
 }
-
 function openRecipeDetail(id) {
   var r = RECIPES_DATA.find(function (item) { return item.id === id; });
   if (!r) return;
@@ -2403,7 +2450,7 @@ function renderHomeLatestCards() {
 
     for (var j = 0; j < rcount; j++) {
       var latestRcp = RECIPES_DATA[RECIPES_DATA.length - 1 - j];
-      var serving = latestRcp.servings || '2-3';
+      var serving = latestRcp.default_servings || '2-3';
 
       rhtml += '<div class="home-featured-card" onclick="openRecipeDetail(\'' + latestRcp.id + '\')">'
         + '<div class="hf-img-wrap"><img src="' + latestRcp.image + '" alt="Recipe"/>'
