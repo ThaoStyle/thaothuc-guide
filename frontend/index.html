@@ -678,11 +678,29 @@
     <div class="ai-body" id="ai-body">
       <div class="ai-msg">Chào bạn! Tớ là Thao Thức AI 🤖. Bạn muốn tìm quán ăn ngon hay gợi ý món gì hôm nay?</div>
     </div>
-    <div class="ai-chips">
+    <!-- <div class="ai-chips">
       <button class="ai-chip" onclick="sendAiMsg('Hôm nay ăn gì?')">🎲 Hôm nay ăn gì?</button>
       <button class="ai-chip" onclick="sendAiMsg('Quán ngon gần tôi')">📍 Quán ngon gần tôi</button>
       <button class="ai-chip" onclick="sendAiMsg('Gợi ý Quán Di Sản')">🏆 Quán Di Sản</button>
       <button class="ai-chip" onclick="sendAiMsg('Cafe view đẹp để chill')">☕ Cafe & Chill</button>
+    </div> -->
+    <div class="ai-chips">
+      <button class="ai-chip" onclick="sendAiMsg('Hôm nay ăn gì?')">
+        <i class="ri-magic-line"
+          style="color: #FF7043; font-size: 1.1em; margin-right: 4px; vertical-align: middle;"></i> Hôm nay ăn gì?
+      </button>
+      <button class="ai-chip" onclick="sendAiMsg('Quán ngon gần tôi')">
+        <i class="ri-map-pin-user-line"
+          style="color: #FF7043; font-size: 1.1em; margin-right: 4px; vertical-align: middle;"></i> Quán ngon gần tôi
+      </button>
+      <button class="ai-chip" onclick="sendAiMsg('Gợi ý Quán Di Sản')">
+        <i class="ri-trophy-line"
+          style="color: #FF7043; font-size: 1.1em; margin-right: 4px; vertical-align: middle;"></i> Quán Di Sản
+      </button>
+      <button class="ai-chip" onclick="sendAiMsg('Cafe view đẹp để chill')">
+        <i class="ri-cup-line" style="color: #FF7043; font-size: 1.1em; margin-right: 4px; vertical-align: middle;"></i>
+        Cafe & Chill
+      </button>
     </div>
     <div class="ai-input-area">
       <input type="text" id="ai-input" placeholder="Hỏi tớ đi..." onkeypress="if(event.key==='Enter') sendAiMsg()">
