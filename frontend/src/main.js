@@ -611,7 +611,7 @@ function renderIngredientsList(animate = false) {
     listEl.appendChild(label);
   });
 }
-
+var deepLinkRecipeResolved = false; // Thêm biến này
 function loadRecipesData(force = false) {
   if (isRecipesLoaded && !force) {
     renderRecipes();
@@ -624,10 +624,19 @@ function loadRecipesData(force = false) {
   if (typeof google !== 'undefined' && google.script && google.script.run) {
     google.script.run.withSuccessHandler(function (res) {
       RECIPES_DATA = res || [];
+      // Mã cũ
       isRecipesLoaded = true;
       renderRecipes();
       renderHomeLatestCards();
 
+      // THÊM ĐOẠN CHECK DEEP-LINK NÀY VÀO DƯỚI:
+      if (DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe' && !deepLinkRecipeResolved) {
+        deepLinkRecipeResolved = true;
+        switchNav('cook');
+        setTimeout(function () { openRecipeDetail(DEEP_LINK_ID); }, 200);
+      }
+
+      // Mã cũ
       var mAdmin = document.getElementById('m-admin');
       if (mAdmin && mAdmin.style.display === 'flex') renderAdminRcpList();
     }).getRecipes();
@@ -2549,11 +2558,11 @@ window.addEventListener('load', function () {
   renderHomeLatestCards();
   setTimeout(hideAppSplash, 6000); // an toàn: nếu vì lý do gì data không về, vẫn tự ẩn splash sau 6s
 
-  // Deep-link công thức (?id=...&type=recipe): RECIPES_DATA có sẵn ngay, không cần chờ onData()
-  if (DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe') {
-    switchNav('cook');
-    setTimeout(function () { openRecipeDetail(DEEP_LINK_ID); }, 300);
-  }
+  // // Deep-link công thức (?id=...&type=recipe): RECIPES_DATA có sẵn ngay, không cần chờ onData()
+  // if (DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe') {
+  //   switchNav('cook');
+  //   setTimeout(function () { openRecipeDetail(DEEP_LINK_ID); }, 300);
+  // }
 });
 
 // ── MAP SEARCH CAPSULE LOGIC ──
