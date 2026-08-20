@@ -217,21 +217,43 @@ var WEBP_ICONS = {
 // ── CENTRALIZED CATEGORY LIST (syncs filter pills + admin dropdown) ──
 // 9 nhóm danh mục chính thức cho Map Spots
 var CATEGORIES = [
-  { key: 'all', emoji: '🟢', vi: 'Tất cả', en: 'All', pill: true, special: 'all' },
+  { key: 'all', emoji: '<span style="display:inline-block; width:10px; height:10px; background:#4CAF50; border-radius:50%; margin-right:6px;"></span>', vi: 'Tất cả', en: 'All', pill: true, special: 'all' },
 
+  { key: 'Bún / Phở / Món Nước', emoji: '<svg viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><path d="M2 12h20"></path><path d="M4 12v1a8 8 0 0 0 16 0v-1"></path><path d="M8 12V7"></path><path d="M12 12V6"></path><path d="M16 12V7"></path></svg>', vi: 'Bún/Phở/Món Nước', en: 'Noodle Soup', pill: true },
 
+  { key: 'Cơm / Bữa Chính', emoji: '<i class="ri-restaurant-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Cơm/Bữa Chính', en: 'Rice/Main', pill: true },
 
+  { key: 'Lẩu / Nướng / Nhậu', emoji: '<i class="ri-fire-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Lẩu/Nướng/Nhậu', en: 'Hotpot/BBQ', pill: true },
 
-  { key: 'Bún / Phở / Món Nước', emoji: '🍜', vi: 'Bún/Phở/Món Nước', en: 'Noodle Soup', pill: true },
-  { key: 'Cơm / Bữa Chính', emoji: '🍚', vi: 'Cơm/Bữa Chính', en: 'Rice/Main', pill: true },
-  { key: 'Lẩu / Nướng / Nhậu', emoji: '🍲', vi: 'Lẩu/Nướng/Nhậu', en: 'Hotpot/BBQ', pill: true },
-  { key: 'Ăn Vặt / Đường Phố', emoji: '🥟', vi: 'Ăn Vặt/Đường Phố', en: 'Street Food', pill: true },
-  { key: 'Cà Phê / Đồ Uống', emoji: '☕', vi: 'Cà Phê/Đồ Uống', en: 'Cafe/Drinks', pill: true },
-  { key: 'Bếp Đêm / Ăn Khuya', emoji: '🌙', vi: 'Bếp Đêm/Ăn Khuya', en: 'Late Night', pill: true },
-  { key: 'Chỉ Bán Mang Về', emoji: '🛍️', vi: 'Chỉ Bán Mang Về', en: 'Takeaway Only', pill: true },
-  { key: 'Chỉ Bán Online', emoji: '🛵', vi: 'Chỉ Bán Online', en: 'Online Only', pill: true },
-  { key: 'Khác / Đặc Sản Bổ Sung', emoji: '🍽️', vi: 'Khác/Đặc Sản', en: 'Other/Specialty', pill: true }
+  { key: 'Ăn Vặt / Đường Phố', emoji: '<i class="ri-cake-3-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Ăn Vặt/Đường Phố', en: 'Street Food', pill: true },
+
+  { key: 'Cà Phê / Đồ Uống', emoji: '<i class="ri-cup-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Cà Phê/Đồ Uống', en: 'Cafe/Drinks', pill: true },
+
+  { key: 'Bếp Đêm / Ăn Khuya', emoji: '<i class="ri-moon-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Bếp Đêm/Ăn Khuya', en: 'Late Night', pill: true },
+
+  { key: 'Chỉ Bán Mang Về', emoji: '<i class="ri-shopping-bag-3-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Chỉ Bán Mang Về', en: 'Takeaway Only', pill: true },
+
+  { key: 'Chỉ Bán Online', emoji: '<i class="ri-e-bike-2-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Chỉ Bán Online', en: 'Online Only', pill: true },
+
+  { key: 'Khác / Đặc Sản Bổ Sung', emoji: '<i class="ri-star-line" style="margin-right:6px; vertical-align:text-bottom;"></i>', vi: 'Khác/Đặc Sản', en: 'Other/Specialty', pill: true }
 ];
+// // 9 nhóm danh mục chính thức cho Map Spots
+// var CATEGORIES = [
+//   { key: 'all', emoji: '🟢', vi: 'Tất cả', en: 'All', pill: true, special: 'all' },
+
+
+
+
+//   { key: 'Bún / Phở / Món Nước', emoji: '🍜', vi: 'Bún/Phở/Món Nước', en: 'Noodle Soup', pill: true },
+//   { key: 'Cơm / Bữa Chính', emoji: '🍚', vi: 'Cơm/Bữa Chính', en: 'Rice/Main', pill: true },
+//   { key: 'Lẩu / Nướng / Nhậu', emoji: '🍲', vi: 'Lẩu/Nướng/Nhậu', en: 'Hotpot/BBQ', pill: true },
+//   { key: 'Ăn Vặt / Đường Phố', emoji: '🥟', vi: 'Ăn Vặt/Đường Phố', en: 'Street Food', pill: true },
+//   { key: 'Cà Phê / Đồ Uống', emoji: '☕', vi: 'Cà Phê/Đồ Uống', en: 'Cafe/Drinks', pill: true },
+//   { key: 'Bếp Đêm / Ăn Khuya', emoji: '🌙', vi: 'Bếp Đêm/Ăn Khuya', en: 'Late Night', pill: true },
+//   { key: 'Chỉ Bán Mang Về', emoji: '🛍️', vi: 'Chỉ Bán Mang Về', en: 'Takeaway Only', pill: true },
+//   { key: 'Chỉ Bán Online', emoji: '🛵', vi: 'Chỉ Bán Online', en: 'Online Only', pill: true },
+//   { key: 'Khác / Đặc Sản Bổ Sung', emoji: '🍽️', vi: 'Khác/Đặc Sản', en: 'Other/Specialty', pill: true }
+// ];
 
 // // 8 nhóm danh mục chính thức cho Công Thức Nấu Ăn (Cook)
 // var RECIPE_CATEGORIES = [
@@ -1971,9 +1993,20 @@ function renderDesktopSidebar(locs) {
   var meta = document.getElementById('desktop-sidebar-meta');
   if (meta) meta.textContent = (locs ? locs.length : 0) + ' quán';
 
+  // var title = document.getElementById('desktop-sidebar-title');
+  // if (title) {
+  //   title.textContent = (activeFilter && activeFilter !== 'all') ? '🔍 ' + activeFilter : '🍜 Danh sách quán';
+  // }
   var title = document.getElementById('desktop-sidebar-title');
   if (title) {
-    title.textContent = (activeFilter && activeFilter !== 'all') ? '🔍 ' + activeFilter : '🍜 Danh sách quán';
+    // Lấy mã Icon Kính Lúp và Bát Phở bốc khói màu cam
+    var searchIcon = '<i class="ri-search-line" style="color:#FF7043; margin-right:6px; vertical-align:text-bottom;"></i>';
+    var bowlIcon = '<svg viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; color:#FF7043; vertical-align:text-bottom;"><path d="M2 12h20"></path><path d="M4 12v1a8 8 0 0 0 16 0v-1"></path><path d="M8 12V7"></path><path d="M12 12V6"></path><path d="M16 12V7"></path></svg>';
+
+    // BẮT BUỘC DÙNG innerHTML thay cho textContent
+    title.innerHTML = (activeFilter && activeFilter !== 'all')
+      ? searchIcon + activeFilter
+      : bowlIcon + 'Danh sách quán';
   }
 
   if (!Array.isArray(locs) || !locs.length) {
