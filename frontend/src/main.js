@@ -269,13 +269,13 @@ var CATEGORIES = [
 // 8 nhóm danh mục chính thức cho Công Thức Nấu Ăn (Cook)
 var RECIPE_CATEGORIES = [
   { key: 'Bữa Cơm Gia Đình', emoji: '<i class="ri-restaurant-line"></i>', vi: 'Bữa Cơm Gia Đình' },
-  { key: 'Món Nước / Bún Phở', emoji: '<svg viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:text-bottom;"><path d="M2 12h20"></path><path d="M4 12v1a8 8 0 0 0 16 0v-1"></path><path d="M8 12V7"></path><path d="M12 12V6"></path><path d="M16 12V7"></path></svg>', vi: 'Món Nước/Bún Phở' },
-  { key: 'Món Canh / Rau / Nộm', emoji: '<i class="ri-leaf-line"></i>', vi: 'Món Canh/Rau/Nộm' },
-  { key: 'Món Chiên / Nướng / Nhậu', emoji: '<i class="ri-fire-line"></i>', vi: 'Món Chiên/Nướng/Nhậu' },
-  { key: 'Món Khuya / Bếp Đêm', emoji: '<i class="ri-moon-line"></i>', vi: 'Món Khuya/Bếp Đêm' },
-  { key: 'Ăn Vặt / Chè / Bánh', emoji: '<i class="ri-cake-3-line"></i>', vi: 'Ăn Vặt/Chè/Bánh' },
-  { key: 'Món Chay / Eat-Clean', emoji: '<i class="ri-plant-line"></i>', vi: 'Món Chay/Eat-Clean' },
-  { key: 'Mẹo Bếp / Gia Vị & Sốt', emoji: '<i class="ri-flask-line"></i>', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
+  { key: 'Món Nước/Bún Phở', emoji: '<svg viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:text-bottom;"><path d="M2 12h20"></path><path d="M4 12v1a8 8 0 0 0 16 0v-1"></path><path d="M8 12V7"></path><path d="M12 12V6"></path><path d="M16 12V7"></path></svg>', vi: 'Món Nước/Bún Phở' },
+  { key: 'Món Canh/Rau/Nộm', emoji: '<i class="ri-leaf-line"></i>', vi: 'Món Canh/Rau/Nộm' },
+  { key: 'Món Chiên/Nướng/Nhậu', emoji: '<i class="ri-fire-line"></i>', vi: 'Món Chiên/Nướng/Nhậu' },
+  { key: 'Món Khuya/Bếp Đêm', emoji: '<i class="ri-moon-line"></i>', vi: 'Món Khuya/Bếp Đêm' },
+  { key: 'Ăn Vặt/Chè/Bánh', emoji: '<i class="ri-cake-3-line"></i>', vi: 'Ăn Vặt/Chè/Bánh' },
+  { key: 'Món Chay/Eat-Clean', emoji: '<i class="ri-plant-line"></i>', vi: 'Món Chay/Eat-Clean' },
+  { key: 'Mẹo Bếp/Gia Vị & Sốt', emoji: '<i class="ri-flask-line"></i>', vi: 'Mẹo Bếp/Gia Vị & Sốt' }
 ];
 function initCategories() {
   // 1. Build filter pills
