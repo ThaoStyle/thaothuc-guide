@@ -2562,7 +2562,7 @@ window.addEventListener('load', function () {
   // if (DEEP_LINK_ID && DEEP_LINK_TYPE === 'recipe') {
   //   switchNav('cook');
   //   setTimeout(function () { openRecipeDetail(DEEP_LINK_ID); }, 300);
-  // }
+  // }//
 });
 
 // ── MAP SEARCH CAPSULE LOGIC ──
