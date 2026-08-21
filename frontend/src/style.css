@@ -2185,7 +2185,7 @@ body.desktop-map-view #mobile-list-sheet {
   align-items: flex-start;
 }
 
-.lc-title {
+/* .lc-title {
   font-size: 16px;
   font-weight: 700;
   color: #0F172A;
@@ -2209,6 +2209,39 @@ body.desktop-map-view #mobile-list-sheet {
   display: flex;
   align-items: center;
   gap: 2px;
+} */
+.lc-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  /* BẢN FIX: Ép tiêu đề tự giới hạn không gian, chừa chỗ cho huy hiệu */
+  flex: 1;
+  min-width: 0;
+  padding-right: 8px;
+}
+
+.lc-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  /* BẢN FIX: Tuyệt đối không cho phép khối huy hiệu bị bóp méo */
+  flex-shrink: 0;
+}
+
+.badge-dist {
+  background: #F1F5F9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  /* BẢN FIX: Bắt chữ km phải nằm trên 1 dòng cùng với số */
+  white-space: nowrap;
 }
 
 /* Rank Badges */

@@ -2335,11 +2335,9 @@ function renderMobileList(locs) {
   if (countEl) countEl.textContent = displayNum;
   if (countSheetEl) countSheetEl.textContent = num;
 
-  // Lấy container mới
   var content = document.getElementById('ml-content') || document.querySelector('#mobile-list-sheet .sheet-content');
   if (!content) return;
 
-  // Cập nhật Tiêu đề và Icon tự động
   var titleEl = document.getElementById('ml-title');
   var iconEl = document.getElementById('ml-icon');
   if (titleEl) {
@@ -2388,10 +2386,10 @@ function renderMobileList(locs) {
     var idx = item.originalIdx;
     var img = loc.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200';
 
-    var statusBadge = '';
-    if (loc.badge_type === 'approved') statusBadge = '<div class="badge-approved">🏆 Approved</div>';
-    else if (loc.badge_type === 'spot') statusBadge = '<div class="badge-approved" style="background:#F1F5F9; color:#475569;">📍 Spot</div>';
-    else if (loc.badge_type === 'heritage') statusBadge = '<div class="badge-approved" style="background:#FFF7ED; color:#D97706;">👑 Heritage</div>';
+    // BẢN FIX: KHÔI PHỤC LẠI BADGE WEB-P 3D CỦA BẠN (Sử dụng BADGE_LABELS cũ)
+    var badgeDef = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
+    var statusBadge = '<div class="badge-approved" style="color:' + badgeDef.color + '; background:' + badgeDef.color + '1A;">'
+      + getBadgeIconHtml(loc.badge_type) + badgeDef.text + '</div>';
 
     var distHtml = '';
     if (hasGPS && item.dist !== null) {
