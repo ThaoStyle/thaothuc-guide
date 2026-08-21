@@ -1804,17 +1804,18 @@ function checkOpenStatus(openingHoursStr) {
 //   var sb = document.getElementById('desktop-sidebar');
 //   if (sb) sb.style.display = 'none';
 // }
-// ── LOCATION DETAIL BOTTOM SHEET WITH GLASSMORPHISM ──
+// ── LOCATION DETAIL BOTTOM SHEET WITH GLASSMORPHISM (ĐẦY ĐỦ THÔNG TIN) ──
 function openSheet(loc) {
   currentSheetLoc = loc;
   var name = fixUtf8(loc.name);
   var must_try = fixUtf8(loc.must_try);
   var category = fixUtf8(loc.category);
+  var desc = fixUtf8(loc.description);
 
   // 1. Media Cover
   var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
 
-  // 2. Badge (Heritage, Approved...)
+  // 2. Badge
   var badgeName = (loc.badge_type === 'heritage' ? 'Heritage' : loc.badge_type === 'approved' ? 'Approved' : loc.badge_type === 'pending' ? 'Chờ Duyệt' : 'Spot');
   var badgeUrl = WEBP_ICONS[loc.badge_type] || WEBP_ICONS['spot'];
   var badgeIcon = '';
@@ -1826,46 +1827,87 @@ function openSheet(loc) {
     else badgeIcon = '📍 ';
   }
 
-  // 3. Giờ mở cửa & Trạng thái
+  // 3. Info Row (Giờ, Giá, Trạng thái)
   var hoursHtml = loc.opening_hours ? `<span class="glass-info-pill"><i class="ri-time-line"></i> ${loc.opening_hours}</span>` : '';
   var statusHtml = loc.opening_hours ? checkOpenStatus(loc.opening_hours) : '';
 
-  // 4. Món tủ (Must try)
-  var mustHtml = '';
-  if (must_try) {
-    mustHtml = `
-      <div style="font-size: 13.5px; color: #E64A19; font-weight: 700; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 6px; background: #FFF3E0; padding: 10px 14px; border-radius: 12px; line-height: 1.4;">
-          <i class="ri-star-smile-fill" style="font-size: 18px; margin-top: -2px;"></i> 
-          <span>${must_try}</span>
+  // 4. Description (Trích dẫn Review - Giống Ảnh 1)
+  var descHtml = '';
+  if (desc) {
+    descHtml = `
+      <div style="background: rgba(255,112,67,0.05); border-left: 3px solid #FF7043; padding: 12px 16px; border-radius: 0 12px 12px 0; margin-bottom: 20px; font-size: 13.5px; color: #475569; font-style: italic; line-height: 1.5;">
+          "${desc}"
       </div>`;
   }
 
-  // 5. Khối Nút Hành động chính
+  // 5. Utility List (Tiện ích: Điện thoại, Loại hình, Thanh toán, Giữ xe - Khối xám giống Ảnh 1)
+  var hasUtil = loc.phone || loc.type || loc.payment_methods || loc.parking_info;
+  var utilHtml = '';
+  if (hasUtil) {
+    var phoneStr = loc.phone ? `<div style="display:flex; align-items:center; gap:12px;"><i class="ri-phone-fill" style="color:#64748B; font-size:18px;"></i><a href="tel:${loc.phone.replace(/[^0-9]/g, '')}" style="color:#0F172A; text-decoration:none; font-weight:700;">${loc.phone}</a> <span style="color:#94A3B8; font-size:12px; font-weight:400;">(Gọi / Zalo)</span></div>` : '';
+
+    var typeStr = 'Tự do';
+    if (loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
+    else if (loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
+    else if (loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
+    else if (loc.type === 'Both') typeStr = 'Phục vụ tại chỗ & Nhận ship';
+    var typeRow = `<div style="display:flex; align-items:center; gap:12px;"><i class="ri-store-2-line" style="color:#64748B; font-size:18px;"></i><span style="color:#334155;">${typeStr}</span></div>`;
+
+    var payStr = loc.payment_methods ? `<div style="display:flex; align-items:center; gap:12px;"><i class="ri-bank-card-line" style="color:#64748B; font-size:18px;"></i><span style="color:#334155;">${fixUtf8(loc.payment_methods)}</span></div>` : '';
+
+    var parkStr = loc.parking_info ? `<div style="display:flex; align-items:center; gap:12px;"><i class="ri-parking-box-line" style="color:#64748B; font-size:18px;"></i><span style="color:#334155;">${fixUtf8(loc.parking_info)}</span></div>` : '';
+
+    utilHtml = `
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; font-size: 14px;">
+          ${phoneStr}
+          ${typeRow}
+          ${payStr}
+          ${parkStr}
+      </div>`;
+  }
+
+  // 6. Must Try Tags (Tách thành các thẻ Tag nhỏ giống Ảnh 1)
+  var mustHtml = '';
+  if (must_try) {
+    var musts = must_try.split(',').filter(function (s) { return s.trim(); });
+    var tags = musts.map(function (m) {
+      return `<span style="background: #FFF3E0; color: #E64A19; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; display: inline-block; box-shadow: 0 2px 4px rgba(230,74,25,0.05);">${fixUtf8(m).trim()}</span>`;
+    }).join('');
+
+    mustHtml = `
+      <div style="margin-bottom: 24px;">
+          <div style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Món phải thử</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              ${tags}
+          </div>
+      </div>`;
+  }
+
+  // 7. Khối Nút Hành động chính
   var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng);
   var buttonsHtml = `<a href="${mapLnk}" target="_blank" class="glass-btn primary"><i class="ri-direction-fill"></i> Chỉ đường</a>`;
   if (loc.video_url) {
     buttonsHtml += `<a href="${loc.video_url}" target="_blank" class="glass-btn secondary"><i class="ri-play-circle-fill" style="color:#E64A19;"></i> Review</a>`;
   }
 
-  // 6. Nút Đặt đồ ăn (ShopeeFood, GrabFood)
+  // 8. Nút Đặt đồ ăn (ShopeeFood, GrabFood)
   var appBtnsHtml = '';
-  if (loc.shopeefood_link) appBtnsHtml += `<a href="${loc.shopeefood_link}" target="_blank" class="glass-btn" style="background:#fff3ed; color:#ea580c; border:1px solid #fed7aa; flex:1; font-size:13px;">🧡 ShopeeFood</a>`;
-  if (loc.grab_link) appBtnsHtml += `<a href="${loc.grab_link}" target="_blank" class="glass-btn" style="background:#e6f7ed; color:#16a34a; border:1px solid #bbf7d0; flex:1; font-size:13px;">💚 GrabFood</a>`;
+  if (loc.shopeefood_link) appBtnsHtml += `<a href="${loc.shopeefood_link}" target="_blank" class="glass-btn" style="background:#fff3ed; color:#ea580c; border:1px solid #fed7aa; flex:1; font-size:13.5px;">🧡 ShopeeFood</a>`;
+  if (loc.grab_link) appBtnsHtml += `<a href="${loc.grab_link}" target="_blank" class="glass-btn" style="background:#e6f7ed; color:#16a34a; border:1px solid #bbf7d0; flex:1; font-size:13.5px;">💚 GrabFood</a>`;
   if (appBtnsHtml) {
     buttonsHtml += `<div style="display:flex; gap:12px; width:100%; margin-top:12px;">${appBtnsHtml}</div>`;
   }
 
-  // 7. Icon Tim (Fav) SVG giữ nguyên style tương tác cũ
+  // Fav Icon
   var favClass = isFav(loc.id) ? 'liked' : '';
   var favSvg = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 
-  // 8. Ráp HTML lại
+  // 9. Ráp HTML lại
   var sheetContent = `
     <div class="glass-map-card">
         <div class="glass-card-header" style="background-image: url('${imgUrl}');">
-            <div class="glass-card-badge">${badgeIcon} ${badgeName}</div>
+            <div class="glass-card-badge" onclick="openModal('m-crit')" style="cursor: pointer;" title="Xem tiêu chí đánh giá">${badgeIcon} ${badgeName}</div>
             
-            <!-- Nhóm nút góc phải trên ảnh -->
             <div style="position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 10;">
                 <button class="glass-icon-btn ${favClass}" id="sh-fav-btn" onclick="toggleFavLocSheet()">
                     ${favSvg}
@@ -1882,16 +1924,18 @@ function openSheet(loc) {
         <div class="glass-card-body">
             <h3 class="glass-card-title">${name}</h3>
             <p class="glass-card-address">
-                <i class="ri-map-pin-2-fill"></i> ${loc.address || 'Đà Nẵng'}
+                <i class="ri-map-pin-2-fill"></i> ${loc.address || 'Việt Nam'}
             </p>
-            
-            ${mustHtml}
             
             <div class="glass-card-info-row">
                 ${hoursHtml}
                 <span class="glass-info-pill"><i class="ri-money-dollar-circle-line"></i> ${loc.price_range || 'Đang cập nhật'}</span>
                 ${statusHtml}
             </div>
+            
+            ${descHtml}
+            ${utilHtml}
+            ${mustHtml}
             
             <div class="glass-card-actions" style="flex-wrap: wrap;">
                 ${buttonsHtml}
@@ -1900,11 +1944,10 @@ function openSheet(loc) {
     </div>
   `;
 
-  // 9. Gán vào DOM & Thiết lập lại Container
+  // 10. Gán vào DOM
   var sheetEl = document.getElementById('loc-sheet');
   sheetEl.innerHTML = sheetContent;
 
-  // Hack CSS xóa padding mặc định của loc-sheet để thẻ tràn viền màn hình (Edge-to-edge)
   sheetEl.style.padding = '0';
   sheetEl.style.background = 'transparent';
   sheetEl.style.border = 'none';
@@ -1912,7 +1955,6 @@ function openSheet(loc) {
 
   sheetEl.classList.add('open');
 
-  // Ẩn sidebar trên desktop khi mở quán
   var sb = document.getElementById('desktop-sidebar');
   if (sb) sb.style.display = 'none';
 }
