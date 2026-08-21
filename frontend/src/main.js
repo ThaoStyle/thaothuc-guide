@@ -1692,119 +1692,230 @@ function checkOpenStatus(openingHoursStr) {
   else return '<span class="status-pill red">Đã đóng cửa</span>';
 }
 
+// function openSheet(loc) {
+//   currentSheetLoc = loc;
+//   var name = fixUtf8(loc.name);
+//   var must_try = fixUtf8(loc.must_try);
+//   var category = fixUtf8(loc.category);
+//   var desc = fixUtf8(loc.description);
+
+//   // 1. Media Header
+//   var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
+//   document.getElementById('sh-cover-img').src = imgUrl;
+
+//   var badgeName = (loc.badge_type === 'heritage' ? 'Heritage' : loc.badge_type === 'approved' ? 'Approved' : loc.badge_type === 'pending' ? 'Chờ Duyệt' : 'Spot');
+//   var badgeUrl = WEBP_ICONS[loc.badge_type] || WEBP_ICONS['spot'];
+//   var badgeIcon = '';
+//   if (badgeUrl && badgeUrl.length > 50) {
+//     badgeIcon = '<img src="' + badgeUrl + '" style="height:18px; margin-right:4px; vertical-align:-3px;" alt="badge"> ';
+//   } else {
+//     if (loc.badge_type === 'heritage') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+//     else if (loc.badge_type === 'approved') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+//     else badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+//   }
+
+//   document.getElementById('sh-badge-overlay').innerHTML = badgeIcon + badgeName;
+//   var inlineBadgeEl = document.getElementById('sh-badge-inline');
+//   if (inlineBadgeEl) inlineBadgeEl.innerHTML = badgeIcon + badgeName;
+
+//   // 2. Title & Meta
+
+//   var favBtn = document.getElementById('sh-fav-btn');
+//   if (favBtn) {
+//     if (isFav(loc.id)) favBtn.classList.add('liked');
+//     else favBtn.classList.remove('liked');
+//   }
+//   document.getElementById('sh-title').textContent = name;
+//   document.getElementById('sh-cat').textContent = category || 'Ẩm thực';
+//   document.getElementById('sh-price').textContent = loc.price_range || 'Đang cập nhật';
+
+//   document.getElementById('sh-type-tag').style.display = 'none';
+
+//   // 3. Opening Hours
+//   var hoursWrap = document.getElementById('sh-hours-wrap');
+//   if (loc.opening_hours) {
+//     document.getElementById('sh-hours-text').textContent = loc.opening_hours;
+//     document.getElementById('sh-status').innerHTML = checkOpenStatus(loc.opening_hours);
+//     hoursWrap.style.display = 'flex';
+//   } else {
+//     hoursWrap.style.display = 'none';
+//   }
+
+//   // 4. Description
+//   var descEl = document.getElementById('sh-desc');
+//   if (desc) {
+//     descEl.textContent = desc;
+//     descEl.style.display = 'block';
+//   } else {
+//     descEl.style.display = 'none';
+//   }
+
+//   // 5. Utility Grid
+//   var hasUtil = false;
+//   if (loc.phone) { document.getElementById('sh-phone-link').href = 'tel:' + String(loc.phone).replace(/[^0-9]/g, ''); document.getElementById('sh-phone-link').textContent = loc.phone; document.getElementById('util-phone').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-phone').style.display = 'none'; }
+
+//   var typeStr = 'Tự do';
+//   if (loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
+//   else if (loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
+//   else if (loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
+//   else if (loc.type === 'Both') typeStr = 'Tại chỗ & Mang đi';
+//   document.getElementById('sh-type').textContent = typeStr;
+//   document.getElementById('util-type').style.display = 'flex';
+//   hasUtil = true;
+
+//   if (loc.payment_methods) { document.getElementById('sh-payment').textContent = fixUtf8(loc.payment_methods); document.getElementById('util-payment').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-payment').style.display = 'none'; }
+//   if (loc.parking_info) { document.getElementById('sh-parking').textContent = fixUtf8(loc.parking_info); document.getElementById('util-parking').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-parking').style.display = 'none'; }
+//   document.getElementById('sh-utility-card').style.display = hasUtil ? 'grid' : 'none';
+
+//   // 6. Must Try
+//   var mustWrap = document.getElementById('sh-must-wrap');
+//   var tagsBox = document.getElementById('sh-tags');
+//   var musts = (must_try || '').split(',').filter(function (s) { return s.trim(); });
+//   if (musts.length) {
+//     mustWrap.style.display = 'block';
+//     tagsBox.innerHTML = musts.map(function (m) { return '<span class="must-tag-pill">' + fixUtf8(m) + '</span>'; }).join('');
+//   } else {
+//     mustWrap.style.display = 'none';
+//   }
+
+//   // 7. Actions Grid
+//   var row1 = document.getElementById('sh-row-1');
+//   var row2 = document.getElementById('sh-row-2');
+
+//   var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng);
+//   var btn1Html = '<a href="' + mapLnk + '" target="_blank" class="sh-btn primary"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg> Chỉ đường</a>';
+//   if (loc.video_url) btn1Html += '<a href="' + loc.video_url + '" target="_blank" class="sh-btn secondary"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Review</a>';
+//   row1.innerHTML = btn1Html;
+//   row1.style.gridTemplateColumns = loc.video_url ? '1fr 1fr' : '1fr';
+
+//   var btn2Html = '';
+//   if (loc.shopeefood_link) btn2Html += '<a href="' + loc.shopeefood_link + '" target="_blank" class="sh-btn shopee">🧡 ShopeeFood</a>';
+//   if (loc.grab_link) btn2Html += '<a href="' + loc.grab_link + '" target="_blank" class="sh-btn grab">💚 GrabFood</a>';
+//   if (btn2Html) {
+//     row2.innerHTML = btn2Html;
+//     row2.style.display = 'grid';
+//     row2.style.gridTemplateColumns = (loc.shopeefood_link && loc.grab_link) ? '1fr 1fr' : '1fr';
+//   } else {
+//     row2.style.display = 'none';
+//   }
+
+//   document.getElementById('loc-sheet').classList.add('open');
+//   // Ẩn danh sách quán bên phải khi đang xem chi tiết 1 quán (tránh chồng lấn trên desktop)
+//   var sb = document.getElementById('desktop-sidebar');
+//   if (sb) sb.style.display = 'none';
+// }
+// ── LOCATION DETAIL BOTTOM SHEET WITH GLASSMORPHISM ──
 function openSheet(loc) {
   currentSheetLoc = loc;
   var name = fixUtf8(loc.name);
   var must_try = fixUtf8(loc.must_try);
   var category = fixUtf8(loc.category);
-  var desc = fixUtf8(loc.description);
 
-  // 1. Media Header
+  // 1. Media Cover
   var imgUrl = loc.image_url || loc.photo_url || CAT_IMAGES[category] || CAT_IMAGES['Default'] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80';
-  document.getElementById('sh-cover-img').src = imgUrl;
 
+  // 2. Badge (Heritage, Approved...)
   var badgeName = (loc.badge_type === 'heritage' ? 'Heritage' : loc.badge_type === 'approved' ? 'Approved' : loc.badge_type === 'pending' ? 'Chờ Duyệt' : 'Spot');
   var badgeUrl = WEBP_ICONS[loc.badge_type] || WEBP_ICONS['spot'];
   var badgeIcon = '';
   if (badgeUrl && badgeUrl.length > 50) {
     badgeIcon = '<img src="' + badgeUrl + '" style="height:18px; margin-right:4px; vertical-align:-3px;" alt="badge"> ';
   } else {
-    if (loc.badge_type === 'heritage') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-    else if (loc.badge_type === 'approved') badgeIcon = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
-    else badgeIcon = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+    if (loc.badge_type === 'heritage') badgeIcon = '🏆 ';
+    else if (loc.badge_type === 'approved') badgeIcon = '✔️ ';
+    else badgeIcon = '📍 ';
   }
 
-  document.getElementById('sh-badge-overlay').innerHTML = badgeIcon + badgeName;
-  var inlineBadgeEl = document.getElementById('sh-badge-inline');
-  if (inlineBadgeEl) inlineBadgeEl.innerHTML = badgeIcon + badgeName;
+  // 3. Giờ mở cửa & Trạng thái
+  var hoursHtml = loc.opening_hours ? `<span class="glass-info-pill"><i class="ri-time-line"></i> ${loc.opening_hours}</span>` : '';
+  var statusHtml = loc.opening_hours ? checkOpenStatus(loc.opening_hours) : '';
 
-  // 2. Title & Meta
-
-  var favBtn = document.getElementById('sh-fav-btn');
-  if (favBtn) {
-    if (isFav(loc.id)) favBtn.classList.add('liked');
-    else favBtn.classList.remove('liked');
-  }
-  document.getElementById('sh-title').textContent = name;
-  document.getElementById('sh-cat').textContent = category || 'Ẩm thực';
-  document.getElementById('sh-price').textContent = loc.price_range || 'Đang cập nhật';
-
-  document.getElementById('sh-type-tag').style.display = 'none';
-
-  // 3. Opening Hours
-  var hoursWrap = document.getElementById('sh-hours-wrap');
-  if (loc.opening_hours) {
-    document.getElementById('sh-hours-text').textContent = loc.opening_hours;
-    document.getElementById('sh-status').innerHTML = checkOpenStatus(loc.opening_hours);
-    hoursWrap.style.display = 'flex';
-  } else {
-    hoursWrap.style.display = 'none';
+  // 4. Món tủ (Must try)
+  var mustHtml = '';
+  if (must_try) {
+    mustHtml = `
+      <div style="font-size: 13.5px; color: #E64A19; font-weight: 700; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 6px; background: #FFF3E0; padding: 10px 14px; border-radius: 12px; line-height: 1.4;">
+          <i class="ri-star-smile-fill" style="font-size: 18px; margin-top: -2px;"></i> 
+          <span>${must_try}</span>
+      </div>`;
   }
 
-  // 4. Description
-  var descEl = document.getElementById('sh-desc');
-  if (desc) {
-    descEl.textContent = desc;
-    descEl.style.display = 'block';
-  } else {
-    descEl.style.display = 'none';
-  }
-
-  // 5. Utility Grid
-  var hasUtil = false;
-  if (loc.phone) { document.getElementById('sh-phone-link').href = 'tel:' + String(loc.phone).replace(/[^0-9]/g, ''); document.getElementById('sh-phone-link').textContent = loc.phone; document.getElementById('util-phone').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-phone').style.display = 'none'; }
-
-  var typeStr = 'Tự do';
-  if (loc.type === 'Take-Away') typeStr = 'Chỉ bán mang đi';
-  else if (loc.type === 'Dine-In') typeStr = 'Phục vụ tại chỗ';
-  else if (loc.type === 'Online-Only') typeStr = 'Chỉ bán Online / Bếp đêm';
-  else if (loc.type === 'Both') typeStr = 'Tại chỗ & Mang đi';
-  document.getElementById('sh-type').textContent = typeStr;
-  document.getElementById('util-type').style.display = 'flex';
-  hasUtil = true;
-
-  if (loc.payment_methods) { document.getElementById('sh-payment').textContent = fixUtf8(loc.payment_methods); document.getElementById('util-payment').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-payment').style.display = 'none'; }
-  if (loc.parking_info) { document.getElementById('sh-parking').textContent = fixUtf8(loc.parking_info); document.getElementById('util-parking').style.display = 'flex'; hasUtil = true; } else { document.getElementById('util-parking').style.display = 'none'; }
-  document.getElementById('sh-utility-card').style.display = hasUtil ? 'grid' : 'none';
-
-  // 6. Must Try
-  var mustWrap = document.getElementById('sh-must-wrap');
-  var tagsBox = document.getElementById('sh-tags');
-  var musts = (must_try || '').split(',').filter(function (s) { return s.trim(); });
-  if (musts.length) {
-    mustWrap.style.display = 'block';
-    tagsBox.innerHTML = musts.map(function (m) { return '<span class="must-tag-pill">' + fixUtf8(m) + '</span>'; }).join('');
-  } else {
-    mustWrap.style.display = 'none';
-  }
-
-  // 7. Actions Grid
-  var row1 = document.getElementById('sh-row-1');
-  var row2 = document.getElementById('sh-row-2');
-
+  // 5. Khối Nút Hành động chính
   var mapLnk = loc.map_url || ('https://www.google.com/maps/dir/?api=1&destination=' + loc.lat + ',' + loc.lng);
-  var btn1Html = '<a href="' + mapLnk + '" target="_blank" class="sh-btn primary"><svg viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg> Chỉ đường</a>';
-  if (loc.video_url) btn1Html += '<a href="' + loc.video_url + '" target="_blank" class="sh-btn secondary"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Review</a>';
-  row1.innerHTML = btn1Html;
-  row1.style.gridTemplateColumns = loc.video_url ? '1fr 1fr' : '1fr';
-
-  var btn2Html = '';
-  if (loc.shopeefood_link) btn2Html += '<a href="' + loc.shopeefood_link + '" target="_blank" class="sh-btn shopee">🧡 ShopeeFood</a>';
-  if (loc.grab_link) btn2Html += '<a href="' + loc.grab_link + '" target="_blank" class="sh-btn grab">💚 GrabFood</a>';
-  if (btn2Html) {
-    row2.innerHTML = btn2Html;
-    row2.style.display = 'grid';
-    row2.style.gridTemplateColumns = (loc.shopeefood_link && loc.grab_link) ? '1fr 1fr' : '1fr';
-  } else {
-    row2.style.display = 'none';
+  var buttonsHtml = `<a href="${mapLnk}" target="_blank" class="glass-btn primary"><i class="ri-direction-fill"></i> Chỉ đường</a>`;
+  if (loc.video_url) {
+    buttonsHtml += `<a href="${loc.video_url}" target="_blank" class="glass-btn secondary"><i class="ri-play-circle-fill" style="color:#E64A19;"></i> Review</a>`;
   }
 
-  document.getElementById('loc-sheet').classList.add('open');
-  // Ẩn danh sách quán bên phải khi đang xem chi tiết 1 quán (tránh chồng lấn trên desktop)
+  // 6. Nút Đặt đồ ăn (ShopeeFood, GrabFood)
+  var appBtnsHtml = '';
+  if (loc.shopeefood_link) appBtnsHtml += `<a href="${loc.shopeefood_link}" target="_blank" class="glass-btn" style="background:#fff3ed; color:#ea580c; border:1px solid #fed7aa; flex:1; font-size:13px;">🧡 ShopeeFood</a>`;
+  if (loc.grab_link) appBtnsHtml += `<a href="${loc.grab_link}" target="_blank" class="glass-btn" style="background:#e6f7ed; color:#16a34a; border:1px solid #bbf7d0; flex:1; font-size:13px;">💚 GrabFood</a>`;
+  if (appBtnsHtml) {
+    buttonsHtml += `<div style="display:flex; gap:12px; width:100%; margin-top:12px;">${appBtnsHtml}</div>`;
+  }
+
+  // 7. Icon Tim (Fav) SVG giữ nguyên style tương tác cũ
+  var favClass = isFav(loc.id) ? 'liked' : '';
+  var favSvg = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+
+  // 8. Ráp HTML lại
+  var sheetContent = `
+    <div class="glass-map-card">
+        <div class="glass-card-header" style="background-image: url('${imgUrl}');">
+            <div class="glass-card-badge">${badgeIcon} ${badgeName}</div>
+            
+            <!-- Nhóm nút góc phải trên ảnh -->
+            <div style="position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 10;">
+                <button class="glass-icon-btn ${favClass}" id="sh-fav-btn" onclick="toggleFavLocSheet()">
+                    ${favSvg}
+                </button>
+                <button class="glass-icon-btn share" onclick="shareCurrentLocation()">
+                    <i class="ri-share-forward-fill"></i>
+                </button>
+                <button class="glass-icon-btn close" onclick="closeSheet()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="glass-card-body">
+            <h3 class="glass-card-title">${name}</h3>
+            <p class="glass-card-address">
+                <i class="ri-map-pin-2-fill"></i> ${loc.address || 'Đà Nẵng'}
+            </p>
+            
+            ${mustHtml}
+            
+            <div class="glass-card-info-row">
+                ${hoursHtml}
+                <span class="glass-info-pill"><i class="ri-money-dollar-circle-line"></i> ${loc.price_range || 'Đang cập nhật'}</span>
+                ${statusHtml}
+            </div>
+            
+            <div class="glass-card-actions" style="flex-wrap: wrap;">
+                ${buttonsHtml}
+            </div>
+        </div>
+    </div>
+  `;
+
+  // 9. Gán vào DOM & Thiết lập lại Container
+  var sheetEl = document.getElementById('loc-sheet');
+  sheetEl.innerHTML = sheetContent;
+
+  // Hack CSS xóa padding mặc định của loc-sheet để thẻ tràn viền màn hình (Edge-to-edge)
+  sheetEl.style.padding = '0';
+  sheetEl.style.background = 'transparent';
+  sheetEl.style.border = 'none';
+  sheetEl.style.boxShadow = 'none';
+
+  sheetEl.classList.add('open');
+
+  // Ẩn sidebar trên desktop khi mở quán
   var sb = document.getElementById('desktop-sidebar');
   if (sb) sb.style.display = 'none';
 }
-
 function closeSheet() {
   document.getElementById('loc-sheet').classList.remove('open');
   // Hiện lại danh sách quán bên phải khi đóng chi tiết (chỉ khi đang ở desktop split-view)
