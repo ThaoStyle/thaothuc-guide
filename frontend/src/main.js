@@ -2247,18 +2247,113 @@ function mobileListGoTo(idx) {
   }, 350);
 }
 
+// function renderMobileList(locs) {
+//   var countEl = document.getElementById('mobile-list-count');
+//   var countSheetEl = document.getElementById('mobile-sheet-count');
+//   var btn = document.getElementById('mobile-list-btn');
+//   if (btn) btn.style.display = 'flex';
+//   var num = locs ? locs.length : 0;
+//   var displayNum = num > 999 ? (num / 1000).toFixed(1).replace('.0', '') + 'k' : num;
+//   if (countEl) countEl.textContent = displayNum;
+//   if (countSheetEl) countSheetEl.textContent = num;
+
+//   var content = document.getElementById('mobile-list-content');
+//   if (!content) return;
+//   if (!Array.isArray(locs) || !locs.length) {
+//     content.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
+//     return;
+//   }
+
+//   var uLat = userMarker ? userMarker.getLatLng().lat : null;
+//   var uLng = userMarker ? userMarker.getLatLng().lng : null;
+//   var hasGPS = !!(uLat && uLng);
+
+//   var gpsStatus = document.getElementById('mobile-list-gps-status');
+//   if (gpsStatus) gpsStatus.style.display = hasGPS ? 'flex' : 'none';
+
+//   var sortedLocs = locs.map(function (loc) {
+//     var dist = null;
+//     if (hasGPS) {
+//       var c = parseCoord(loc.lat, loc.lng);
+//       if (c.lat && c.lng) {
+//         dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
+//       }
+//     }
+//     return { loc: loc, originalIdx: allLocs.indexOf(loc), dist: dist };
+//   });
+
+//   if (hasGPS) {
+//     sortedLocs.sort(function (a, b) {
+//       var da = a.dist !== null ? a.dist : 99999;
+//       var db = b.dist !== null ? b.dist : 99999;
+//       return da - db;
+//     });
+//   }
+
+//   var rankColors = ['#f59e0b', '#94a3b8', '#b45309'];
+//   content.innerHTML = sortedLocs.map(function (item, i) {
+//     var loc = item.loc;
+//     var idx = item.originalIdx;
+//     var img = loc.image_url || '';
+//     var thumb = img ? '<img src="' + img + '" loading="lazy" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>' : '<div style="width:60px;height:60px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">' + (loc.emoji || '🍜') + '</div>';
+
+//     var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
+//     var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:' + badge.color + ';background:' + badge.color + '20;padding:2px 7px;border-radius:10px;margin-right:6px;">' + getBadgeIconHtml(loc.badge_type) + badge.text + '</span>';
+
+//     var isNear = false;
+//     var distHtml = '';
+//     if (hasGPS && item.dist !== null) {
+//       isNear = item.dist < 1;
+//       distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
+//         + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
+//         + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
+//     }
+
+//     var rankHtml = '';
+//     if (hasGPS && i < 3) {
+//       rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:' + rankColors[i] + ';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:10;">' + (i + 1) + '</div>';
+//     }
+
+//     var bgStyle = (isNear && i === 0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
+
+//     return '<div class="desktop-loc-card" style="position:relative;' + bgStyle + '" onclick="mobileListGoTo(' + idx + ')">'
+//       + rankHtml
+//       + thumb
+//       + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (loc.name || '') + '</span>' + distHtml + '</div>'
+//       + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">' + badgeHtml + '<span>' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</span></div></div>'
+//       + '</div>';
+//   }).join('');
+// }
 function renderMobileList(locs) {
   var countEl = document.getElementById('mobile-list-count');
   var countSheetEl = document.getElementById('mobile-sheet-count');
   var btn = document.getElementById('mobile-list-btn');
   if (btn) btn.style.display = 'flex';
+
   var num = locs ? locs.length : 0;
   var displayNum = num > 999 ? (num / 1000).toFixed(1).replace('.0', '') + 'k' : num;
   if (countEl) countEl.textContent = displayNum;
   if (countSheetEl) countSheetEl.textContent = num;
 
-  var content = document.getElementById('mobile-list-content');
+  // Lấy container mới
+  var content = document.getElementById('ml-content') || document.querySelector('#mobile-list-sheet .sheet-content');
   if (!content) return;
+
+  // Cập nhật Tiêu đề và Icon tự động
+  var titleEl = document.getElementById('ml-title');
+  var iconEl = document.getElementById('ml-icon');
+  if (titleEl) {
+    titleEl.textContent = (activeFilter !== 'all' && activeFilter !== 'near' && activeFilter !== 'fav')
+      ? activeFilter + ' (' + num + ')'
+      : 'Danh sách quán (' + num + ')';
+  }
+  if (iconEl) {
+    var fIcon = '<i class="ri-store-2-fill"></i>';
+    if (activeFilter === 'Ăn Vặt / Đường Phố') fIcon = '<i class="ri-fire-fill"></i>';
+    else if (activeFilter === 'Cà Phê / Đồ Uống') fIcon = '<i class="ri-cup-fill"></i>';
+    iconEl.innerHTML = fIcon;
+  }
+
   if (!Array.isArray(locs) || !locs.length) {
     content.innerHTML = '<div style="padding:32px 20px;text-align:center;color:var(--sl);font-size:13px;font-weight:600;"><span style="font-size:28px;display:block;margin-bottom:8px;">😔</span>Không tìm thấy quán nào.</div>';
     return;
@@ -2275,9 +2370,7 @@ function renderMobileList(locs) {
     var dist = null;
     if (hasGPS) {
       var c = parseCoord(loc.lat, loc.lng);
-      if (c.lat && c.lng) {
-        dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
-      }
+      if (c.lat && c.lng) dist = haversineDistanceKm(uLat, uLng, c.lat, c.lng);
     }
     return { loc: loc, originalIdx: allLocs.indexOf(loc), dist: dist };
   });
@@ -2290,41 +2383,38 @@ function renderMobileList(locs) {
     });
   }
 
-  var rankColors = ['#f59e0b', '#94a3b8', '#b45309'];
   content.innerHTML = sortedLocs.map(function (item, i) {
     var loc = item.loc;
     var idx = item.originalIdx;
-    var img = loc.image_url || '';
-    var thumb = img ? '<img src="' + img + '" loading="lazy" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'"/>' : '<div style="width:60px;height:60px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">' + (loc.emoji || '🍜') + '</div>';
+    var img = loc.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200';
 
-    var badge = BADGE_LABELS[loc.badge_type] || BADGE_LABELS['spot'];
-    var badgeHtml = '<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;color:' + badge.color + ';background:' + badge.color + '20;padding:2px 7px;border-radius:10px;margin-right:6px;">' + getBadgeIconHtml(loc.badge_type) + badge.text + '</span>';
+    var statusBadge = '';
+    if (loc.badge_type === 'approved') statusBadge = '<div class="badge-approved">🏆 Approved</div>';
+    else if (loc.badge_type === 'spot') statusBadge = '<div class="badge-approved" style="background:#F1F5F9; color:#475569;">📍 Spot</div>';
+    else if (loc.badge_type === 'heritage') statusBadge = '<div class="badge-approved" style="background:#FFF7ED; color:#D97706;">👑 Heritage</div>';
 
-    var isNear = false;
     var distHtml = '';
     if (hasGPS && item.dist !== null) {
-      isNear = item.dist < 1;
-      distHtml = '<span style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;'
-        + (isNear ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:var(--sl);')
-        + '">' + (isNear ? '🟢 ' : '📍 ') + item.dist.toFixed(1) + ' km</span>';
+      distHtml = '<div class="badge-dist"><i class="ri-map-pin-fill" style="color:#EF4444;"></i> ' + item.dist.toFixed(1) + ' km</div>';
     }
 
-    var rankHtml = '';
-    if (hasGPS && i < 3) {
-      rankHtml = '<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:' + rankColors[i] + ';color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:10;">' + (i + 1) + '</div>';
-    }
+    var rankClass = '';
+    if (i === 0) rankClass = 'rank-1';
+    else if (i === 1) rankClass = 'rank-2';
+    else if (i === 2) rankClass = 'rank-3';
 
-    var bgStyle = (isNear && i === 0) ? 'background: linear-gradient(135deg, #fff7ed, #fff);' : '';
-
-    return '<div class="desktop-loc-card" style="position:relative;' + bgStyle + '" onclick="mobileListGoTo(' + idx + ')">'
-      + rankHtml
-      + thumb
-      + '<div style="flex:1;min-width:0;"><div class="desktop-loc-card-name" style="display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding-right:24px;"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (loc.name || '') + '</span>' + distHtml + '</div>'
-      + '<div class="desktop-loc-card-sub" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">' + badgeHtml + '<span>' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</span></div></div>'
-      + '</div>';
-  }).join('');
+    return '<div class="list-card" onclick="mobileListGoTo(' + idx + ')">'
+      + '<img src="' + img + '" class="lc-img" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200\'"/>'
+      + '<div class="lc-body">'
+      + '<div class="lc-row-1">'
+      + '<div class="lc-title">' + (loc.name || '') + '</div>'
+      + '<div class="lc-badges">' + distHtml + '<div class="badge-rank ' + rankClass + '">' + (i + 1) + '</div></div>'
+      + '</div>'
+      + '<div class="lc-row-2">' + statusBadge + '</div>'
+      + '<div class="lc-desc">' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</div>'
+      + '</div></div>';
+  }).join('') + '<div style="height: 40px;"></div>';
 }
-
 function desktopSidebarGoTo(idx) {
   var loc = allLocs[idx];
   if (!loc) return;
@@ -2417,7 +2507,7 @@ function loadMarkers(locs, skipFitBounds) {
 function filterMap(f, btn, skipFitBounds) {
   activeFilter = f;
   if (btn) {
-    document.querySelectorAll('.pill, .s-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.pill, .s-filter-btn, .f-pill').forEach(function (b) { b.classList.remove('active'); });
     btn.classList.add('active');
   }
 
@@ -3128,54 +3218,52 @@ window.toggleFavLocSheet = function () {
 // ========================================================
 // TÍNH NĂNG VUỐT XUỐNG ĐỂ TẮT (SWIPE TO DISMISS)
 // ========================================================
-function enableSwipeDownToClose(wrapperId, cardSelector, closeAction) {
+// ========================================================
+// TÍNH NĂNG VUỐT XUỐNG ĐỂ TẮT MƯỢT MÀ V4.2 (Bản Hoàn Hảo)
+// ========================================================
+function enableSmoothSwipeClose(wrapperId, headerSelector, closeAction) {
   var wrapper = document.getElementById(wrapperId);
   if (!wrapper) return;
 
-  // Nếu có class con (cardSelector), tìm thẻ đó. Nếu không, lấy chính vỏ ngoài.
-  var card = cardSelector ? wrapper.querySelector(cardSelector) : wrapper;
-  if (!card) return;
-
+  var triggerArea = wrapper.querySelector(headerSelector) || wrapper;
   var startY = 0, currentY = 0, isDragging = false;
 
-  card.addEventListener('touchstart', function (e) {
-    // Chỉ cho phép vuốt tắt nếu nội dung đang ở trên cùng (chưa cuộn)
-    if (card.scrollTop > 5) return;
+  triggerArea.addEventListener('touchstart', function (e) {
+    if (wrapper.scrollTop > 5) return;
+
+    // BẢN FIX CUỐI CÙNG: Nếu ngón tay đang chạm vào khu vực Bộ Lọc (filter-row) 
+    // thì BỎ QUA lệnh vuốt thẻ, để người dùng cuộn ngang bộ lọc thoải mái!
+    if (e.target.closest('.filter-row')) return;
 
     startY = e.touches[0].clientY;
+    currentY = startY; // Xóa bộ nhớ chạm cũ
     isDragging = true;
-    card.style.transition = 'none'; // Tắt animation để vuốt bám theo ngón tay
+    wrapper.style.transition = 'none';
   }, { passive: true });
 
-  card.addEventListener('touchmove', function (e) {
+  triggerArea.addEventListener('touchmove', function (e) {
     if (!isDragging) return;
     currentY = e.touches[0].clientY;
     var deltaY = currentY - startY;
 
-    // Chỉ phản hồi khi kéo hướng XUỐNG
     if (deltaY > 0) {
-      card.style.transform = 'translateY(' + deltaY + 'px)';
-      // Chặn tính năng cuộn mặc định của trình duyệt để không bị giật
+      wrapper.style.transform = 'translateY(' + deltaY + 'px)';
       if (e.cancelable) e.preventDefault();
     }
   }, { passive: false });
 
-  card.addEventListener('touchend', function (e) {
+  triggerArea.addEventListener('touchend', function (e) {
     if (!isDragging) return;
     isDragging = false;
     var deltaY = currentY - startY;
 
-    // Bật lại hiệu ứng mượt khi nhả tay
-    card.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    wrapper.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
 
     if (deltaY > 100) {
-      // Nếu vuốt xuống đủ mạnh/đủ xa -> Kích hoạt lệnh Đóng
-      closeAction();
-      // Đợi tắt xong thì reset vị trí về mặc định cho lần mở sau
-      setTimeout(function () { card.style.transform = ''; }, 300);
+      if (closeAction) closeAction();
+      setTimeout(function () { wrapper.style.transform = ''; }, 350);
     } else {
-      // Nếu chỉ vuốt nhẹ rồi nhả -> Bật nảy thẻ lại vị trí cũ
-      card.style.transform = '';
+      wrapper.style.transform = '';
     }
   });
 }
@@ -3183,12 +3271,16 @@ function enableSwipeDownToClose(wrapperId, cardSelector, closeAction) {
 // Khởi chạy kích hoạt Swipe ngay khi trang web đã tải xong DOM
 window.addEventListener('DOMContentLoaded', function () {
   setTimeout(function () {
-    // Áp dụng cho Thẻ quán ăn (Bottom Sheet)
-    enableSwipeDownToClose('loc-sheet', null, closeSheet);
+    // Thẻ chi tiết Quán
+    enableSmoothSwipeClose('loc-sheet', '.glass-card-header', closeSheet);
 
-    // Áp dụng cho Thẻ công thức nấu ăn (Modal)
-    enableSwipeDownToClose('m-recipe-detail', '.modal-card', function () {
+    // Thẻ công thức nấu ăn
+    enableSmoothSwipeClose('m-recipe-detail', '.modal-card', function () {
       closeModal('m-recipe-detail');
     });
+
+    // TRẢ LẠI vùng vuốt cho toàn bộ khối Header (Bao gồm cả thanh vạch xám Drag-Pill)
+    enableSmoothSwipeClose('mobile-list-sheet', '#mobile-list-header', closeMobileList);
+
   }, 1000);
 });

@@ -294,7 +294,7 @@
 
 
 
-    <!-- ── MOBILE LIST BOTTOM SHEET ── -->
+    <!-- ── MOBILE LIST BOTTOM SHEET ──
     <div class="bottom-sheet" id="mobile-list-sheet">
       <div style="padding:12px;display:flex;justify-content:center;cursor:pointer;" onclick="closeMobileList()">
         <div style="width:40px;height:5px;background:#cbd5e1;border-radius:999px;"></div>
@@ -336,8 +336,46 @@
         </div>
       </div>
       <div class="sheet-content" id="mobile-list-content"></div>
-    </div>
+    </div> -->
+    <!-- ── MOBILE LIST BOTTOM SHEET (GLASSMORPHISM V4) ── -->
+    <div class="mobile-list-sheet" id="mobile-list-sheet">
 
+      <!-- HEADER KÍNH MỜ XUYÊN THẤU -->
+      <div class="sheet-top" id="mobile-list-header">
+        <div class="drag-pill"></div>
+
+        <div class="sheet-header-content">
+          <div class="title-group">
+            <div class="s-icon" id="ml-icon"><i class="ri-store-2-fill"></i></div>
+            <div class="title-text">
+              <h3 id="ml-title">Danh sách quán (<span id="mobile-sheet-count">0</span>)</h3>
+
+              <!-- Trạng thái GPS (JS cũ sẽ tự động ẩn/hiện cái này) -->
+              <div class="gps-text" id="mobile-list-gps-status" style="display:none;">
+                <i class="ri-radar-line"></i> Ưu tiên hiển thị quán gần nhất
+              </div>
+            </div>
+          </div>
+          <button class="sheet-close" onclick="closeMobileList()"><i class="ri-close-line"></i></button>
+        </div>
+
+        <!-- BỘ LỌC CHỨC NĂNG (Giữ nguyên logic click cũ, đắp CSS mới) -->
+        <div class="filter-row">
+          <div class="f-pill" id="btn-near" onclick="toggleFilterMap('near', this)">
+            <i class="ri-map-pin-user-line"></i> Gần tôi
+          </div>
+          <div class="f-pill" id="btn-price" onclick="toggleFilterMap('price', this)">
+            <i class="ri-money-dollar-circle-line"></i> Giá tiền
+          </div>
+          <div class="f-pill" id="btn-fav" onclick="toggleFilterMap('fav', this)">
+            <i class="ri-heart-3-line"></i> Yêu thích
+          </div>
+        </div>
+      </div>
+
+      <!-- KHU VỰC CUỘN DANH SÁCH (JS sẽ tự động đổ các thẻ quán ăn vào đây) -->
+      <div class="sheet-content" id="ml-content"></div>
+    </div>
     <!-- ── LOCATION DETAIL BOTTOM SHEET ── -->
     <div class="bottom-sheet" id="loc-sheet">
       <div class="sheet-drag"></div>
