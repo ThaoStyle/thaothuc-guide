@@ -3125,3 +3125,70 @@ window.toggleFavLocSheet = function () {
     else favBtn.classList.remove('liked');
   }
 };
+// ========================================================
+// TÍNH NĂNG VUỐT XUỐNG ĐỂ TẮT (SWIPE TO DISMISS)
+// ========================================================
+function enableSwipeDownToClose(wrapperId, cardSelector, closeAction) {
+  var wrapper = document.getElementById(wrapperId);
+  if (!wrapper) return;
+
+  // Nếu có class con (cardSelector), tìm thẻ đó. Nếu không, lấy chính vỏ ngoài.
+  var card = cardSelector ? wrapper.querySelector(cardSelector) : wrapper;
+  if (!card) return;
+
+  var startY = 0, currentY = 0, isDragging = false;
+
+  card.addEventListener('touchstart', function (e) {
+    // Chỉ cho phép vuốt tắt nếu nội dung đang ở trên cùng (chưa cuộn)
+    if (card.scrollTop > 5) return;
+
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    card.style.transition = 'none'; // Tắt animation để vuốt bám theo ngón tay
+  }, { passive: true });
+
+  card.addEventListener('touchmove', function (e) {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    var deltaY = currentY - startY;
+
+    // Chỉ phản hồi khi kéo hướng XUỐNG
+    if (deltaY > 0) {
+      card.style.transform = 'translateY(' + deltaY + 'px)';
+      // Chặn tính năng cuộn mặc định của trình duyệt để không bị giật
+      if (e.cancelable) e.preventDefault();
+    }
+  }, { passive: false });
+
+  card.addEventListener('touchend', function (e) {
+    if (!isDragging) return;
+    isDragging = false;
+    var deltaY = currentY - startY;
+
+    // Bật lại hiệu ứng mượt khi nhả tay
+    card.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+
+    if (deltaY > 100) {
+      // Nếu vuốt xuống đủ mạnh/đủ xa -> Kích hoạt lệnh Đóng
+      closeAction();
+      // Đợi tắt xong thì reset vị trí về mặc định cho lần mở sau
+      setTimeout(function () { card.style.transform = ''; }, 300);
+    } else {
+      // Nếu chỉ vuốt nhẹ rồi nhả -> Bật nảy thẻ lại vị trí cũ
+      card.style.transform = '';
+    }
+  });
+}
+
+// Khởi chạy kích hoạt Swipe ngay khi trang web đã tải xong DOM
+window.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
+    // Áp dụng cho Thẻ quán ăn (Bottom Sheet)
+    enableSwipeDownToClose('loc-sheet', null, closeSheet);
+
+    // Áp dụng cho Thẻ công thức nấu ăn (Modal)
+    enableSwipeDownToClose('m-recipe-detail', '.modal-card', function () {
+      closeModal('m-recipe-detail');
+    });
+  }, 1000);
+});
