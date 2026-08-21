@@ -2409,7 +2409,7 @@ function renderMobileList(locs) {
       + '<div class="lc-badges">' + distHtml + '<div class="badge-rank ' + rankClass + '">' + (i + 1) + '</div></div>'
       + '</div>'
       + '<div class="lc-row-2">' + statusBadge + '</div>'
-      + '<div class="lc-desc">' + (loc.category || '') + (loc.must_try ? ' · ' + loc.must_try : '') + '</div>'
+      + '<div class="lc-desc">' + (loc.category || '') + '</div>'
       + '</div></div>';
   }).join('') + '<div style="height: 40px;"></div>';
 }

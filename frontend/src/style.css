@@ -2211,12 +2211,12 @@ body.desktop-map-view #mobile-list-sheet {
   gap: 2px;
 } */
 .lc-title {
-  font-size: 16px;
+  font-size: 14.5px;
+  /* Đã thu nhỏ xuống một chút để chữ có không gian thở */
   font-weight: 700;
   color: #0F172A;
   line-height: 1.3;
   margin-bottom: 4px;
-  /* BẢN FIX: Ép tiêu đề tự giới hạn không gian, chừa chỗ cho huy hiệu */
   flex: 1;
   min-width: 0;
   padding-right: 8px;
@@ -2295,10 +2295,10 @@ body.desktop-map-view #mobile-list-sheet {
   font-size: 13px;
   color: #64748B;
   font-weight: 500;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  /* Bắt buộc chỉ hiển thị 1 dòng, nếu quá dài sẽ tự có dấu ... để giữ chiều cao các thẻ luôn bằng nhau */
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.4;
 }
 
