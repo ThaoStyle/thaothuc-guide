@@ -761,7 +761,9 @@ function openRecipeDetail(id) {
   var r = RECIPES_DATA.find(function (item) { return item.id === id; });
   if (!r) return;
   currentSheetRecipeId = r.id;
-
+  // Set ảnh bìa
+  var coverEl = document.getElementById('rcp-cover-img');
+  if (coverEl) coverEl.style.backgroundImage = "url('" + (r.image || r.image_url || '') + "')";
   document.getElementById('rcp-cat').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 10H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1zm-1.5-2a1 1 0 0 0 .5-.86v-1a1.5 1.5 0 0 0-1.5-1.5H5.5A1.5 1.5 0 0 0 4 6.14v1a1 1 0 0 0 .5.86h15z"/></svg> ' + r.category;
   document.getElementById('rcp-title').textContent = r.name;
 
@@ -3273,10 +3275,13 @@ window.addEventListener('DOMContentLoaded', function () {
     enableSmoothSwipeClose('loc-sheet', '.glass-card-header', closeSheet);
 
     // Thẻ công thức nấu ăn
-    enableSmoothSwipeClose('m-recipe-detail', '.modal-card', function () {
+    // enableSmoothSwipeClose('m-recipe-detail', '.modal-card', function () {
+    //   closeModal('m-recipe-detail');
+    // });
+    // Thẻ công thức nấu ăn
+    enableSmoothSwipeClose('recipe-modal-card', '#rcp-fixed-top-header', function () {
       closeModal('m-recipe-detail');
     });
-
     // TRẢ LẠI vùng vuốt cho toàn bộ khối Header (Bao gồm cả thanh vạch xám Drag-Pill)
     enableSmoothSwipeClose('mobile-list-sheet', '#mobile-list-header', closeMobileList);
 

@@ -2581,6 +2581,42 @@ body.desktop-map-view #mobile-list-sheet {
   display: flex;
 }
 
+/* ── MODAL CÔNG THỨC: LAYOUT FIXED HEADER + SCROLLABLE BODY ── */
+.rcp-modal-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  max-height: 88vh;
+}
+
+#rcp-fixed-top-header {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, .98);
+  /* Không có padding ở đây — ảnh cần tràn viền */
+  /* Không có touch-action: none — để scroll body hoạt động */
+  border-bottom: 1px solid rgba(15, 23, 42, .05);
+}
+
+#rcp-fixed-top-header:active {
+  cursor: grabbing;
+}
+
+.rcp-scrollable-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 22px calc(28px + var(--sb));
+  background: #F8FAFC;
+}
+
+/* ── COVER IMAGE MODAL CÔNG THỨC ── */
+#rcp-cover-img {
+  border-radius: 32px 32px 0 0;
+  overflow: hidden;
+  transition: background-image 0.3s ease;
+}
+
 .modal-card {
   background: rgba(255, 255, 255, .95);
   backdrop-filter: blur(30px);
