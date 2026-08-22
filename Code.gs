@@ -1,13 +1,23 @@
 function doGet(e) {
-  // Deep-link: ?id=<id location hoặc recipe>&type=recipe (bỏ &type nếu là địa điểm)
-  var tpl = HtmlService.createTemplateFromFile('Index');
-  tpl.deepLinkId = (e && e.parameter && e.parameter.id) ? String(e.parameter.id) : '';
-  tpl.deepLinkType = (e && e.parameter && e.parameter.type) ? String(e.parameter.type) : '';
-  tpl.scriptUrl = ScriptApp.getService().getUrl();
-  return tpl.evaluate()
-    .setTitle('Thao Thức Guide – Cẩm Nang Ẩm Thực & Lifestyle')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover');
+  var email = '';
+  try { email = Session.getActiveUser().getEmail(); } catch (e1) {}
+  var ownerEmail = '';
+  try { ownerEmail = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getOwner().getEmail(); } catch (e2) {}
+
+  if (email && ownerEmail && email.toLowerCase() === ownerEmail.toLowerCase()) {
+    var tpl = HtmlService.createTemplateFromFile('Index');
+    return tpl.evaluate()
+      .setTitle('Thao Thuc Guide - Admin')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover');
+  }
+
+  return HtmlService.createHtmlOutput(
+    '<div style="font-family:sans-serif;padding:40px;text-align:center;">' +
+    '<h2>🔴 Truy cap bi tu choi</h2>' +
+    '<p>Ban can dang nhap dung tai khoan Google chu so huu de vao trang quan tri.</p>' +
+    '</div>'
+  );
 }
 
 function getAdminStatus() {
@@ -156,9 +166,9 @@ function resolveLatLngFromMapUrl(mapUrl) {
 function getFoodLocations() {
   try {
     var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Locations');
-    if (!sheet) return [];
+    if (!sheet) return [{id: 'err', name: 'Lỗi: Không tìm thấy sheet', lat: 16, lng: 108}];
     var data = sheet.getDataRange().getValues();
-    if (data.length <= 1) return [];
+    if (data.length <= 1) return [{id: 'err', name: 'Lỗi: Sheet trống (chỉ có header)', lat: 16, lng: 108}];
     var locations = [];
     for (var i = 1; i < data.length; i++) {
       var r = data[i];
@@ -311,7 +321,7 @@ function saveSuggestion(data) {
 function getSuggestions() {
   try {
     var sheet = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getSheetByName('Suggestions');
-    if (!sheet) return [];
+    if (!sheet) return [{ place_name: "Lỗi: Không tìm thấy sheet Suggestions" }];
     var data = sheet.getDataRange().getValues();
     if (data.length <= 1) return [];
     var list = [];
@@ -319,18 +329,18 @@ function getSuggestions() {
       var r = data[i];
       if (!r[1]) continue;
       list.push({
-        timestamp: r[0],
-        place_name: r[1],
-        address: r[2],
-        lat: r[3],
-        lng: r[4],
-        category: r[5],
-        must_try_notes: r[6]
+        timestamp: String(r[0]),
+        place_name: String(r[1]),
+        address: String(r[2]),
+        lat: String(r[3]),
+        lng: String(r[4]),
+        category: String(r[5]),
+        must_try_notes: String(r[6])
       });
     }
     return list;
   } catch (e) {
-    return [];
+    return [{ place_name: "Lỗi Backend: " + e.message }];
   }
 }
 

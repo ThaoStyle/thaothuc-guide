@@ -2727,7 +2727,7 @@ body.desktop-map-view #mobile-list-sheet {
 .input-box:focus {
   border-color: #FF7043;
   background: white;
-  box-shadow: 0 0 0 3px rgba(255, 112, 67, .12);
+  box-shadow: 0 0 0 4px rgba(255, 112, 67, 0.12);
 }
 
 .input-row {
@@ -4542,4 +4542,43 @@ body.desktop-mode .sheet-share-btn {
 #cook-search-clear:active {
   color: #FF7043;
   /* Đổi màu cam khi chạm vào */
+}
+
+/* Nút Ghost & Upload Mới */
+.btn-ghost {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--nv);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-bottom: 14px;
+}
+
+.btn-ghost:active {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.btn-upload {
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--nv);
+  border: 2px dashed rgba(255, 112, 67, 0.4);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-upload:active {
+  background: rgba(255, 112, 67, 0.05);
+  border-color: #FF7043;
 }

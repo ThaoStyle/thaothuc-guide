@@ -1,0 +1,36 @@
+const fs = require('fs');
+let code = fs.readFileSync('Code.gs', 'utf8');
+
+const newDoGet = `function doGet(e) {
+  var email = '';
+  try { email = Session.getActiveUser().getEmail(); } catch (e1) {}
+  var ownerEmail = '';
+  try { ownerEmail = SpreadsheetApp.openById("1AhW1i8IetVRIGSr8iVHPxuF31ZZc3hQtb88yzV0aQjg").getOwner().getEmail(); } catch (e2) {}
+
+  if (email && ownerEmail && email.toLowerCase() === ownerEmail.toLowerCase()) {
+    var tpl = HtmlService.createTemplateFromFile('Index');
+    tpl.deepLinkId = '';
+    tpl.deepLinkType = '';
+    tpl.scriptUrl = ScriptApp.getService().getUrl();
+    return tpl.evaluate()
+      .setTitle('Thao Thức Guide - Admin')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=3.0, viewport-fit=cover');
+  }
+
+  return HtmlService.createHtmlOutput(
+    '<div style="font-family:sans-serif;padding:40px;text-align:center;">' +
+    '<h2>🔴 Truy cập bị từ chối</h2>' +
+    '<p>Bạn cần đăng nhập đúng tài khoản Google chủ sở hữu để vào trang quản trị.</p>' +
+    '</div>'
+  );
+}`;
+
+let endIdx = code.indexOf('function getAdminStatus()');
+if (endIdx > 0) {
+  code = newDoGet + '\n\n' + code.substring(endIdx);
+  fs.writeFileSync('Code.gs', code, 'utf8');
+  console.log('Updated Code.gs successfully!');
+} else {
+  console.log('Could not find getAdminStatus');
+}

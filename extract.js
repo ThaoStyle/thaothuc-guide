@@ -1,5 +1,1 @@
-﻿const fs = require('fs');
-const html = fs.readFileSync('Index.html', 'utf8');
-const scriptMatches = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
-let allScript = scriptMatches.map(m => m[1]).join('\n');
-fs.writeFileSync('temp.js', allScript, 'utf8');
+const fs=require('fs'); const html=fs.readFileSync('Index.html','utf8'); const start=html.indexOf('id="page-admin"'); console.log(html.substring(start+3000, start + 6000));

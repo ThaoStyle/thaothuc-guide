@@ -9,8 +9,8 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <!-- Deep-link: id/type do doGet(e) trong code.gs bơm vào qua scriptlet GAS -->
 <script>
-var DEEP_LINK_ID = <?!= JSON.stringify(deepLinkId || '') ?>;
-var DEEP_LINK_TYPE = <?!= JSON.stringify(deepLinkType || '') ?>;
+var DEEP_LINK_ID = <?!= typeof deepLinkId !== 'undefined' ? JSON.stringify(deepLinkId) : '""' ?>;
+var DEEP_LINK_TYPE = <?!= typeof deepLinkType !== 'undefined' ? JSON.stringify(deepLinkType) : '""' ?>;
 var SCRIPT_URL = <?!= typeof scriptUrl !== 'undefined' ? JSON.stringify(scriptUrl) : '""' ?>;
 </script>
 
@@ -553,7 +553,7 @@ body.desktop-map-view #mobile-list-sheet{display:none!important;}
 .modal-h2{font-size:20px;font-weight:700;color:var(--nv);margin-bottom:8px;letter-spacing:-.01em;}
 .modal-p{font-size:13px;color:var(--sl);margin-bottom:20px;font-weight:400;}
 .input-box{width:100%;border:1px solid rgba(15,23,42,.14);border-radius:14px;padding:13px 16px;font-size:14px;font-family:Inter,sans-serif;color:var(--nv);background:rgba(255,255,255,.8);outline:none;resize:none;margin-bottom:12px;transition:all .2s;}
-.input-box:focus{border-color:#FF7043;background:white;box-shadow:0 0 0 3px rgba(255,112,67,.12);}
+.input-box:focus{border-color:#FF7043;background:white;box-shadow:0 0 0 4px rgba(255,112,67,.12);}
 .input-row{display:flex;gap:10px;}
 .input-row .input-box{flex:1;}
 .btn-submit{width:100%;background:linear-gradient(135deg,#FF7043,#E64A19);color:white;border-radius:16px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;box-shadow:0 8px 22px rgba(255,112,67,.35);border:none;transition:all .2s;}
@@ -948,7 +948,7 @@ body.desktop-mode .sheet-share-btn{ position:absolute; top:14px; right:56px; z-i
 @keyframes flashOrange { 0% { color: var(--nv); transform: scale(1.1); } 100% { color: var(--or); transform: scale(1); } }
 /* ---------------------------------- */
 
-</style>
+\n.btn-ghost { width: 100%; padding: 14px; border-radius: 14px; background: rgba(15, 23, 42, 0.04); color: var(--nv); border: 1px solid rgba(15, 23, 42, 0.08); font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 14px; }\n.btn-ghost:active { background: rgba(15, 23, 42, 0.08); }\n.btn-upload { padding: 12px 20px; border-radius: 12px; background: #fff; color: var(--nv); border: 2px dashed rgba(255, 112, 67, 0.4); font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }\n.btn-upload:active { background: rgba(255, 112, 67, 0.05); border-color: #FF7043; }\n</style>
 </head>
 <body>
 

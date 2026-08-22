@@ -605,14 +605,8 @@
       <div class="modal-h2" id="t-ms-h2">Gợi Ý Địa Điểm</div>
       <div class="modal-p" id="t-ms-p">Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!</div>
 
-      <button class="btn-submit" id="s-btn-gps"
-        style="margin-bottom:14px;background:var(--nv);width:100%;justify-content:center;display:flex;align-items:center;gap:8px;"
-        onclick="gpsForSuggest()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-        </svg>
+      <button type="button" class="btn-ghost" id="s-btn-gps" onclick="gpsForSuggest()" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <i class="ri-map-pin-user-fill" style="color: #FF7043; font-size: 1.25rem;"></i>
         <span id="t-ms-gps">Lấy vị trí GPS của tôi</span>
       </button>
       <div id="s-gps-badge"
@@ -631,17 +625,12 @@
       <select class="input-box" id="s-cat" style="cursor:pointer;"></select>
 
       <div style="margin-bottom:16px;">
-        <label style="font-size:14px;font-weight:900;color:var(--nv);display:block;margin-bottom:6px;"><svg
-            class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-            <circle cx="12" cy="13" r="4"></circle>
-          </svg> Ảnh Gợi Ý (Không Bắt Buộc):</label>
+        <label style="font-size:14px; font-weight:700; color:var(--nv); display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+          <i class="ri-camera-fill" style="color: #475569; font-size: 1.1rem;"></i> Ảnh Gợi Ý (Không Bắt Buộc):
+        </label>
         <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
-          <button type="button" class="btn-submit"
-            style="margin-top:0;background:var(--or);padding:12px 18px;font-size:15px;display:inline-flex;align-items:center;gap:8px;width:auto;"
-            onclick="document.getElementById('s-img-file').click();">
-            <span>📷 Chọn ảnh từ máy</span>
+          <button type="button" class="btn-upload" onclick="document.getElementById('s-img-file').click()">
+            <i class="ri-image-add-fill" style="font-size: 1.25rem; color: #FF7043;"></i> Chọn ảnh từ máy
           </button>
           <input type="file" id="s-img-file" accept="image/*" style="display:none;"
             onchange="handleImageFileSelect(this, 's-img', 's-img-preview')" />
@@ -657,8 +646,11 @@
       </div>
 
       <textarea class="input-box" id="s-note" rows="3" placeholder="Món phải thử, giá cả, ghi chú..."></textarea>
-      <button class="btn-submit" onclick="doSuggest()"><span id="t-ms-send">📤 Gửi gợi ý tới Thao Thức
-          Guide</span></button>
+      <button class="btn-submit" onclick="doSuggest()"
+        style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span id="t-ms-send"><i class="ri-send-plane-fill" style="font-size: 1.25rem;"></i> Gửi gợi ý tới Thao Thức
+          Guide</span>
+      </button>
     </div>
   </div>
 

@@ -162,7 +162,7 @@ var TR = {
     s0t: 'Chờ duyệt', s0d: 'Các quán nằm trong danh sách chuẩn bị lên lịch thẩm định.',
     mcok: '✓ Đã hiểu',
     msH: 'Gợi Ý Địa Điểm', msP: 'Bạn biết quán ngon? Chia sẻ với Thao Thức Guide nhé!',
-    gps: '📍 Lấy vị trí GPS của tôi', send: '🚀 Gửi gợi ý tới Thao Thức Guide',
+    gps: '📍 Lấy vị trí GPS của tôi', send: '<i class="ri-send-plane-fill" style="font-size: 1.25rem;"></i> Gửi gợi ý tới Thao Thức Guide',
     navd: UI_ICONS.pin + 'Chỉ đường', navv: UI_ICONS.play + 'Review', must: UI_ICONS.star + 'Món Phải Thử',
     bMap: 'Bản Đồ', bCook: 'Nấu Ăn',
     nameReq: 'Vui lòng nhập tên địa điểm', sent: '✅ Đã gửi gợi ý tới Thao Thức Guide! Cảm ơn bạn 💖',
@@ -297,16 +297,20 @@ function initCategories() {
     bar.appendChild(btn);
   });
 
-  // 2. Populate category <select> dropdowns (admin add + edit forms, suggest) — chỉ dùng danh mục Map Spots
+  // 2. Populate category <select> dropdowns
   var selectable = CATEGORIES.filter(function (c) { return !c.special; });
   ['s-cat'].forEach(function (id) {
     var sel = document.getElementById(id);
     if (!sel) return;
-    sel.innerHTML = '<option value="" disabled selected>📂 Chọn danh mục...</option>';
+
+    sel.innerHTML = '<option value="" disabled selected>Chọn danh mục...</option>';
+
     selectable.forEach(function (cat) {
       var opt = document.createElement('option');
       opt.value = cat.key;
-      opt.textContent = cat.emoji + ' ' + cat.vi;
+      // Mẹo: Tự động xóa thẻ HTML (<i>, <svg>) để lấy chữ thuần
+      var cleanEmoji = (cat.emoji || '').replace(/<[^>]*>?/gm, '').trim();
+      opt.textContent = (cleanEmoji ? cleanEmoji + ' ' : '') + (typeof lang !== 'undefined' && lang === 'en' ? cat.en : cat.vi);
       sel.appendChild(opt);
     });
   });
