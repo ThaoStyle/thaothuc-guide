@@ -707,7 +707,16 @@
           <div class="modal-p" id="rcp-meta">⏱️ 45 phút • 👨‍🍳 Dễ nấu</div>
           <div
             style="display:flex;justify-content:space-between;align-items:center;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:8px 12px;margin-top:12px;">
-            <span style="font-size:13px;font-weight:700;color:var(--nv);">Nguyên liệu:</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div
+                style="width:32px; height:32px; background:rgba(255,112,67,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#E64A19;">
+                <i class="ri-group-line" style="font-size:16px;"></i>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <span style="font-size:14px; font-weight:800; color:var(--nv); line-height:1.2;">Khẩu phần</span>
+                <span style="font-size:11.5px; font-weight:500; color:var(--sl);">Điều chỉnh số người</span>
+              </div>
+            </div>
             <div class="rcp-stepper">
               <button onclick="changeServings(-1)">-</button>
               <span id="servings-display">4 người</span>
@@ -719,6 +728,13 @@
 
       <!-- VÙNG 2: CUỘN ĐỘC LẬP -->
       <div class="rcp-scrollable-body">
+
+        <!-- TIÊU ĐỀ NGUYÊN LIỆU -->
+        <div
+          style="font-size:15px;font-weight:900;color:var(--nv);margin:12px 0 16px;display:flex;align-items:center;gap:6px;">
+          <i class="ri-shopping-basket-line" style="color:var(--or); font-size:18px;"></i> Nguyên Liệu:
+        </div>
+
         <div id="rcp-ing-list" style="display:flex;flex-direction:column;"></div>
 
         <div

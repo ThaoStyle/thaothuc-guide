@@ -4336,7 +4336,9 @@ body.desktop-mode .sheet-share-btn {
   padding: 10px;
 }
 
-/* Chế độ 3: List */
+/* =========================================
+   Chế độ 3: List (Bản Tối Ưu Bố Cục Khung Ảnh)
+   ========================================= */
 .view-list {
   display: flex !important;
   flex-direction: column;
@@ -4354,8 +4356,8 @@ body.desktop-mode .sheet-share-btn {
 }
 
 .view-list .rcp-img-wrap {
-  width: 85px;
-  height: 85px;
+  width: 90px;
+  height: 90px;
   aspect-ratio: unset;
   border-radius: 12px;
   flex-shrink: 0;
@@ -4367,12 +4369,46 @@ body.desktop-mode .sheet-share-btn {
 
 .view-list .rcp-body {
   padding: 0;
+  min-width: 0;
+  /* Lệnh cực kỳ quan trọng để chữ có thể bị cắt (ellipsis) trong flexbox */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
+/* 1. Khóa Tên món đúng 1 dòng */
 .view-list .rcp-title {
-  font-size: 14.5px;
+  font-size: 15px;
+  margin-bottom: 6px;
+  display: -webkit-box;
   -webkit-line-clamp: 1;
-  margin-bottom: 4px;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+}
+
+/* 2. Khóa Cụm Thẻ Tag (Time, People) trên 1 hàng ngang */
+.view-list .rcp-stats {
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.view-list .rcp-stat-item {
+  padding: 4px 6px;
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  /* Cho phép thẻ tự động co nhỏ nếu màn hình quá hẹp */
+}
+
+/* 3. Thu nhỏ nút Xem Video vừa xinh */
+.view-list .rcp-btn-play {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin-top: auto;
 }
 
 /* Nút Xem Thêm */

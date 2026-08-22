@@ -2343,9 +2343,13 @@ function renderMobileList(locs) {
   var titleEl = document.getElementById('ml-title');
   var iconEl = document.getElementById('ml-icon');
   if (titleEl) {
-    titleEl.textContent = (activeFilter !== 'all' && activeFilter !== 'near' && activeFilter !== 'fav')
-      ? activeFilter + ' (' + num + ')'
-      : 'Danh sách quán (' + num + ')';
+    // 1. Lọc lấy phần chữ (Tiêu đề)
+    var prefixText = (activeFilter !== 'all' && activeFilter !== 'near' && activeFilter !== 'fav')
+      ? activeFilter
+      : 'Danh sách quán';
+
+    // 2. Ép thêm thẻ HTML mang class pill-badge để tạo viền cam bo tròn cho con số
+    titleEl.innerHTML = prefixText + ' <span class="pill-badge" id="mobile-sheet-count" style="margin-left: 6px; vertical-align: middle; transform: translateY(-1px);">' + num + '</span>';
   }
   if (iconEl) {
     var fIcon = '<i class="ri-store-2-fill"></i>';
