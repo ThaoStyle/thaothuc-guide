@@ -1701,7 +1701,7 @@ body {
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: all .25s;
+  transition: transform 0.25s, box-shadow 0.25s, background-color 0.25s;
   border: none;
 }
 
@@ -4311,7 +4311,9 @@ body.desktop-mode .sheet-share-btn {
   aspect-ratio: 4/3;
 }
 
-/* Chế độ 2: Grid */
+/* =========================================
+   Chế độ 2: Grid (Tối ưu đồng đều 2 cột)
+   ========================================= */
 .view-grid {
   display: grid !important;
   grid-template-columns: 1fr 1fr;
@@ -4322,18 +4324,57 @@ body.desktop-mode .sheet-share-btn {
   flex: unset !important;
   max-width: none !important;
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .view-grid .rcp-img-wrap {
   aspect-ratio: 1/1;
 }
 
-.view-grid .rcp-title {
-  font-size: 13.5px;
-}
-
 .view-grid .rcp-body {
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.view-grid .rcp-title {
+  font-size: 13.5px;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+}
+
+.view-grid .rcp-stats {
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.view-grid .rcp-stat-item {
+  padding: 4px 6px;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+/* Lệnh ẩn thẻ "Số người" (thẻ thứ 2) */
+.view-grid .rcp-stat-item:nth-child(2) {
+  display: none !important;
+}
+
+.view-grid .rcp-btn-play {
+  margin-top: auto;
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 /* =========================================
