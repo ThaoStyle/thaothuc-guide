@@ -730,6 +730,16 @@ function renderRecipes() {
     });
   }
 
+  // BẮT ĐẦU ĐOẠN THÊM MỚI: Lọc theo Từ khóa tìm kiếm
+  var searchInput = document.getElementById('recipeSearchInput');
+  if (searchInput && searchInput.value.trim() !== '') {
+    var keyword = searchInput.value.trim().toLowerCase();
+    list = list.filter(function (r) {
+      return (r.name || '').toLowerCase().indexOf(keyword) !== -1;
+    });
+  }
+  // KẾT THÚC ĐOẠN THÊM MỚI
+
   if (list.length === 0) {
     grid.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--sl);font-weight:700;grid-column:1/-1;">Chưa có công thức nào thuộc danh mục này.</div>';
     return;
@@ -3332,3 +3342,25 @@ document.addEventListener('DOMContentLoaded', function () {
     window.switchRecipeView(savedMode);
   }
 });
+window.doRecipeSearch = function () {
+  var input = document.getElementById('recipeSearchInput');
+  var clearBtn = document.getElementById('cook-search-clear');
+
+  // Hiện dấu X nếu có chữ, ẩn đi nếu ô trống
+  if (clearBtn && input) {
+    clearBtn.style.display = input.value.length > 0 ? 'flex' : 'none';
+  }
+
+  renderRecipes(); // Lọc danh sách
+};
+
+// Hàm mới: Khi bấm dấu X
+window.clearRecipeSearch = function () {
+  var input = document.getElementById('recipeSearchInput');
+  var clearBtn = document.getElementById('cook-search-clear');
+
+  if (input) input.value = ''; // Xóa chữ
+  if (clearBtn) clearBtn.style.display = 'none'; // Ẩn dấu X đi
+
+  renderRecipes(); // Trả lại danh sách món ăn ban đầu
+};

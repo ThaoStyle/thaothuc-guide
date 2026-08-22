@@ -4483,3 +4483,63 @@ body.desktop-mode .sheet-share-btn {
   transform: scale(0.96);
   background-color: #FFE0D1 !important;
 }
+
+/* =========================================
+   THANH TÌM KIẾM TRANG CÔNG THỨC (COOK SEARCH)
+   ========================================= */
+.cook-search-bar {
+  margin: 0 0 16px 0;
+  background: #FFFFFF;
+  border-radius: 999px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.02);
+  transition: all 0.2s;
+}
+
+.cook-search-bar:focus-within {
+  box-shadow: 0 4px 20px rgba(255, 112, 67, 0.15);
+  border-color: rgba(255, 112, 67, 0.3);
+}
+
+.cook-search-bar i {
+  color: #FF7043;
+  font-size: 20px;
+}
+
+.cook-search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14.5px;
+  color: #0F172A;
+  background: transparent;
+}
+
+.cook-search-bar input::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+/* NÚT XÓA TRONG THANH SEARCH */
+#cook-search-clear {
+  background: none;
+  border: none;
+  color: #CBD5E1;
+  /* Màu xám nhạt hiện đại */
+  font-size: 20px;
+  padding: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+#cook-search-clear:hover,
+#cook-search-clear:active {
+  color: #FF7043;
+  /* Đổi màu cam khi chạm vào */
+}
