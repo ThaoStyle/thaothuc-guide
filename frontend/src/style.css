@@ -4257,3 +4257,152 @@ body.desktop-mode .sheet-share-btn {
   border: 1px solid #E2E8F0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
+/* =========================================
+   VIEW SWITCHER & 3 LAYOUTS (CAROUSEL, GRID, LIST)
+   ========================================= */
+.view-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.view-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  outline: none !important;
+}
+
+.view-btn.active {
+  background: white;
+  color: #FF7043;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Chế độ 1: Carousel */
+.view-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  flex-shrink: 0;
+}
+
+.view-carousel .recipe-card-glass {
+  flex: 0 0 82%;
+  scroll-snap-align: center;
+}
+
+.view-carousel .rcp-img-wrap {
+  aspect-ratio: 4/3;
+}
+
+/* Chế độ 2: Grid */
+.view-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.view-grid .recipe-card-glass {
+  flex: unset !important;
+  max-width: none !important;
+  border-radius: 16px;
+}
+
+.view-grid .rcp-img-wrap {
+  aspect-ratio: 1/1;
+}
+
+.view-grid .rcp-title {
+  font-size: 13.5px;
+}
+
+.view-grid .rcp-body {
+  padding: 10px;
+}
+
+/* Chế độ 3: List */
+.view-list {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.view-list .recipe-card-glass {
+  flex-direction: row;
+  padding: 8px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 16px;
+  flex: unset !important;
+  max-width: none !important;
+}
+
+.view-list .rcp-img-wrap {
+  width: 85px;
+  height: 85px;
+  aspect-ratio: unset;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.view-list .rcp-region-tag {
+  display: none;
+}
+
+.view-list .rcp-body {
+  padding: 0;
+}
+
+.view-list .rcp-title {
+  font-size: 14.5px;
+  -webkit-line-clamp: 1;
+  margin-bottom: 4px;
+}
+
+/* Nút Xem Thêm */
+.load-more-btn {
+  width: auto;
+  margin: 10px auto 30px auto;
+  padding: 10px 24px;
+  background-color: #FFF0EB !important;
+  color: #E64A19 !important;
+  border: 1px solid rgba(255, 112, 67, 0.2) !important;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none !important;
+  box-shadow: 0 4px 12px rgba(255, 112, 67, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-more-btn i {
+  font-size: 18px;
+  margin-left: 4px;
+  margin-top: 1px;
+}
+
+.load-more-btn:active {
+  transform: scale(0.96);
+  background-color: #FFE0D1 !important;
+}

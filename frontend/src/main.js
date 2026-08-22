@@ -3287,3 +3287,44 @@ window.addEventListener('DOMContentLoaded', function () {
 
   }, 1000);
 });
+// ==========================================
+// RECIPE VIEW SWITCHER LOGIC
+// ==========================================
+
+// Gắn hàm vào 'window' để thẻ HTML bên ngoài có thể gọi được
+window.switchRecipeView = function (mode) {
+  const container = document.getElementById('recipe-list-grid');
+  if (!container) return;
+
+  // 1. Xóa class cũ, gán class mới
+  container.classList.remove('view-carousel', 'view-grid', 'view-list');
+  container.classList.add(mode);
+
+  // 2. Cập nhật giao diện thanh nút bấm
+  const btns = document.querySelectorAll('.view-btn');
+  btns.forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById('btn-' + mode.split('-')[1]);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // 3. Ẩn/Hiện nút Xem thêm (Chỉ hiện ở dạng Lưới và Danh sách)
+  const loadMoreBtn = document.getElementById('recipe-load-more');
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display = (mode === 'view-carousel') ? 'none' : 'inline-flex';
+  }
+
+  // 4. Lưu sở thích vào bộ nhớ trình duyệt
+  localStorage.setItem('recipeViewMode', mode);
+};
+
+// Gắn hàm Xem thêm vào window
+window.loadMoreRecipes = function () {
+  alert('Đang tải thêm công thức...');
+};
+
+// Tự động kiểm tra bộ nhớ khi tải lại trang web
+document.addEventListener('DOMContentLoaded', function () {
+  const savedMode = localStorage.getItem('recipeViewMode');
+  if (savedMode) {
+    window.switchRecipeView(savedMode);
+  }
+});
